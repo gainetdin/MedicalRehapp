@@ -1,0 +1,23 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/mrdata
+    username: mradmin
+    password: rehmed
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: validate
+#    properties:
+#      javax:
+#        persistence:
+#          schema-generation:
+#            create-source: metadata
+#            scripts:
+#              action: create
+#              create-target: create.sql
+  main:
+    banner-mode: off
+
+logging:
+  level:
+    com.telekom.javaschool.medicalrehapp: DEBUG

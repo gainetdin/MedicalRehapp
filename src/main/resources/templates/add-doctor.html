@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Add new user</title>
+    <link rel="stylesheet" href="../static/library/bootstrap.min.css" th:href="@{/library/bootstrap.min.css}">
+    <link rel="stylesheet" href="../static/style.css" th:href="@{/style.css}">
+</head>
+<body>
+    <form action="#" th:action="@{/add-doctor}" th:object="${doctor}" method="post">
+        <label for="name">Name</label>
+        <input type="text" th:field="*{name}" id="name" placeholder="Name">
+<!--        <span th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></span>-->
+        <input type="submit" value="Add doctor">
+    </form>
+</body>
+</html>
