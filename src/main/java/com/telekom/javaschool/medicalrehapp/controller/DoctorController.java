@@ -1,7 +1,6 @@
 package com.telekom.javaschool.medicalrehapp.controller;
 
-import com.telekom.javaschool.medicalrehapp.dao.DoctorRepository;
-import com.telekom.javaschool.medicalrehapp.entity.Doctor;
+import com.telekom.javaschool.medicalrehapp.dto.DoctorDto;
 import com.telekom.javaschool.medicalrehapp.service.DoctorService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,14 +16,14 @@ public class DoctorController {
     private final DoctorService doctorService;
 
     @GetMapping("/signup")
-    public String showSignUpForm(Doctor doctor) {
+    public String showSignUpForm(DoctorDto doctorDto) {
         log.debug("Signup page requested");
         return "add-doctor";
     }
 
     @PostMapping("/add-doctor")
-    public String addDoctor(Doctor doctor, Model model) {
-        doctorService.save(doctor);
+    public String addDoctor(DoctorDto doctorDto, Model model) {
+        doctorService.save(doctorDto);
         log.debug("New doctor added");
         return "redirect:/";
     }
