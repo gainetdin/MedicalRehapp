@@ -1,3 +1,6 @@
+CREATE SCHEMA IF NOT EXISTS mrschema;
+SET search_path TO mrschema;
+
 CREATE TABLE doctor
 (
     id BIGSERIAL PRIMARY KEY,
@@ -10,10 +13,10 @@ CREATE TABLE patient
     id               BIGSERIAL PRIMARY KEY,
     version          BIGINT NOT NULL,
     diagnosis        VARCHAR(255),
-    insurance_number VARCHAR(255) UNIQUE NOT NULL,
+    insurance_number VARCHAR(14) UNIQUE NOT NULL,
     name             VARCHAR(255),
     patient_status   INTEGER,
-    doctor_id        BIGINT REFERENCES doctor
+    doctor_id        BIGINT REFERENCES doctor (id)
 );
 
 CREATE TABLE treatment
@@ -31,8 +34,8 @@ CREATE TABLE event
     cancel_reason VARCHAR(255),
     date_time     TIMESTAMP,
     event_status  INTEGER,
-    patient_id    BIGINT REFERENCES patient,
-    treatment_id  BIGINT REFERENCES treatment
+    patient_id    BIGINT REFERENCES patient (id),
+    treatment_id  BIGINT REFERENCES treatment (id)
 );
 
 CREATE TABLE time_pattern
@@ -48,7 +51,7 @@ CREATE TABLE time_pattern_element
     id              BIGSERIAL PRIMARY KEY,
     version         BIGINT NOT NULL,
     day_of_week     INTEGER,
-    time_pattern_id BIGINT REFERENCES time_pattern
+    time_pattern_id BIGINT REFERENCES time_pattern (id)
 );
 
 CREATE TABLE prescription
@@ -59,7 +62,7 @@ CREATE TABLE prescription
     dosage_unit     VARCHAR(255),
     end_date_time   TIMESTAMP,
     start_date_time TIMESTAMP,
-    patient_id      BIGINT REFERENCES patient,
-    time_pattern_id BIGINT REFERENCES time_pattern,
-    treatment_id    BIGINT REFERENCES treatment
+    patient_id      BIGINT REFERENCES patient (id),
+    time_pattern_id BIGINT REFERENCES time_pattern (id),
+    treatment_id    BIGINT REFERENCES treatment (id)
 );

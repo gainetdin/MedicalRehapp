@@ -1,20 +1,16 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/mrdata
-    username: mradmin
-    password: rehmed
+    url: ${MED_REH_DB_URL}
+    username: ${MED_REH_DB_USERNAME}
+    password: ${MED_REH_DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
       ddl-auto: validate
-#    properties:
-#      javax:
-#        persistence:
-#          schema-generation:
-#            create-source: metadata
-#            scripts:
-#              action: create
-#              create-target: create.sql
+    properties:
+      hibernate.default_schema: mrschema
+  flyway:
+    schemas: mrschema
   main:
     banner-mode: off
 

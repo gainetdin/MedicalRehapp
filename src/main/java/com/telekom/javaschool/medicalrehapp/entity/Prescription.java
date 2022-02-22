@@ -1,81 +1,45 @@
 package com.telekom.javaschool.medicalrehapp.entity;
 
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 import java.time.LocalDateTime;
 
+@Getter
+@Setter
+@NoArgsConstructor
 @Entity
+@Table(name = "prescription")
 public class Prescription extends AbstractEntity {
 
     @ManyToOne
     @JoinColumn(name = "patient_id")
     private Patient patient;
+
     @ManyToOne
+    @JoinColumn(name = "treatment_id")
     private Treatment treatment;
+
     @ManyToOne
+    @JoinColumn(name = "time_pattern_id")
     private TimePattern timePattern;
+
+    @Column(name = "start_date_time")
     private LocalDateTime startDateTime;
+
+    @Column(name = "end_date_time")
     private LocalDateTime endDateTime;
+
+    @Column(name = "dosage")
     private double dosage;
+
+    @Column(name = "dosage_unit")
     private String dosageUnit;
 
-    public Patient getPatient() {
-        return patient;
-    }
-
-    public void setPatient(Patient patient) {
-        this.patient = patient;
-    }
-
-    public Treatment getTreatment() {
-        return treatment;
-    }
-
-    public void setTreatment(Treatment treatment) {
-        this.treatment = treatment;
-    }
-
-    public TimePattern getTimePattern() {
-        return timePattern;
-    }
-
-    public void setTimePattern(TimePattern timePattern) {
-        this.timePattern = timePattern;
-    }
-
-    public LocalDateTime getStartDateTime() {
-        return startDateTime;
-    }
-
-    public void setStartDateTime(LocalDateTime startDateTime) {
-        this.startDateTime = startDateTime;
-    }
-
-    public LocalDateTime getEndDateTime() {
-        return endDateTime;
-    }
-
-    public void setEndDateTime(LocalDateTime endDateTime) {
-        this.endDateTime = endDateTime;
-    }
-
-    public double getDosage() {
-        return dosage;
-    }
-
-    public void setDosage(double dosage) {
-        this.dosage = dosage;
-    }
-
-    public String getDosageUnit() {
-        return dosageUnit;
-    }
-
-    public void setDosageUnit(String dosageUnit) {
-        this.dosageUnit = dosageUnit;
-    }
-
-    public Prescription() {
-    }
 }
