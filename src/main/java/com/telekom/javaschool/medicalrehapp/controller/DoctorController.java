@@ -2,6 +2,7 @@ package com.telekom.javaschool.medicalrehapp.controller;
 
 import com.telekom.javaschool.medicalrehapp.dao.DoctorRepository;
 import com.telekom.javaschool.medicalrehapp.entity.Doctor;
+import com.telekom.javaschool.medicalrehapp.service.DoctorService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -13,7 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 @Controller
 public class DoctorController {
 
-    private final DoctorRepository doctorRepository;
+    private final DoctorService doctorService;
 
     @GetMapping("/signup")
     public String showSignUpForm(Doctor doctor) {
@@ -23,20 +24,20 @@ public class DoctorController {
 
     @PostMapping("/add-doctor")
     public String addDoctor(Doctor doctor, Model model) {
-        doctorRepository.save(doctor);
+        doctorService.save(doctor);
         log.debug("New doctor added");
         return "redirect:/";
     }
 
     @GetMapping("/")
     public String showDoctorList(Model model) {
-        model.addAttribute("doctors", doctorRepository.findAll());
+        model.addAttribute("doctors", doctorService.findAll());
         log.debug("Index page requested");
         return "index";
     }
 
     @Autowired
-    public DoctorController(DoctorRepository doctorRepository) {
-        this.doctorRepository = doctorRepository;
+    public DoctorController(DoctorService doctorService) {
+        this.doctorService = doctorService;
     }
 }
