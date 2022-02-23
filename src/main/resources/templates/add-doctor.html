@@ -3,15 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <title>Add new user</title>
-    <link rel="stylesheet" href="../static/library/bootstrap.min.css" th:href="@{/library/bootstrap.min.css}">
-    <link rel="stylesheet" href="../static/style.css" th:href="@{/style.css}">
+    <script src="../static/js/jquery-3.6.0.min.js" th:src="@{/js/jquery-3.6.0.min.js}"></script>
+    <script src="../static/js/bootstrap.bundle.min.js" th:src="@{/js/bootstrap.bundle.min.js}"></script>
+    <link rel="stylesheet" href="../static/css/bootstrap.min.css" th:href="@{/css/bootstrap.min.css}">
+    <link rel="stylesheet" href="../static/css/style.css" th:href="@{/css/style.css}">
 </head>
-<body>
-    <form action="#" th:action="@{/add-doctor}" th:object="${doctorDto}" method="post">
-        <label for="name">Name</label>
-        <input type="text" th:field="*{name}" id="name" placeholder="Name">
-<!--        <span th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></span>-->
-        <input type="submit" value="Add doctor">
-    </form>
+<body class="d-flex flex-column">
+    <div th:replace="header :: content"></div>
+    <div id="page-content">
+        <div class="container text-center">
+            <form action="#" th:action="@{/add-doctor}" th:object="${doctorDto}" method="post">
+                <label for="name">Name</label>
+                <input type="text" th:field="*{name}" id="name" placeholder="Name">
+        <!--        <span th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></span>-->
+                <input type="submit" value="Add doctor">
+            </form>
+        </div>
+    </div>
+    <div th:replace="footer :: content"></div>
 </body>
 </html>

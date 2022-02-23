@@ -6,6 +6,7 @@ import com.telekom.javaschool.medicalrehapp.mapper.DoctorMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -21,11 +22,13 @@ public class DoctorServiceImpl implements DoctorService {
         this.doctorMapper = doctorMapper;
     }
 
+    @Transactional
     @Override
     public void save(DoctorDto doctorDto) {
         doctorRepository.save(doctorMapper.dtoToEntity(doctorDto));
     }
 
+    @Transactional
     @Override
     public List<DoctorDto> findAll() {
         return doctorRepository.findAll()
