@@ -1,42 +1,32 @@
 package com.telekom.javaschool.medicalrehapp.entity;
 
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
+import javax.persistence.Table;
 import java.util.List;
 
+@Getter
+@Setter
+@NoArgsConstructor
 @Entity
+@Table(name = "time_pattern")
 public class TimePattern extends AbstractEntity {
 
+    @Enumerated
+    @Column(name = "time_basis")
     private TimeBasis timeBasis;
+
+    @Column(name = "daily_frequency")
     private int dailyFrequency; // 1 - 4 times a day
+
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "timePattern", orphanRemoval = true)
     private List<TimePatternElement> timePatternElement;
 
-    public TimeBasis getTimeBasis() {
-        return timeBasis;
-    }
-
-    public void setTimeBasis(TimeBasis timeBasis) {
-        this.timeBasis = timeBasis;
-    }
-
-    public int getDailyFrequency() {
-        return dailyFrequency;
-    }
-
-    public void setDailyFrequency(int dailyFrequency) {
-        this.dailyFrequency = dailyFrequency;
-    }
-
-    public List<TimePatternElement> getTimePatternElement() {
-        return timePatternElement;
-    }
-
-    public void setTimePatternElement(List<TimePatternElement> timePatternElement) {
-        this.timePatternElement = timePatternElement;
-    }
-
-    public TimePattern() {
-    }
 }

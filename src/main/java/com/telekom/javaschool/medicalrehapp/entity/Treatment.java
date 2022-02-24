@@ -1,29 +1,26 @@
 package com.telekom.javaschool.medicalrehapp.entity;
 
-import javax.persistence.Entity;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Enumerated;
+import javax.persistence.Table;
+
+@Getter
+@Setter
+@NoArgsConstructor
 @Entity
+@Table(name = "treatment")
 public class Treatment extends AbstractEntity {
 
+    @Column(name = "name")
     private String name;
+
+    @Enumerated
+    @Column(name = "type")
     private TreatmentType type;
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public TreatmentType getType() {
-        return type;
-    }
-
-    public void setType(TreatmentType type) {
-        this.type = type;
-    }
-
-    public Treatment() {
-    }
 }
