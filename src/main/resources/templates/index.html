@@ -1,5 +1,8 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="https://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
 <head>
     <meta charset="UTF-8">
     <title>Home page</title>
@@ -10,6 +13,18 @@
 </head>
 <body class="d-flex flex-column">
     <div th:replace="header :: content"></div>
+
+    <h1>Welcome!</h1>
+
+    <p>Click <a th:href="@{/hello}">here</a> to see a greeting.</p>
+
+
+
+
+
+
+    <hr>
+
     <div id="page-content">
         <div class="container text-center">
             <div class="row justify-content-center">

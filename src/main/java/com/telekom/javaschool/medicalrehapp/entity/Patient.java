@@ -6,6 +6,7 @@ import lombok.Setter;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -31,7 +32,7 @@ public class Patient extends AbstractEntity {
     @JoinColumn(name = "doctor_id")
     private Doctor doctor;
 
-    @Enumerated
+    @Enumerated(value = EnumType.STRING)
     @Column(name = "patient_status")
     private PatientStatus patientStatus;
 

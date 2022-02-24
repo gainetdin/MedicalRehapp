@@ -15,6 +15,11 @@ public class DoctorController {
 
     private final DoctorService doctorService;
 
+    @Autowired
+    public DoctorController(DoctorService doctorService) {
+        this.doctorService = doctorService;
+    }
+
     @GetMapping("/signup")
     public String showSignUpForm(DoctorDto doctorDto) {
         log.debug("Signup page requested");
@@ -35,8 +40,9 @@ public class DoctorController {
         return "index";
     }
 
-    @Autowired
-    public DoctorController(DoctorService doctorService) {
-        this.doctorService = doctorService;
+    @GetMapping("/hello")
+    public String sayHello() {
+        log.debug("Hello page requested");
+        return "hello";
     }
 }

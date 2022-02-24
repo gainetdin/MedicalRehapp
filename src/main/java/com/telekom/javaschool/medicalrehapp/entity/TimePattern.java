@@ -6,6 +6,7 @@ import lombok.Setter;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
@@ -19,7 +20,7 @@ import java.util.List;
 @Table(name = "time_pattern")
 public class TimePattern extends AbstractEntity {
 
-    @Enumerated
+    @Enumerated(value = EnumType.STRING)
     @Column(name = "time_basis")
     private TimeBasis timeBasis;
 
