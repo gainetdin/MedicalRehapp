@@ -1,10 +1,17 @@
 package com.telekom.javaschool.medicalrehapp.service;
 
 import com.telekom.javaschool.medicalrehapp.dto.UserDto;
+import org.springframework.security.core.userdetails.UserDetailsService;
 
-public interface UserService {
+import java.util.List;
 
-    void save(UserDto userDto);
+public interface UserService extends UserDetailsService {
 
-    UserDto findByUsername(String username);
+    void create(UserDto userDto);
+
+    void update(UserDto userDto);
+
+    UserDto findByLogin(String login);
+
+    List<UserDto> findAll();
 }

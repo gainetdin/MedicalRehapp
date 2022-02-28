@@ -9,6 +9,7 @@ spring:
       ddl-auto: validate
     properties:
       hibernate.default_schema: mrschema
+    show-sql: true
   flyway:
     schemas: mrschema
   main:

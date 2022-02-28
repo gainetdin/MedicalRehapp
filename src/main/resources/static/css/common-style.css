@@ -5,10 +5,16 @@ body {
 
 body {
     font-family: Segoe UI, serif;
+    display: flex;
+    flex-direction: column;
 }
 
 #page-content {
     flex: 1 0 auto;
+}
+
+#sticky-footer {
+    flex-shrink: 0;
 }
 
 .header-blue {

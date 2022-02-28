@@ -4,7 +4,7 @@
     <div class="header-blue" th:fragment="content">
         <nav class="navbar navbar-dark navbar-expand-md navigation-clean-search">
             <div class="container"><a class="navbar-brand" href="/">Medical Rehapp</a>
-                <button class="navbar-toggler" data-toggle="collapse" data-target="#navcol-1">
+                <button class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navcol-1">
                     <span class="sr-only">Menu</span>
                     <span class="navbar-toggler-icon"></span>
                 </button>
@@ -20,11 +20,12 @@
                                 <a class="dropdown-item" role="presentation" href="#">Procedures</a>
                                 <a class="dropdown-item" role="presentation" href="#">Our doctors</a>
                                 <a class="dropdown-item" role="presentation" href="#">Contacts</a>
+                                <a class="dropdown-item" role="presentation" href="/user">Users</a>
                             </div>
                         </li>
                     </ul>
-                    <span class="navbar-text"> <a href="#" class="login">Log In</a></span>
-                    <a class="btn btn-light action-button" role="button" href="#">Sign Up</a>
+                    <span class="navbar-text"> <a th:href="@{/login}" class="login">Log In</a></span>
+                    <a class="btn btn-light action-button" role="button" th:href="@{/add-user}">Sign Up</a>
                 </div>
             </div>
         </nav>

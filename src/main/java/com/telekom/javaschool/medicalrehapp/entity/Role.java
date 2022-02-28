@@ -1,8 +1,15 @@
 package com.telekom.javaschool.medicalrehapp.entity;
 
-public enum Role {
-//    DOCTOR,
-//    NURSE,
-//    ADMIN,
-    USER
+import org.springframework.security.core.GrantedAuthority;
+
+public enum Role implements GrantedAuthority {
+    DOCTOR,
+    NURSE,
+    ADMIN,
+    USER;
+
+    @Override
+    public String getAuthority() {
+        return name();
+    }
 }
