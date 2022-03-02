@@ -31,11 +31,6 @@ public class User extends AbstractEntity {
     @Column(name = "name", nullable = false)
     private String name;
 
-//    @ElementCollection(targetClass = Role.class, fetch = FetchType.EAGER)
-//    @CollectionTable(name = "user_role", joinColumns = @JoinColumn(name = "user_id"))
-//    @Enumerated(value = EnumType.STRING)
-//    private Set<Role> roles;
-
     @Enumerated(value = EnumType.STRING)
     @Column(name = "role", nullable = false)
     private Role role;

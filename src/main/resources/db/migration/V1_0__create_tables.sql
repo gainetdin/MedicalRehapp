@@ -76,10 +76,3 @@ CREATE TABLE "user"
     name      VARCHAR(255) NOT NULL,
     role      VARCHAR(10)
 );
-
--- CREATE TABLE user_role
--- (
---     id        BIGSERIAL PRIMARY KEY,
---     user_id   BIGINT REFERENCES "user" (id),
---     roles     VARCHAR(255)
--- );

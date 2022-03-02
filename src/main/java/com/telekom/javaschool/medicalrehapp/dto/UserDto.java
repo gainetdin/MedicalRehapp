@@ -11,7 +11,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Set;
 
 @Data
 @Builder
@@ -22,7 +21,6 @@ public class UserDto extends AbstractDto implements Serializable, UserDetails {
     private String password;
     private String name;
     private Role role;
-//    private Set<Role> roles;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

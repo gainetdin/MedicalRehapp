@@ -6,6 +6,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Hello World!</title>
+    <div th:replace="doc-style :: content"></div>
 </head>
 <body>
     <h1 th:inline="text">Hello [[${#httpServletRequest.remoteUser}]]!</h1>

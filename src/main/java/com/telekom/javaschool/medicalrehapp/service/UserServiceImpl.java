@@ -3,12 +3,11 @@ package com.telekom.javaschool.medicalrehapp.service;
 import com.telekom.javaschool.medicalrehapp.dao.UserRepository;
 import com.telekom.javaschool.medicalrehapp.dto.UserDto;
 import com.telekom.javaschool.medicalrehapp.entity.Role;
+import com.telekom.javaschool.medicalrehapp.entity.User;
 import com.telekom.javaschool.medicalrehapp.mapper.UserMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -53,12 +52,10 @@ public class UserServiceImpl implements UserService{
     @Override
     @Transactional
     public void update(UserDto user) {
-        UserDto userDto = userMapper.entityToDto(userRepository.findByLogin(user.getLogin()));
-        userDto.setName(user.getName());
-        userDto.setRole(user.getRole());
-        log.debug(userDto.toString());
-        log.debug("Id of user: {}", userDto.getId());
-        userRepository.save(userMapper.dtoToEntity(userDto));
+        User userFromDb = userRepository.findByLogin(user.getLogin());
+        userFromDb.setName(user.getName());
+        userFromDb.setRole(user.getRole());
+        userRepository.save(userFromDb);
     }
 
     @Override
@@ -74,10 +71,5 @@ public class UserServiceImpl implements UserService{
                 .stream()
                 .map(userMapper::entityToDto)
                 .collect(Collectors.toList());
-    }
-
-    @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return findByLogin(username);
     }
 }

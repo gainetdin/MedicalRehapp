@@ -19,13 +19,13 @@ import javax.persistence.Table;
 @Table(name = "patient")
 public class Patient extends AbstractEntity {
 
-    @Column(name = "name")
+    @Column(name = "name", nullable = false)
     private String name;
 
     @Column(name = "diagnosis")
     private String diagnosis;
 
-    @Column(name = "insurance_number", unique = true)
+    @Column(name = "insurance_number", unique = true, nullable = false)
     private String insuranceNumber; //format: XXX-XXX-XXX-XX
 
     @ManyToOne
@@ -33,7 +33,7 @@ public class Patient extends AbstractEntity {
     private Doctor doctor;
 
     @Enumerated(value = EnumType.STRING)
-    @Column(name = "patient_status")
+    @Column(name = "patient_status", nullable = false)
     private PatientStatus patientStatus;
 
 }

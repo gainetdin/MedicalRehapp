@@ -10,13 +10,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Controller
@@ -36,11 +29,6 @@ public class UserController {
 
     @PostMapping("/add-user")
     public String addUser(UserDto user) {
-//        UserDto maybeUser = userService.findByLogin(user.getLogin());
-//        if (maybeUser != null) {
-//            model.addAttribute("message", "User already exists!");
-//            return "add-user";
-//        }
         userService.create(user);
         return "redirect:/login";
     }
@@ -59,7 +47,7 @@ public class UserController {
     }
 
     @PostMapping("/user-edit")
-    public String userSave(@RequestParam Map<String, String> form, UserDto user) {
+    public String userSave(UserDto user) {
         log.debug(user.toString());
         userService.update(user);
         return "redirect:/user";
