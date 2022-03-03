@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="https://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit patient</title>
+    <div th:replace="doc-style :: content"></div>
+</head>
+<body class="d-flex flex-column">
+    <div th:replace="header :: content"></div>
+    <div id="page-content">
+        <div class="container text-center">
+            <h2>Edit patient</h2>
+<!--                                            -->
+            <a th:href="@{/patient/add}">Add new patient</a>
+        </div>
+    </div>
+    <div th:replace="footer :: content"></div>
+</body>
+</html>

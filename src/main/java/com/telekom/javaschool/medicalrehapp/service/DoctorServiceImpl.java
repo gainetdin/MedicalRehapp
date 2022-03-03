@@ -22,18 +22,24 @@ public class DoctorServiceImpl implements DoctorService {
         this.doctorMapper = doctorMapper;
     }
 
-    @Transactional
     @Override
+    @Transactional
     public void save(DoctorDto doctorDto) {
         doctorRepository.save(doctorMapper.dtoToEntity(doctorDto));
     }
 
-    @Transactional(readOnly = true)
     @Override
+    @Transactional(readOnly = true)
     public List<DoctorDto> findAll() {
         return doctorRepository.findAll()
                 .stream()
                 .map(doctorMapper::entityToDto)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public DoctorDto find(String name) {
+        return doctorMapper.entityToDto(doctorRepository.findByName(name));
     }
 }

@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="https://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<head>
+    <meta charset="UTF-8">
+    <title>New patient registration</title>
+    <div th:replace="doc-style :: content"></div>
+</head>
+<body class="d-flex flex-column">
+    <div th:replace="header :: content"></div>
+    <div id="page-content">
+        <div class="container text-center">
+            <h2>Add new patient</h2>
+            <form action="#" th:action="@{/patient/add}" th:object="${patient}" th:method="post">
+                <label for="name">Full name: </label>
+                <br>
+                <input type="text" th:field="*{name}" id="name">
+                <br>
+                <label for="diagnosis">Diagnosis: </label>
+                <br>
+                <input type="text" th:field="*{diagnosis}" id="diagnosis">
+                <br>
+                <label for="insuranceNumber">Insurance number: </label>
+                <br>
+                <input type="text" th:field="*{insuranceNumber}" id="insuranceNumber"
+                       onkeyup="addHyphen(this)" maxlength="14">
+                <br>
+                <label for="selectDoctor">Select doctor: </label>
+                <br>
+                <select th:field="*{doctor}" id="selectDoctor">
+                    <option th:each="doctor : ${doctors}"
+                            th:value="${doctor.name}"
+                            th:text="${doctor.name}">
+                    </option>
+                </select>
+                <br>
+                <input type="submit" value="Add patient">
+            </form>
+        </div>
+    </div>
+    <div th:replace="footer :: content"></div>
+
+    <script>
+        function addHyphen(element) {
+            let ele = document.getElementById(element.id);
+            ele = ele.value.split('-').join('');
+            let finalVal = ele.match(/.{1,3}/g).join('-');
+            document.getElementById(element.id).value = finalVal;
+        }
+    </script>
+</body>
+</html>

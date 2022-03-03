@@ -20,12 +20,16 @@ public class SuccessHandler implements AuthenticationSuccessHandler {
     private final RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
 
     @Override
-    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
+    public void onAuthenticationSuccess(HttpServletRequest request,
+                                        HttpServletResponse response,
+                                        Authentication authentication) {
         Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
         authorities.forEach(authority -> sendRedirectByAuthority(request, response, authority));
     }
 
-    private void sendRedirectByAuthority(HttpServletRequest request, HttpServletResponse response, GrantedAuthority authority) {
+    private void sendRedirectByAuthority(HttpServletRequest request,
+                                         HttpServletResponse response,
+                                         GrantedAuthority authority) {
         String successUrl = selectUrlByAuthority(authority);
         try {
             redirectStrategy.sendRedirect(request, response, successUrl);

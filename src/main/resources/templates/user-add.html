@@ -6,6 +6,7 @@
 <head>
   <title>Create user</title>
   <div th:replace="doc-style :: content"></div>
+  <link rel="stylesheet" href="../static/css/form.css" th:href="@{/css/form.css}">
 </head>
 <body>
   <div th:replace="header :: content"></div>
@@ -25,7 +26,7 @@
           <input type="password" name="password" id="password" placeholder="enter password">
         </div>
         <div>
-          <label for="login">Full name: </label>
+          <label for="name">Full name: </label>
           <br>
           <input type="text" name="name" id="name" placeholder="enter full name">
         </div>

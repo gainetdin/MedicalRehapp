@@ -15,7 +15,7 @@ import javax.persistence.Table;
 @Table(name = "doctor")
 public class Doctor extends AbstractEntity {
 
-    @Column(name = "name")
+    @Column(name = "name", unique = true)
     private String name;
 
 }

@@ -24,7 +24,7 @@ public class UserController {
 
     @GetMapping("/add-user")
     public String addNewUser() {
-        return "add-user";
+        return "user-add";
     }
 
     @PostMapping("/add-user")
