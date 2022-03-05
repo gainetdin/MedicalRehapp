@@ -11,17 +11,35 @@
 <body class="d-flex flex-column">
     <div th:replace="header :: content"></div>
     <div id="page-content">
-        <div class="container text-center">
-            <h2>Edit user profile</h2>
+        <div class="container">
+            <h2 class="text-center">Edit user profile</h2>
             <form action="#" th:action="@{/user-edit}" th:object="${user}" th:method="post">
-                <input type="text" th:field="*{login}" id="login" placeholder="login" readonly>
-                <br>
-                <input type="text" th:field="*{name}" id="name" placeholder="name">
-                <div th:each="role : ${roles}">
-                    <input type="radio" th:field="*{role}" th:value="${role}">
-                    <label th:for="${role}" th:text="${role}"></label>
+                <div class="row">
+                    <div class="col-sm">
+                        <label for="login">Login: </label>
+                        <br>
+                        <input type="text" th:field="*{login}" id="login"
+                               readonly class="form-control-plaintext fw-bold">
+                        <br>
+                        <label for="name">Full name: </label>
+                        <br>
+                        <input type="text" th:field="*{name}" id="name" placeholder="name" class="form-control">
+                        <br>
+                    </div>
+                    <div class="col-sm">
+                        <label for="radio">Select user role: </label>
+                        <div id="radio">
+                            <th:block th:each="role : ${roles}">
+                                <input type="radio" class="btn-check"
+                                       th:id="${role}" th:field="*{role}" th:value="${role}" autocomplete="off">
+                                <label class="btn btn-outline-secondary m-1" th:for="${role}" th:text="${role}"></label>
+                            </th:block>
+                        </div>
+                    </div>
                 </div>
-                <input type="submit" value="Save">
+                <input type="submit" class="btn btn-primary m-1" value="Save">
+                <a th:href="@{/user}" role="button"
+                   class="btn btn-primary m-1">Return</a>
             </form>
         </div>
     </div>

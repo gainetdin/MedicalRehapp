@@ -5,31 +5,32 @@
       xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
 <head>
     <meta charset="UTF-8">
-    <title>New patient registration</title>
+    <title>Patient treatment</title>
     <div th:replace="doc-style :: content"></div>
 </head>
 <body class="d-flex flex-column">
     <div th:replace="header :: content"></div>
     <div id="page-content">
-        <h2 class="text-center">New patient</h2>
         <div class="container">
-            <form action="#" th:action="@{/patient/add}" th:object="${patient}" th:method="post">
+            <h2 class="text-center">Edit patient</h2>
+            <form action="#" th:action="@{/patient}" th:object="${patient}" th:method="post">
                 <div class="row">
                     <div class="col-sm">
                         <label for="name">Full name: </label>
                         <br>
-                        <input type="text" th:field="*{name}" id="name" class="form-control">
+                        <input type="text" th:field="*{name}" id="name"
+                               readonly class="form-control-plaintext fw-bold">
                         <br>
-                        <label for="diagnosis">Diagnosis: </label>
+                        <label for="id">Insurance number: </label>
                         <br>
-                        <input type="text" th:field="*{diagnosis}" id="diagnosis" class="form-control">
+                        <input type="text" th:field="*{insuranceNumber}" id="id"
+                               readonly class="form-control-plaintext fw-bold">
                         <br>
                     </div>
                     <div class="col-sm">
-                        <label for="insuranceNumber">Insurance number: </label>
+                        <label for="diagnosis">Diagnosis: </label>
                         <br>
-                        <input type="text" th:field="*{insuranceNumber}" id="insuranceNumber"
-                               onkeyup="addHyphen(this)" maxlength="14" class="form-control">
+                        <input type="text" th:field="*{diagnosis}" id="diagnosis" class="form-control">
                         <br>
                         <label for="selectDoctor">Select doctor: </label>
                         <br>
@@ -39,24 +40,24 @@
                                     th:text="${doctor.name}">
                             </option>
                         </select>
+                        <br>
+                        <label for="selectStatus">Select status: </label>
+                        <br>
+                        <select th:field="*{patientStatus}" id="selectStatus" class="form-select">
+                            <option th:each="status : ${statuses}"
+                                    th:value="${status.name}"
+                                    th:text="${status.label}">
+                            </option>
+                        </select>
+                        <br>
                     </div>
                 </div>
-                <br>
-                <input type="submit" value="Add patient" class="btn btn-primary">
+                <input type="submit" value="Save" class="btn btn-primary m-1">
                 <a th:href="@{/patient}" role="button"
-                   class="btn btn-primary">Return</a>
+                   class="btn btn-primary m-1">Return</a>
             </form>
         </div>
     </div>
     <div th:replace="footer :: content"></div>
-
-    <script>
-        function addHyphen(element) {
-            let ele = document.getElementById(element.id);
-            ele = ele.value.split('-').join('');
-            let finalVal = ele.match(/.{1,3}/g).join('-');
-            document.getElementById(element.id).value = finalVal;
-        }
-    </script>
 </body>
 </html>

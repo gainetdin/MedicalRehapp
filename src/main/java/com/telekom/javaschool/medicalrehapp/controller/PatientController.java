@@ -2,9 +2,12 @@ package com.telekom.javaschool.medicalrehapp.controller;
 
 import com.telekom.javaschool.medicalrehapp.dto.DoctorDto;
 import com.telekom.javaschool.medicalrehapp.dto.PatientDto;
+import com.telekom.javaschool.medicalrehapp.entity.PatientStatus;
 import com.telekom.javaschool.medicalrehapp.service.DoctorService;
 import com.telekom.javaschool.medicalrehapp.service.PatientService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,6 +19,8 @@ import org.springframework.web.servlet.view.RedirectView;
 
 import java.util.List;
 
+@Slf4j
+@PreAuthorize("hasRole('ROLE_DOCTOR')")
 @Controller
 @RequestMapping("/patient")
 public class PatientController {
@@ -47,8 +52,28 @@ public class PatientController {
 
     @GetMapping
     public String editPatient(@RequestParam(required = false) String id, Model model) {
-        model.addAttribute("patient", patientService.findByInsuranceNumber(id));
-        return "patient";
+        if (id != null) {
+            model.addAttribute("patient", patientService.findByInsuranceNumber(id));
+            model.addAttribute("doctors", doctorService.findAll());
+            model.addAttribute("statuses", PatientStatus.values());
+            return "patient-edit";
+        }
+        else {
+            model.addAttribute("patients", patientService.findAll());
+            return "patient";
+        }
     }
 
+    @PostMapping
+    public String editPatient(PatientDto patientDto) {
+        patientService.update(patientDto);
+        return "redirect:/patient";
+    }
+
+//    @PostMapping("/discharge")
+//    public RedirectView addPatient(PatientDto patientDto, RedirectAttributes attributes) {
+//        patientService.create(patientDto);
+//        attributes.addAttribute("id", patientDto.getInsuranceNumber());
+//        return new RedirectView("/patient");
+//    }
 }
