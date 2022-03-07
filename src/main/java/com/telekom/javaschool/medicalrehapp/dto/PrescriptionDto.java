@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class PrescriptionDto implements Serializable {
+public class PrescriptionDto extends AbstractDto implements Serializable {
     private PatientDto patient;
     private TreatmentDto treatment;
     private TimePatternDto timePattern;

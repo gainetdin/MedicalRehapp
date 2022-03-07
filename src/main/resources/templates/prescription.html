@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="https://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<head>
+    <meta charset="UTF-8">
+    <title>Patient treatment</title>
+    <div th:replace="doc-style :: content"></div>
+</head>
+<body class="d-flex flex-column">
+    <div th:replace="header :: content"></div>
+    <div id="page-content">
+        <div class="container">
+            <h2 class="text-center">Prescription</h2>
+            <form action="#" th:action="@{/prescription}" th:object="${prescription}" th:method="post">
+                <div class="row">
+                    <div class="col-sm">
+                        <div class="card" style="width: 18rem;">
+                            <div class="card-body">
+                                <h5 class="card-title">Patient</h5>
+                                <p th:text="'Full name: ' + ${patient.name}" class="card-text"></p>
+                                <p th:text="'Insurance number: ' + ${patient.insuranceNumber}" class="card-text"></p>
+                                <p th:text="'Diagnosis: ' + ${patient.diagnosis}" class="card-text"></p>
+                                <p th:text="'Doctor: ' + ${patient.doctor.name}" class="card-text"></p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm">
+                        <label for="treatment">Select treatment: </label>
+                        <br>
+                        <select th:field="*{treatment}" id="treatment" class="form-select">
+                            <option th:each="treatment : ${treatments}"
+                                    th:value="${treatment}"
+                                    th:text="${treatment.type + ': ' + treatment.name}">
+                            </option>
+                        </select>
+                        <br>
+                        <h5>Time pattern</h5>
+                        <label for="time-basis">Select time basis: </label>
+                        <br>
+                        <div id="time-basis">
+                            <input type="radio" name="time-basis" class="btn-check" id="daily"
+                                   data-bs-toggle="collapse" data-bs-target=".timeCollapse.show" checked
+                                   th:field="*{timePattern.timeBasis}"
+                                   th:value="${T(com.telekom.javaschool.medicalrehapp.entity.TimeBasis).DAILY}">
+                            <label class="btn btn-outline-secondary m-1" for="daily">Daily</label>
+                            <input type="radio" name="time-basis" class="btn-check" id="weekly"
+                                   data-bs-toggle="collapse" data-bs-target=".timeCollapse:not(.show)"
+                                   th:field="*{timePattern.timeBasis}"
+                                   th:value="${T(com.telekom.javaschool.medicalrehapp.entity.TimeBasis).WEEKLY}">
+                            <label class="btn btn-outline-secondary m-1" for="weekly">Weekly</label>
+                            <div class="collapse timeCollapse">
+                                <div class="card card-body">
+                                    Choose days of week:
+                                    <div class="form-check" th:each="day : ${dayOfWeek}">
+                                        <input type="checkbox" class="form-check-input" id="week-day"
+                                               th:id="${day}" th:field="*{timePattern.timePatternElement}" th:value="${day}">
+                                        <label class="form-check-label" th:for="${day}" th:text="${day}"></label>
+                                    </div>
+                                </div>
+                            </div>
+                            <br>
+                            <label for="frequency" class="form-label">Frequency, per day: </label>
+                            <output id="num">1</output>
+                            <input type="range" th:field="*{timePattern.dailyFrequency}"
+                                   class="form-range" min="1" max="4" id="frequency"
+                                   value="1" oninput="num.value = this.value">
+                        </div>
+
+                    </div>
+                </div>
+                <input type="submit" value="Save" class="btn btn-primary m-1">
+<!--                <a th:href="@{/prescription}" role="button"-->
+<!--                   class="btn btn-primary m-1">Return</a>-->
+            </form>
+        </div>
+    </div>
+    <div th:replace="footer :: content"></div>
+</body>
+</html>

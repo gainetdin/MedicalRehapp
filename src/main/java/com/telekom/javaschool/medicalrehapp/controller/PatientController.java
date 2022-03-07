@@ -57,10 +57,9 @@ public class PatientController {
             model.addAttribute("doctors", doctorService.findAll());
             model.addAttribute("statuses", PatientStatus.values());
             return "patient-edit";
-        }
-        else {
+        } else {
             model.addAttribute("patients", patientService.findAll());
-            return "patient";
+            return "patients";
         }
     }
 
@@ -69,11 +68,4 @@ public class PatientController {
         patientService.update(patientDto);
         return "redirect:/patient";
     }
-
-//    @PostMapping("/discharge")
-//    public RedirectView addPatient(PatientDto patientDto, RedirectAttributes attributes) {
-//        patientService.create(patientDto);
-//        attributes.addAttribute("id", patientDto.getInsuranceNumber());
-//        return new RedirectView("/patient");
-//    }
 }
