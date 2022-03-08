@@ -10,7 +10,7 @@ import java.io.Serializable;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class TreatmentDto implements Serializable {
+public class TreatmentDto extends AbstractDto implements Serializable {
     private String name;
     private TreatmentType type;
 }

@@ -17,7 +17,7 @@ import javax.persistence.Table;
 @Table(name = "treatment")
 public class Treatment extends AbstractEntity {
 
-    @Column(name = "name")
+    @Column(name = "name", unique = true)
     private String name;
 
     @Enumerated(value = EnumType.STRING)

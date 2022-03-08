@@ -1,7 +1,6 @@
 package com.telekom.javaschool.medicalrehapp.service;
 
 import com.telekom.javaschool.medicalrehapp.dao.TreatmentRepository;
-import com.telekom.javaschool.medicalrehapp.dto.PrescriptionDto;
 import com.telekom.javaschool.medicalrehapp.dto.TreatmentDto;
 import com.telekom.javaschool.medicalrehapp.mapper.TreatmentMapper;
 import org.springframework.beans.factory.annotation.Autowired;

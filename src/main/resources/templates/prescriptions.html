@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="https://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<head>
+    <meta charset="UTF-8">
+    <title>Patient treatment</title>
+    <div th:replace="doc-style :: content"></div>
+
+</head>
+<body class="d-flex flex-column">
+    <div th:replace="header :: content"></div>
+
+    <div id="page-content">
+        <div class="container">
+            <h2 class="text-center">Prescriptions</h2>
+            <div class="row">
+                <div class="col-sm">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Patient</h5>
+                            <br>
+                            <p th:text="'Full name: ' + ${patient.name}" class="card-text"></p>
+                            <p th:text="'Insurance number: ' + ${patient.insuranceNumber}" class="card-text"></p>
+                            <p th:text="'Diagnosis: ' + ${patient.diagnosis}" class="card-text"></p>
+                            <p th:text="'Doctor: ' + ${patient.doctor.name}" class="card-text"></p>
+                        </div>
+                    </div>
+                    <a th:href="@{/patient}" role="button"
+                       class="btn btn-primary m-1">Return</a>
+                    <a th:href="@{/prescription/add(insurance=${patient.insuranceNumber})}" role="button"
+                       class="btn btn-primary m-1">Add new prescription</a>
+                </div>
+                <div class="col-sm-8">
+                    <div th:switch="${prescriptions}">
+                        <h5 th:case="null" class="text-center">No prescriptions created</h5>
+                        <div th:case="*">
+                            <table class="table">
+                                <thead>
+                                <tr>
+                                    <th scope="col">Treatment</th>
+                                    <th scope="col">Type</th>
+                                    <th scope="col">Dosage</th>
+                                    <th scope="col">Until</th>
+                                    <th scope="col"></th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr th:each="prescription : ${prescriptions}">
+                                    <td th:text="${prescription.treatment.name}"></td>
+                                    <td th:text="${#strings.capitalize(#strings.toLowerCase(prescription.treatment.type))}"></td>
+                                    <td th:if="${prescription.treatment.type.name() == 'MEDICINE'}"
+                                        th:text="${prescription.dosage + ' ' + prescription.dosageUnit.label}"></td>
+                                    <td th:unless="${prescription.treatment.type.name() == 'MEDICINE'}"></td>
+                                    <td th:text="${prescription.endDateTime.getDayOfMonth() + ' of ' +
+                                    #strings.capitalize(#strings.toLowerCase(prescription.endDateTime.getMonth()))}"></td>
+                                    <td><a th:href="@{/prescription(insurance=${patient.insuranceNumber},
+                                           id=${prescription.id})}" role="button"
+                                           class="btn btn-sm btn-primary">Edit</a></td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div th:replace="footer :: content"></div>
+</body>
+</html>

@@ -10,6 +10,7 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import java.time.LocalDateTime;
 
@@ -28,7 +29,7 @@ public class Prescription extends AbstractEntity {
     @JoinColumn(name = "treatment_id")
     private Treatment treatment;
 
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "time_pattern_id")
     private TimePattern timePattern;
 

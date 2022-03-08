@@ -10,6 +10,7 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import java.util.List;
 
@@ -30,4 +31,6 @@ public class TimePattern extends AbstractEntity {
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "timePattern", orphanRemoval = true)
     private List<TimePatternElement> timePatternElement;
 
+    @OneToOne(mappedBy = "timePattern")
+    private Prescription prescription;
 }
