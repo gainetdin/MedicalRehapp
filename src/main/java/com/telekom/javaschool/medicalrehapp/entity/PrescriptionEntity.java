@@ -11,27 +11,32 @@ import javax.persistence.Enumerated;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
+import javax.persistence.PrePersist;
 import javax.persistence.Table;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @Entity
 @Table(name = "prescription")
-public class Prescription extends AbstractEntity {
+public class PrescriptionEntity extends AbstractEntity {
+
+    @Column(name = "uuid")
+    private UUID uuid;
 
     @ManyToOne
     @JoinColumn(name = "patient_id")
-    private Patient patient;
+    private PatientEntity patient;
 
     @ManyToOne
     @JoinColumn(name = "treatment_id")
-    private Treatment treatment;
+    private TreatmentEntity treatment;
 
     @OneToOne
     @JoinColumn(name = "time_pattern_id")
-    private TimePattern timePattern;
+    private TimePatternEntity timePattern;
 
     @Column(name = "start_date_time")
     private LocalDateTime startDateTime;
@@ -46,4 +51,8 @@ public class Prescription extends AbstractEntity {
     @Column(name = "dosage_unit")
     private DosageUnit dosageUnit;
 
+    @PrePersist
+    private void generateUuid() {
+        uuid = UUID.randomUUID();
+    }
 }

@@ -11,9 +11,9 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.view.RedirectView;
 
@@ -25,6 +25,10 @@ import java.util.List;
 @RequestMapping("/patient")
 public class PatientController {
 
+    private static final String PATIENT = "patient";
+    private static final String PATIENTS = "patients";
+    private static final String DOCTORS = "doctors";
+    private static final String STATUSES = "statuses";
     private final PatientService patientService;
     private final DoctorService doctorService;
 
@@ -34,12 +38,18 @@ public class PatientController {
         this.doctorService = doctorService;
     }
 
+    @GetMapping
+    public String showPatients(Model model) {
+        model.addAttribute(PATIENTS, patientService.findAll());
+        return PATIENTS;
+    }
+
     @GetMapping("/add")
-    public String addNewPatient(Model model) {
+    public String showPatientAddForm(Model model) {
         PatientDto patientDto = new PatientDto();
         List<DoctorDto> doctors = doctorService.findAll();
-        model.addAttribute("patient", patientDto);
-        model.addAttribute("doctors", doctors);
+        model.addAttribute(PATIENT, patientDto);
+        model.addAttribute(DOCTORS, doctors);
         return "patient-add";
     }
 
@@ -50,17 +60,12 @@ public class PatientController {
         return new RedirectView("/patient");
     }
 
-    @GetMapping
-    public String editPatient(@RequestParam(required = false) String id, Model model) {
-        if (id != null) {
-            model.addAttribute("patient", patientService.findByInsuranceNumber(id));
-            model.addAttribute("doctors", doctorService.findAll());
-            model.addAttribute("statuses", PatientStatus.values());
-            return "patient-edit";
-        } else {
-            model.addAttribute("patients", patientService.findAll());
-            return "patients";
-        }
+    @GetMapping("/{insuranceNumber}/edit")
+    public String showPatientEditForm(@PathVariable("insuranceNumber") String insuranceNumber, Model model) {
+        model.addAttribute(PATIENT, patientService.findByInsuranceNumber(insuranceNumber));
+        model.addAttribute(DOCTORS, doctorService.findAll());
+        model.addAttribute(STATUSES, PatientStatus.values());
+        return "patient-edit";
     }
 
     @PostMapping

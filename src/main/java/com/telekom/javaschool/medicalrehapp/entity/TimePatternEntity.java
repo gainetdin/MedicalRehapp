@@ -19,18 +19,18 @@ import java.util.List;
 @NoArgsConstructor
 @Entity
 @Table(name = "time_pattern")
-public class TimePattern extends AbstractEntity {
+public class TimePatternEntity extends AbstractEntity {
 
     @Enumerated(value = EnumType.STRING)
     @Column(name = "time_basis")
     private TimeBasis timeBasis;
 
     @Column(name = "daily_frequency")
-    private int dailyFrequency; // 1 - 4 times a day
+    private int dailyFrequency;
 
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "timePattern", orphanRemoval = true)
-    private List<TimePatternElement> timePatternElement;
+    private List<TimePatternElementEntity> timePatternElement;
 
     @OneToOne(mappedBy = "timePattern")
-    private Prescription prescription;
+    private PrescriptionEntity prescription;
 }

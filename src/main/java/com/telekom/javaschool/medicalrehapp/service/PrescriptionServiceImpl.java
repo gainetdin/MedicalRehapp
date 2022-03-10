@@ -5,9 +5,10 @@ import com.telekom.javaschool.medicalrehapp.dao.PrescriptionRepository;
 import com.telekom.javaschool.medicalrehapp.dao.TimePatternRepository;
 import com.telekom.javaschool.medicalrehapp.dao.TreatmentRepository;
 import com.telekom.javaschool.medicalrehapp.dto.PrescriptionDto;
-import com.telekom.javaschool.medicalrehapp.entity.Patient;
-import com.telekom.javaschool.medicalrehapp.entity.Prescription;
-import com.telekom.javaschool.medicalrehapp.entity.TimePattern;
+import com.telekom.javaschool.medicalrehapp.entity.PatientEntity;
+import com.telekom.javaschool.medicalrehapp.entity.PrescriptionEntity;
+import com.telekom.javaschool.medicalrehapp.entity.TimePatternEntity;
+import com.telekom.javaschool.medicalrehapp.entity.TreatmentEntity;
 import com.telekom.javaschool.medicalrehapp.mapper.PrescriptionMapper;
 import com.telekom.javaschool.medicalrehapp.mapper.TimePatternMapper;
 import lombok.extern.slf4j.Slf4j;
@@ -20,7 +21,7 @@ import java.time.LocalDateTime;
 import java.time.Period;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.UUID;
 
 @Slf4j
 @Service
@@ -48,48 +49,30 @@ public class PrescriptionServiceImpl implements PrescriptionService {
 
     @Override
     @Transactional
-    public void create(PrescriptionDto prescriptionDto) {
+    public void save(PrescriptionDto prescriptionDto) {
         convertPeriodToDates(prescriptionDto);
-        Prescription prescriptionFromDb = prescriptionMapper.dtoToEntity(prescriptionDto);
-        prescriptionFromDb.setPatient(patientRepository
-                .findByInsuranceNumber(prescriptionDto.getPatient().getInsuranceNumber()));
-        TimePattern timePattern = timePatternMapper.dtoToEntity(prescriptionDto.getTimePattern());
-        timePatternRepository.save(timePattern);
-        prescriptionFromDb.setTimePattern(timePattern);
-        prescriptionFromDb.setTreatment(treatmentRepository
-                .findById(prescriptionDto.getTreatment().getId()).get());
-        prescriptionRepository.save(prescriptionFromDb);
-
-    }
-
-    @Override
-    @Transactional
-    public void update(PrescriptionDto prescriptionDto) {
-
+        PrescriptionEntity prescriptionEntity = prescriptionMapper.dtoToEntity(prescriptionDto);
+        prescriptionEntity.setPatient(getPatientEntityByInsuranceNumber(prescriptionDto
+                .getPatient().getInsuranceNumber()));
+        TimePatternEntity timePatternEntity = timePatternMapper.dtoToEntity(prescriptionDto.getTimePattern());
+        timePatternRepository.save(timePatternEntity);
+        prescriptionEntity.setTimePattern(timePatternEntity);
+        prescriptionEntity.setTreatment(getTreatmentEntityById(prescriptionDto.getTreatment().getId()));
+        prescriptionRepository.save(prescriptionEntity);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<PrescriptionDto> findAll() {
-        return null;
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public PrescriptionDto findById(String id) {
-        return prescriptionMapper.entityToDto(prescriptionRepository
-                .findById(Long.valueOf(id))
-                .orElseThrow(EntityNotFoundException::new));
+    public PrescriptionDto findByUuid(String uuid) {
+        return prescriptionMapper.entityToDto(prescriptionRepository.findByUuid(UUID.fromString(uuid))
+                .orElseThrow(() -> new EntityNotFoundException("Prescription with this UUID doesn't exist")));
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<PrescriptionDto> findPrescriptionsByPatient(String insuranceNumber) {
-        Patient patientFromDb = patientRepository.findByInsuranceNumber(insuranceNumber);
-        return prescriptionRepository.findPrescriptionsByPatient(patientFromDb)
-                .stream()
-                .map(prescriptionMapper::entityToDto)
-                .collect(Collectors.toList());
+        PatientEntity patientEntity = getPatientEntityByInsuranceNumber(insuranceNumber);
+        return prescriptionMapper.entityListToDtoList(prescriptionRepository.findPrescriptionsByPatient(patientEntity));
     }
 
     private void convertPeriodToDates(PrescriptionDto prescriptionDto) {
@@ -113,5 +96,15 @@ public class PrescriptionServiceImpl implements PrescriptionService {
         LocalDateTime endDateTime = startDateTime.plus(period);
         prescriptionDto.setStartDateTime(startDateTime);
         prescriptionDto.setEndDateTime(endDateTime);
+    }
+
+    private PatientEntity getPatientEntityByInsuranceNumber(String insuranceNumber) {
+        return patientRepository.findByInsuranceNumber(insuranceNumber)
+                .orElseThrow(() -> new EntityNotFoundException("Patient with this insurance number doesn't exist"));
+    }
+
+    private TreatmentEntity getTreatmentEntityById(long id) {
+        return treatmentRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("This treatment doesn't exist"));
     }
 }

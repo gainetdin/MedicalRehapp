@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="https://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<head>
+    <meta charset="UTF-8">
+    <title>New treatment</title>
+    <div th:replace="doc-style :: content"></div>
+</head>
+<body class="d-flex flex-column">
+    <div th:replace="header :: content"></div>
+    <div id="page-content">
+        <h2 class="text-center">New treatment</h2>
+        <div class="container">
+            <form action="#" th:action="@{/treatment/add}" th:object="${treatment}" th:method="post">
+                <div class="row">
+                    <div class="col-sm">
+                        <label for="name">Treatment name: </label>
+                        <br>
+                        <input type="text" th:field="*{name}" id="name" class="form-control" required>
+                        <br>
+                    </div>
+                    <div class="col-sm">
+                        <label for="selectType">Select type: </label>
+                        <br>
+                        <select th:field="*{type}" id="selectType" class="form-select">
+                            <option th:each="type : ${treatmentTypes}"
+                                    th:value="${type}"
+                                    th:text="${#strings.capitalize(#strings.toLowerCase(type))}">
+                            </option>
+                        </select>
+                    </div>
+                </div>
+                <br>
+                <input type="submit" value="Add treatment" class="btn btn-primary m-1">
+            </form>
+        </div>
+    </div>
+    <div th:replace="footer :: content"></div>
+</body>
+</html>

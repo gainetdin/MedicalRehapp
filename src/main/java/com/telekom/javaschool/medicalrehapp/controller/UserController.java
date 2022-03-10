@@ -10,9 +10,11 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 @Slf4j
 @Controller
+@RequestMapping("/user")
 public class UserController {
 
     private final UserService userService;
@@ -22,32 +24,32 @@ public class UserController {
         this.userService = userService;
     }
 
-    @GetMapping("/add-user")
-    public String addNewUser() {
+    @GetMapping("/add")
+    public String showUserAddForm() {
         return "user-add";
     }
 
-    @PostMapping("/add-user")
+    @PostMapping("/add")
     public String addUser(UserDto user) {
         userService.create(user);
         return "redirect:/login";
     }
 
-    @GetMapping("/user")
-    public String userList(Model model) {
+    @GetMapping
+    public String showUsers(Model model) {
         model.addAttribute("users", userService.findAll());
         return "user-list";
     }
 
-    @GetMapping("/user/{login}")
-    public String userEdit(@PathVariable("login") String login, Model model) {
+    @GetMapping("/{login}")
+    public String showUserEditForm(@PathVariable("login") String login, Model model) {
         model.addAttribute("user", userService.findByLogin(login));
         model.addAttribute("roles", Role.values());
         return "user-edit";
     }
 
-    @PostMapping("/user-edit")
-    public String userSave(UserDto user) {
+    @PostMapping("/edit")
+    public String editUser(UserDto user) {
         log.debug(user.toString());
         userService.update(user);
         return "redirect:/user";

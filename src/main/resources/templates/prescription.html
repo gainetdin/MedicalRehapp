@@ -13,7 +13,9 @@
     <div id="page-content">
         <div class="container">
             <h2 class="text-center">Prescription</h2>
-            <form action="#" th:action="@{/prescription}" th:object="${prescription}" th:method="post">
+            <form action="#" th:action="@{/patient/{insuranceNumber}/prescription/{uuid}
+                  (insuranceNumber=*{patient.insuranceNumber}, uuid=*{uuid})}"
+                  th:object="${prescription}" th:method="post">
                 <div class="row">
                     <div class="col-sm">
                         <div class="card">
@@ -34,12 +36,20 @@
                         <br>
                         <div id="treatment-type">
                             Select treatment:
-                            <select th:field="*{treatment.id}" class="form-select">
-                                <option th:each="treatment : ${treatments}"
-                                        th:value="${treatment.id}"
-                                        th:text="${treatment.name + ' (' + treatment.type + ')'}">
-                                </option>
-                            </select>
+                            <div class="row">
+                                <div class="col-sm">
+                                    <select th:field="*{treatment.id}" class="form-select">
+                                        <option th:each="treatment : ${treatments}"
+                                                th:value="${treatment.id}"
+                                                th:text="${treatment.name + ' (' + treatment.type + ')'}">
+                                        </option>
+                                    </select>
+                                </div>
+                                <div class="col-sm-4">
+                                    <a th:href="@{/treatment/add}" role="button"
+                                       class="btn btn-primary">Add new treatment</a>
+                                </div>
+                            </div>
                             <br>
                             <label for="dosage">Dosage (of medicine): </label>
                             <div class="row" id="dosage">
@@ -102,7 +112,7 @@
                                         <div class="collapse timeCollapse">
                                             <div class="card card-body">
                                                 Choose days of week:
-                                                <div class="form-check" th:each="day : ${dayOfWeek}">
+                                                <div class="form-check" th:each="day : ${daysOfWeek}">
                                                     <input type="checkbox" class="form-check-input" id="week-day"
                                                            th:id="${day}" th:field="*{timePattern.timePatternElement}" th:value="${day}">
                                                     <label class="form-check-label" th:for="${day}" th:text="${day}"></label>
@@ -124,8 +134,8 @@
                             <br>
                             <div class="row" id="period">
                                 <div class="col-sm">
-                                    <input type="number" th:field="*{periodValue}" min="1" max="20" step="1"
-                                           class="form-control" required>
+                                    <input type="number" th:field="*{periodValue}" min="1" max="30" step="1"
+                                           class="form-control" placeholder="from 1 to 30" required>
                                 </div>
                                 <div class="col-sm">
                                     <select th:field="*{periodUnit}" class="form-select">
@@ -138,8 +148,6 @@
                         </div>
                     </div>
                 </div>
-<!--                <a th:href="@{/prescription}" role="button"-->
-<!--                   class="btn btn-primary m-1">Return</a>-->
             </form>
         </div>
     </div>

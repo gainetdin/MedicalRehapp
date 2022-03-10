@@ -10,5 +10,5 @@ public interface DoctorService {
 
     List<DoctorDto> findAll();
 
-    DoctorDto find(String name);
+    DoctorDto findByName(String name);
 }

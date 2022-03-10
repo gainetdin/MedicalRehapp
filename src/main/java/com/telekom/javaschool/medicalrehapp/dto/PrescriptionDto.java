@@ -7,13 +7,14 @@ import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.time.Period;
 import java.time.temporal.ChronoUnit;
+import java.util.UUID;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class PrescriptionDto extends AbstractDto implements Serializable {
+    private UUID uuid;
     private PatientDto patient;
     private TreatmentDto treatment;
     private TimePatternDto timePattern;

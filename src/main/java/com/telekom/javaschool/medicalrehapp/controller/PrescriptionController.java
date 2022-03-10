@@ -12,11 +12,9 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import org.springframework.web.servlet.view.RedirectView;
 
 import java.time.DayOfWeek;
 import java.util.List;
@@ -24,46 +22,64 @@ import java.util.List;
 @Slf4j
 @PreAuthorize("hasRole('ROLE_DOCTOR')")
 @Controller
-@RequestMapping("/prescription")
+@RequestMapping("/patient/{insuranceNumber}/prescription")
 public class PrescriptionController {
 
+    private static final String PRESCRIPTION = "prescription";
+    private static final String INSURANCE_NUMBER = "insuranceNumber";
+    private static final String TREATMENTS = "treatments";
+    private static final String DAYS_OF_WEEK = "daysOfWeek";
+    private static final String DOSAGE_UNITS = "dosageUnits";
     private final PrescriptionService prescriptionService;
     private final PatientService patientService;
     private final TreatmentService treatmentService;
 
     @Autowired
-    public PrescriptionController(PrescriptionService prescriptionService, PatientService patientService, TreatmentService treatmentService) {
+    public PrescriptionController(PrescriptionService prescriptionService,
+                                  PatientService patientService,
+                                  TreatmentService treatmentService) {
         this.prescriptionService = prescriptionService;
         this.patientService = patientService;
         this.treatmentService = treatmentService;
     }
 
-    @GetMapping("/add")
-    public String addPrescription(@RequestParam String insurance, Model model) {
-        PrescriptionDto prescriptionDto = new PrescriptionDto();
-        prescriptionDto.setPatient(patientService.findByInsuranceNumber(insurance));
-        model.addAttribute("prescription", prescriptionDto);
-        model.addAttribute("treatments", treatmentService.findAll());
-        model.addAttribute("dayOfWeek", DayOfWeek.values());
-        model.addAttribute("dosageUnits", DosageUnit.values());
-        return "prescription";
-    }
-
-    @PostMapping
-    public RedirectView savePrescription(PrescriptionDto prescriptionDto, RedirectAttributes attributes) {
-        log.debug(prescriptionDto.toString());
-        prescriptionService.create(prescriptionDto);
-        attributes.addAttribute("insurance", prescriptionDto.getPatient().getInsuranceNumber());
-        return new RedirectView("/prescription");
-    }
-
     @GetMapping
-    public String viewPrescription(@RequestParam String insurance, Model model) {
-        List<PrescriptionDto> prescriptionDtos = prescriptionService.findPrescriptionsByPatient(insurance);
-        PatientDto patientDto = patientService.findByInsuranceNumber(insurance);
+    public String showPrescriptionsOfPatient(@PathVariable(INSURANCE_NUMBER) String insuranceNumber, Model model) {
+        List<PrescriptionDto> prescriptionDtos = prescriptionService.findPrescriptionsByPatient(insuranceNumber);
+        PatientDto patientDto = patientService.findByInsuranceNumber(insuranceNumber);
         model.addAttribute("prescriptions", prescriptionDtos);
         model.addAttribute("patient", patientDto);
         log.debug("Prescriptions page requested");
         return "prescriptions";
+    }
+
+    @GetMapping("/add")
+    public String showPrescriptionAddForm(@PathVariable(INSURANCE_NUMBER) String insuranceNumber, Model model) {
+        PrescriptionDto prescriptionDto = new PrescriptionDto();
+        prescriptionDto.setPatient(patientService.findByInsuranceNumber(insuranceNumber));
+        model.addAttribute(PRESCRIPTION, prescriptionDto);
+        model.addAttribute(TREATMENTS, treatmentService.findAll());
+        model.addAttribute(DAYS_OF_WEEK, DayOfWeek.values());
+        model.addAttribute(DOSAGE_UNITS, DosageUnit.values());
+        return PRESCRIPTION;
+    }
+
+    @PostMapping({"/{uuid}", "/"})
+    public String savePrescription(@PathVariable(INSURANCE_NUMBER) String insuranceNumber,
+                                   PrescriptionDto prescriptionDto) {
+        log.debug(prescriptionDto.toString());
+        prescriptionService.save(prescriptionDto);
+        return "redirect:/patient/" + insuranceNumber + "/prescription";
+    }
+
+    @GetMapping("/{uuid}")
+    public String showPrescriptionEditForm(@PathVariable("uuid") String uuid, Model model) {
+        PrescriptionDto prescriptionDto = prescriptionService.findByUuid(uuid);
+        log.debug(prescriptionDto.toString());
+        model.addAttribute(PRESCRIPTION, prescriptionDto);
+        model.addAttribute(TREATMENTS, treatmentService.findAll());
+        model.addAttribute(DAYS_OF_WEEK, DayOfWeek.values());
+        model.addAttribute(DOSAGE_UNITS, DosageUnit.values());
+        return PRESCRIPTION;
     }
 }

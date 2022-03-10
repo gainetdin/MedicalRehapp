@@ -19,7 +19,7 @@ import java.time.DayOfWeek;
 @NoArgsConstructor
 @Entity
 @Table(name = "time_pattern_element")
-public class TimePatternElement extends AbstractEntity {
+public class TimePatternElementEntity extends AbstractEntity {
 
     @Enumerated(value = EnumType.STRING)
     @Column(name = "day_of_week")
@@ -27,6 +27,6 @@ public class TimePatternElement extends AbstractEntity {
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "time_pattern_id")
-    private TimePattern timePattern;
+    private TimePatternEntity timePattern;
 
 }
