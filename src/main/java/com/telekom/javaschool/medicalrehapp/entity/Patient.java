@@ -4,8 +4,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -18,21 +20,21 @@ import javax.persistence.Table;
 @Table(name = "patient")
 public class Patient extends AbstractEntity {
 
-    @Column(name = "name")
+    @Column(name = "name", nullable = false)
     private String name;
 
     @Column(name = "diagnosis")
     private String diagnosis;
 
-    @Column(name = "insurance_number", unique = true)
+    @Column(name = "insurance_number", unique = true, nullable = false)
     private String insuranceNumber; //format: XXX-XXX-XXX-XX
 
     @ManyToOne
-    @JoinColumn(name = "doctor_id")
+    @JoinColumn(name = "doctor_id", nullable = false)
     private Doctor doctor;
 
-    @Enumerated
-    @Column(name = "patient_status")
+    @Enumerated(value = EnumType.STRING)
+    @Column(name = "patient_status", nullable = false)
     private PatientStatus patientStatus;
 
 }

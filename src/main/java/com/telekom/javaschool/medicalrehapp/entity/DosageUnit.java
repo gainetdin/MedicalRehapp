@@ -1,8 +1,12 @@
 package com.telekom.javaschool.medicalrehapp.entity;
 
-public enum PatientStatus {
-    BEING_TREATED("Under treatment"),
-    DISCHARGED("Discharged");
+public enum DosageUnit {
+    G("gram"),
+    MG("milligram"),
+    MCG("microgram"),
+    L("litre"),
+    ML("millilitre"),
+    CC("cubic centimetre");
 
     private final String label;
 
@@ -10,7 +14,7 @@ public enum PatientStatus {
         return label;
     }
 
-    PatientStatus(String label) {
+    DosageUnit(String label) {
         this.label = label;
     }
 }

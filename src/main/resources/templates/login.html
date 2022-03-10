@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="https://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<head>
+  <title>Login user</title>
+  <div th:replace="doc-style :: content"></div>
+  <link rel="stylesheet" href="../static/css/form.css" th:href="@{/css/form.css}">
+</head>
+<body>
+  <div th:replace="header :: content"></div>
+
+  <div class="wrapper fadeInDown" id="page-content">
+    <div id="formContent">
+      <form th:action="@{/login}" method="post">
+        <div class="fadeIn first">
+          <label for="login">Login: </label>
+          <br>
+          <input type="text" name="username" id="login" placeholder="enter login" autofocus="autofocus">
+        </div>
+        <div class="fadeIn second">
+          <label for="password">Password: </label>
+          <br>
+          <input type="password" name="password" id="password" placeholder="enter password">
+        </div>
+        <div class="fadeIn third">
+          <input type="submit" value="Sign in">
+        </div>
+      </form>
+      <a class="fadeIn fourth underlineHover" th:href="@{/add-user}">Create an account</a>
+    </div>
+  </div>
+
+  <div th:replace="footer :: content"></div>
+</body>
+</html>

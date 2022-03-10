@@ -6,11 +6,12 @@ spring:
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
-      ddl-auto: validate
+      ddl-auto: update
     properties:
       hibernate.default_schema: mrschema
-  flyway:
-    schemas: mrschema
+#    show-sql: true
+#  flyway:
+#    schemas: mrschema
   main:
     banner-mode: off
 

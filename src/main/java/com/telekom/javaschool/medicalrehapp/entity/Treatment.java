@@ -6,6 +6,7 @@ import lombok.Setter;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.Table;
 
@@ -16,10 +17,10 @@ import javax.persistence.Table;
 @Table(name = "treatment")
 public class Treatment extends AbstractEntity {
 
-    @Column(name = "name")
+    @Column(name = "name", unique = true)
     private String name;
 
-    @Enumerated
+    @Enumerated(value = EnumType.STRING)
     @Column(name = "type")
     private TreatmentType type;
 

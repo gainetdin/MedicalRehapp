@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="https://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<head>
+    <meta charset="UTF-8">
+    <title>Patient treatment</title>
+    <div th:replace="doc-style :: content"></div>
+</head>
+<body class="d-flex flex-column">
+    <div th:replace="header :: content"></div>
+    <div id="page-content">
+        <div class="container">
+            <h2 class="text-center">Edit patient</h2>
+            <form action="#" th:action="@{/patient}" th:object="${patient}" th:method="post">
+                <div class="row">
+                    <div class="col-sm">
+                        <label for="name">Full name: </label>
+                        <br>
+                        <input type="text" th:field="*{name}" id="name"
+                               readonly class="form-control-plaintext fw-bold">
+                        <br>
+                        <label for="id">Insurance number: </label>
+                        <br>
+                        <input type="text" th:field="*{insuranceNumber}" id="id"
+                               readonly class="form-control-plaintext fw-bold">
+                        <br>
+                    </div>
+                    <div class="col-sm">
+                        <label for="diagnosis">Diagnosis: </label>
+                        <br>
+                        <input type="text" th:field="*{diagnosis}" id="diagnosis" class="form-control">
+                        <br>
+                        <label for="selectDoctor">Select doctor: </label>
+                        <br>
+                        <select th:field="*{doctor}" id="selectDoctor" class="form-select">
+                            <option th:each="doctor : ${doctors}"
+                                    th:value="${doctor.name}"
+                                    th:text="${doctor.name}">
+                            </option>
+                        </select>
+                        <br>
+                        <label for="selectStatus">Select status: </label>
+                        <br>
+                        <select th:field="*{patientStatus}" id="selectStatus" class="form-select">
+                            <option th:each="status : ${statuses}"
+                                    th:value="${status.name}"
+                                    th:text="${status.label}">
+                            </option>
+                        </select>
+                        <br>
+                    </div>
+                </div>
+                <input type="submit" value="Save" class="btn btn-primary m-1">
+                <a th:href="@{/patient}" role="button"
+                   class="btn btn-primary m-1">Return</a>
+                <a th:href="@{/prescription(insurance=*{insuranceNumber})}" role="button"
+                   class="btn btn-primary m-1">Prescriptions</a>
+            </form>
+        </div>
+    </div>
+    <div th:replace="footer :: content"></div>
+</body>
+</html>

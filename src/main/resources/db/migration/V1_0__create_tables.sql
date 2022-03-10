@@ -15,7 +15,7 @@ CREATE TABLE patient
     diagnosis        VARCHAR(255),
     insurance_number VARCHAR(14) UNIQUE NOT NULL,
     name             VARCHAR(255),
-    patient_status   INTEGER,
+    patient_status   VARCHAR(255),
     doctor_id        BIGINT REFERENCES doctor (id)
 );
 
@@ -24,7 +24,7 @@ CREATE TABLE treatment
     id      BIGSERIAL PRIMARY KEY,
     version BIGINT NOT NULL,
     name    VARCHAR(255),
-    type    INTEGER
+    type    VARCHAR(255)
 );
 
 CREATE TABLE event
@@ -33,7 +33,7 @@ CREATE TABLE event
     version       BIGINT NOT NULL,
     cancel_reason VARCHAR(255),
     date_time     TIMESTAMP,
-    event_status  INTEGER,
+    event_status  VARCHAR(255),
     patient_id    BIGINT REFERENCES patient (id),
     treatment_id  BIGINT REFERENCES treatment (id)
 );
@@ -43,14 +43,14 @@ CREATE TABLE time_pattern
     id              BIGSERIAL PRIMARY KEY,
     version         BIGINT NOT NULL,
     daily_frequency INTEGER NOT NULL,
-    time_basis      INTEGER
+    time_basis      VARCHAR(255)
 );
 
 CREATE TABLE time_pattern_element
 (
     id              BIGSERIAL PRIMARY KEY,
     version         BIGINT NOT NULL,
-    day_of_week     INTEGER,
+    day_of_week     VARCHAR(255),
     time_pattern_id BIGINT REFERENCES time_pattern (id)
 );
 
@@ -65,4 +65,14 @@ CREATE TABLE prescription
     patient_id      BIGINT REFERENCES patient (id),
     time_pattern_id BIGINT REFERENCES time_pattern (id),
     treatment_id    BIGINT REFERENCES treatment (id)
+);
+
+CREATE TABLE "user"
+(
+    id        BIGSERIAL PRIMARY KEY,
+    version   BIGINT NOT NULL,
+    login     VARCHAR(255) UNIQUE NOT NULL,
+    password  VARCHAR(255) NOT NULL,
+    name      VARCHAR(255) NOT NULL,
+    role      VARCHAR(10)
 );

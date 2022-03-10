@@ -9,4 +9,6 @@ public interface DoctorService {
     void save(DoctorDto doctor);
 
     List<DoctorDto> findAll();
+
+    DoctorDto find(String name);
 }

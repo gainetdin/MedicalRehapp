@@ -5,21 +5,28 @@ body {
 
 body {
     font-family: Segoe UI, serif;
+    display: flex;
+    flex-direction: column;
 }
 
 #page-content {
     flex: 1 0 auto;
+    margin-top: 20px !important;
+    margin-bottom: 20px !important
+}
+
+#sticky-footer {
+    flex-shrink: 0;
 }
 
 .header-blue {
-    background:linear-gradient(135deg, #172a74, #21a9af);
-    background-color:#184e8e;
+    background: #184e8e linear-gradient(135deg, #172a74, #21a9af);
     padding-bottom:80px;
 }
 
 @media (min-width:768px) {
     .header-blue {
-        padding-bottom:0px;
+        padding-bottom:0;
     }
 }
 

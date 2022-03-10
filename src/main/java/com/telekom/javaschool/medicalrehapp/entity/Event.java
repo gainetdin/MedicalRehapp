@@ -6,6 +6,7 @@ import lombok.Setter;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -27,7 +28,7 @@ public class Event extends AbstractEntity {
     @Column(name = "date_time")
     private LocalDateTime dateTime;
 
-    @Enumerated
+    @Enumerated(value = EnumType.STRING)
     @Column(name = "event_status")
     private EventStatus eventStatus;
 
