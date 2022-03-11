@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class EventDto implements Serializable {
+public class EventDto extends AbstractDto implements Serializable {
     private PatientDto patient;
     private LocalDateTime dateTime;
     private EventStatus eventStatus;

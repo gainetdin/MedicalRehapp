@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Period;
 import java.time.temporal.ChronoUnit;
@@ -27,6 +28,7 @@ import java.util.UUID;
 @Service
 public class PrescriptionServiceImpl implements PrescriptionService {
 
+    private static final String PRESCRIPTION_NOT_EXISTS = "Prescription with this UUID doesn't exist";
     private final PrescriptionRepository prescriptionRepository;
     private final PrescriptionMapper prescriptionMapper;
     private final PatientRepository patientRepository;
@@ -38,7 +40,9 @@ public class PrescriptionServiceImpl implements PrescriptionService {
     public PrescriptionServiceImpl(PrescriptionRepository prescriptionRepository,
                                    PrescriptionMapper prescriptionMapper,
                                    PatientRepository patientRepository,
-                                   TimePatternRepository timePatternRepository, TimePatternMapper timePatternMapper, TreatmentRepository treatmentRepository) {
+                                   TimePatternRepository timePatternRepository,
+                                   TimePatternMapper timePatternMapper,
+                                   TreatmentRepository treatmentRepository) {
         this.prescriptionRepository = prescriptionRepository;
         this.prescriptionMapper = prescriptionMapper;
         this.patientRepository = patientRepository;
@@ -49,7 +53,7 @@ public class PrescriptionServiceImpl implements PrescriptionService {
 
     @Override
     @Transactional
-    public void save(PrescriptionDto prescriptionDto) {
+    public void create(PrescriptionDto prescriptionDto) {
         convertPeriodToDates(prescriptionDto);
         PrescriptionEntity prescriptionEntity = prescriptionMapper.dtoToEntity(prescriptionDto);
         prescriptionEntity.setPatient(getPatientEntityByInsuranceNumber(prescriptionDto
@@ -57,7 +61,7 @@ public class PrescriptionServiceImpl implements PrescriptionService {
         TimePatternEntity timePatternEntity = timePatternMapper.dtoToEntity(prescriptionDto.getTimePattern());
         timePatternRepository.save(timePatternEntity);
         prescriptionEntity.setTimePattern(timePatternEntity);
-        prescriptionEntity.setTreatment(getTreatmentEntityById(prescriptionDto.getTreatment().getId()));
+        prescriptionEntity.setTreatment(getTreatmentEntityByName(prescriptionDto.getTreatment().getName()));
         prescriptionRepository.save(prescriptionEntity);
     }
 
@@ -65,7 +69,24 @@ public class PrescriptionServiceImpl implements PrescriptionService {
     @Transactional(readOnly = true)
     public PrescriptionDto findByUuid(String uuid) {
         return prescriptionMapper.entityToDto(prescriptionRepository.findByUuid(UUID.fromString(uuid))
-                .orElseThrow(() -> new EntityNotFoundException("Prescription with this UUID doesn't exist")));
+                .orElseThrow(() -> new EntityNotFoundException(PRESCRIPTION_NOT_EXISTS)));
+    }
+
+    @Override
+    @Transactional
+    public void update(PrescriptionDto prescriptionDto) {
+        PrescriptionEntity prescriptionEntity = prescriptionRepository.findByUuid(prescriptionDto.getUuid())
+                .orElseThrow(() -> new EntityNotFoundException(PRESCRIPTION_NOT_EXISTS));
+        prescriptionEntity.setPatient(getPatientEntityByInsuranceNumber(prescriptionDto
+                .getPatient().getInsuranceNumber()));
+        prescriptionEntity.setStartDateTime(LocalDateTime.now());
+        prescriptionEntity.setEndDate(prescriptionDto.getEndDate());
+        TimePatternEntity timePatternEntity = timePatternMapper.dtoToEntity(prescriptionDto.getTimePattern());
+        timePatternRepository.save(timePatternEntity);
+        prescriptionEntity.setTimePattern(timePatternEntity);
+        prescriptionEntity.setTreatment(getTreatmentEntityByName(prescriptionDto.getTreatment().getName()));
+        log.debug(prescriptionEntity.toString());
+        prescriptionRepository.save(prescriptionEntity);
     }
 
     @Override
@@ -93,9 +114,9 @@ public class PrescriptionServiceImpl implements PrescriptionService {
             default:
                 throw new IllegalArgumentException("Wrong period unit");
         }
-        LocalDateTime endDateTime = startDateTime.plus(period);
+        LocalDate endDate = startDateTime.plus(period).toLocalDate();
         prescriptionDto.setStartDateTime(startDateTime);
-        prescriptionDto.setEndDateTime(endDateTime);
+        prescriptionDto.setEndDate(endDate);
     }
 
     private PatientEntity getPatientEntityByInsuranceNumber(String insuranceNumber) {
@@ -103,8 +124,13 @@ public class PrescriptionServiceImpl implements PrescriptionService {
                 .orElseThrow(() -> new EntityNotFoundException("Patient with this insurance number doesn't exist"));
     }
 
-    private TreatmentEntity getTreatmentEntityById(long id) {
-        return treatmentRepository.findById(id)
+    private TreatmentEntity getTreatmentEntityByName(String name) {
+        return treatmentRepository.findByName(name)
                 .orElseThrow(() -> new EntityNotFoundException("This treatment doesn't exist"));
+    }
+
+    private TimePatternEntity getTimePatternEntityById(long id) {
+        return timePatternRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("This time pattern doesn't exist"));
     }
 }

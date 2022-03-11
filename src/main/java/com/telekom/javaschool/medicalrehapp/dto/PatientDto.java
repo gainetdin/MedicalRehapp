@@ -11,7 +11,7 @@ import java.io.Serializable;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class PatientDto implements Serializable {
+public class PatientDto extends AbstractDto implements Serializable {
     private String name;
     private String diagnosis;
     private String insuranceNumber;

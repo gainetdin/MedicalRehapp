@@ -6,7 +6,9 @@ import java.util.List;
 
 public interface PrescriptionService {
 
-    void save(PrescriptionDto prescriptionDto);
+    void create(PrescriptionDto prescriptionDto);
+
+    void update(PrescriptionDto prescriptionDto);
 
     PrescriptionDto findByUuid(String uuid);
 

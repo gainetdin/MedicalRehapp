@@ -64,11 +64,11 @@ public class PrescriptionController {
         return PRESCRIPTION;
     }
 
-    @PostMapping({"/{uuid}", "/"})
-    public String savePrescription(@PathVariable(INSURANCE_NUMBER) String insuranceNumber,
+    @PostMapping
+    public String addPrescription(@PathVariable(INSURANCE_NUMBER) String insuranceNumber,
                                    PrescriptionDto prescriptionDto) {
         log.debug(prescriptionDto.toString());
-        prescriptionService.save(prescriptionDto);
+        prescriptionService.create(prescriptionDto);
         return "redirect:/patient/" + insuranceNumber + "/prescription";
     }
 
@@ -81,5 +81,12 @@ public class PrescriptionController {
         model.addAttribute(DAYS_OF_WEEK, DayOfWeek.values());
         model.addAttribute(DOSAGE_UNITS, DosageUnit.values());
         return PRESCRIPTION;
+    }
+
+    @PostMapping("/{uuid}")
+    public String editPrescription(@PathVariable(INSURANCE_NUMBER) String insuranceNumber,
+                                  PrescriptionDto prescriptionDto) {
+        prescriptionService.update(prescriptionDto);
+        return "redirect:/patient/" + insuranceNumber + "/prescription";
     }
 }

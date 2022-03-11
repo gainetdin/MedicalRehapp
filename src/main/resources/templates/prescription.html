@@ -7,6 +7,7 @@
     <meta charset="UTF-8">
     <title>Patient treatment</title>
     <div th:replace="doc-style :: content"></div>
+
 </head>
 <body class="d-flex flex-column">
     <div th:replace="header :: content"></div>
@@ -38,9 +39,9 @@
                             Select treatment:
                             <div class="row">
                                 <div class="col-sm">
-                                    <select th:field="*{treatment.id}" class="form-select">
+                                    <select th:field="*{treatment.name}" class="form-select">
                                         <option th:each="treatment : ${treatments}"
-                                                th:value="${treatment.id}"
+                                                th:value="${treatment.name}"
                                                 th:text="${treatment.name + ' (' + treatment.type + ')'}">
                                         </option>
                                     </select>
@@ -65,32 +66,6 @@
                                     </select>
                                 </div>
                             </div>
-<!--                            <input type="radio" name="treatment-type" class="btn-check" id="medicine"-->
-<!--                                   data-bs-toggle="collapse" data-bs-target=".medicineCollapse"-->
-<!--                                   th:field="*{treatment}"-->
-<!--                                   th:value="${T(com.telekom.javaschool.medicalrehapp.entity.TreatmentType).MEDICINE}">-->
-<!--                            <label class="btn btn-outline-secondary m-1" for="medicine">Medicine</label>-->
-<!--                            <input type="radio" name="treatment-type" class="btn-check" id="procedure"-->
-<!--                                   data-bs-toggle="collapse" data-bs-target=".procedureCollapse"-->
-<!--                                   th:field="*{treatment}"-->
-<!--                                   th:value="${T(com.telekom.javaschool.medicalrehapp.entity.TreatmentType).PROCEDURE}">-->
-<!--                            <label class="btn btn-outline-secondary m-1" for="procedure">Procedure</label>-->
-<!--                            <div class="collapse medicineCollapse" id="medicineCollapse" data-bs-parent="#treatment-type">-->
-<!--                                <div class="card card-body">-->
-<!--                                </div>-->
-<!--                            </div>-->
-<!--                            <div class="collapse procedureCollapse" id="procedureCollapse" data-bs-parent="#treatment-type">-->
-<!--                                <div class="card card-body">-->
-<!--                                    Select procedure:-->
-<!--                                    <select class="form-select">-->
-<!--                                        <option th:each="treatment : ${treatments}"-->
-<!--                                                th:value="${treatment}"-->
-<!--                                                th:if="${treatment.type.name() == 'PROCEDURE'}"-->
-<!--                                                th:text="${treatment.name}">-->
-<!--                                        </option>-->
-<!--                                    </select>-->
-<!--                                </div>-->
-<!--                            </div>-->
                             <br>
                             <label for="time-pattern" class="fw-bold">Time pattern</label>
                             <br>
@@ -113,8 +88,8 @@
                                             <div class="card card-body">
                                                 Choose days of week:
                                                 <div class="form-check" th:each="day : ${daysOfWeek}">
-                                                    <input type="checkbox" class="form-check-input" id="week-day"
-                                                           th:id="${day}" th:field="*{timePattern.timePatternElement}" th:value="${day}">
+                                                    <input type="checkbox" class="form-check-input" id="week-day" th:id="${day}"
+                                                           th:field="*{timePattern.timePatternElement}" th:value="${day}">
                                                     <label class="form-check-label" th:for="${day}" th:text="${day}"></label>
                                                 </div>
                                             </div>
@@ -130,23 +105,37 @@
                                 </div>
                             </div>
                             <br>
-                            <label for="period" class="fw-bold">Period</label>
-                            <br>
-                            <div class="row" id="period">
-                                <div class="col-sm">
-                                    <input type="number" th:field="*{periodValue}" min="1" max="30" step="1"
-                                           class="form-control" placeholder="from 1 to 30" required>
+                            <div th:switch="*{uuid}">
+                                <div th:case="null">
+                                    <label for="period" class="fw-bold">Period</label>
+                                    <br>
+                                    <div class="row" id="period">
+                                        <div class="col-sm">
+                                            <input type="number" th:field="*{periodValue}" min="1" max="30" step="1"
+                                                   class="form-control" placeholder="from 1 to 30" required>
+                                        </div>
+                                        <div class="col-sm">
+                                            <select th:field="*{periodUnit}" class="form-select">
+                                                <option th:value="${#strings.toUpperCase(T(java.time.temporal.ChronoUnit).DAYS)}">days</option>
+                                                <option th:value="${#strings.toUpperCase(T(java.time.temporal.ChronoUnit).WEEKS)}">weeks</option>
+                                                <option th:value="${#strings.toUpperCase(T(java.time.temporal.ChronoUnit).MONTHS)}">months</option>
+                                            </select>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div class="col-sm">
-                                    <select th:field="*{periodUnit}" class="form-select">
-                                        <option th:value="${#strings.toUpperCase(T(java.time.temporal.ChronoUnit).DAYS)}">days</option>
-                                        <option th:value="${#strings.toUpperCase(T(java.time.temporal.ChronoUnit).WEEKS)}">weeks</option>
-                                        <option th:value="${#strings.toUpperCase(T(java.time.temporal.ChronoUnit).MONTHS)}">months</option>
-                                    </select>
+                                <div th:case="*">
+                                    <div class="row">
+                                        <div class="col-sm">
+                                            <label for="endDate" class="fw-bold">Date of end of treatment</label>
+                                            <br>
+                                            <input type="date" th:field="*{endDate}" id="endDate"
+                                                   class="form-control" required>
+                                        </div>
+                                        <div class="col-sm"></div>
+                                    </div>
                                 </div>
                             </div>
                             <br>
-                            <input type="date" />
                         </div>
                     </div>
                 </div>
@@ -154,5 +143,8 @@
         </div>
     </div>
     <div th:replace="footer :: content"></div>
+    <script>
+        endDate.min = new Date().toLocaleDateString('en-ca');
+    </script>
 </body>
 </html>

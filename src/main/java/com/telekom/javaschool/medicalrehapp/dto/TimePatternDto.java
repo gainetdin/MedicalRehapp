@@ -11,7 +11,7 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class TimePatternDto implements Serializable {
+public class TimePatternDto extends AbstractDto implements Serializable {
     private TimeBasis timeBasis;
     private int dailyFrequency;
     private List<TimePatternElementDto> timePatternElement;

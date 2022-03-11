@@ -9,6 +9,6 @@ import java.io.Serializable;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class DoctorDto implements Serializable {
+public class DoctorDto extends AbstractDto implements Serializable {
     private String name;
 }

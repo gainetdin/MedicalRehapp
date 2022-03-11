@@ -12,6 +12,4 @@ public interface TreatmentService {
     void update(TreatmentDto treatmentDto);
 
     List<TreatmentDto> findAll();
-
-    TreatmentDto findById(String id);
 }
