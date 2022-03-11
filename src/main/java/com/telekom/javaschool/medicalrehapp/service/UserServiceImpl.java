@@ -7,7 +7,6 @@ import com.telekom.javaschool.medicalrehapp.entity.UserEntity;
 import com.telekom.javaschool.medicalrehapp.mapper.UserMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,7 +26,7 @@ public class UserServiceImpl implements UserService{
     @Autowired
     public UserServiceImpl(UserRepository userRepository,
                            UserMapper userMapper,
-                           @Lazy PasswordEncoder passwordEncoder) {
+                           PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.userMapper = userMapper;
         this.passwordEncoder = passwordEncoder;
@@ -72,6 +71,6 @@ public class UserServiceImpl implements UserService{
 
     private UserEntity getUserEntityByLogin(String login) {
         return userRepository.findByLogin(login)
-                .orElseThrow(() -> new EntityNotFoundException("User with this login doesn't exists"));
+                .orElseThrow(() -> new EntityNotFoundException("User with this login doesn't exist"));
     }
 }

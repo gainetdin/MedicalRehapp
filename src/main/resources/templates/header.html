@@ -5,7 +5,7 @@
       xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
 <body>
     <div class="header-blue" th:fragment="content">
-        <nav class="navbar navbar-dark navbar-expand-md navigation-clean-search">
+        <nav class="navbar navbar-dark navbar-expand-md">
             <div class="container"><a class="navbar-brand" href="/">Medical Rehapp</a>
                 <button class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navcol-1">
                     <span class="sr-only">Menu</span>
@@ -30,11 +30,11 @@
                     </ul>
                     <div sec:authorize="isAnonymous()">
                         <a th:href="@{/login}" class="navbar-text btn">Log In</a>
-                        <a class="btn btn-light action-button" role="button" th:href="@{/add-user}">Sign Up</a>
+                        <a class="btn btn-light action-button" role="button" th:href="@{/user/add}">Sign Up</a>
                     </div>
                     <div sec:authorize="isAuthenticated()">
                         <form th:action="@{/logout}" method="post">
-                            <input type="submit" value="Log Out" class="navbar-text btn">
+                            <input type="submit" value="Log Out" class="btn btn-light action-button">
                         </form>
                     </div>
                 </div>
