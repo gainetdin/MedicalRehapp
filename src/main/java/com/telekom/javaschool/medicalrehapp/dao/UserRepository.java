@@ -1,8 +1,11 @@
 package com.telekom.javaschool.medicalrehapp.dao;
 
-import com.telekom.javaschool.medicalrehapp.entity.User;
+import com.telekom.javaschool.medicalrehapp.entity.UserEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface UserRepository extends JpaRepository<User, Long> {
-    User findByLogin(String login);
+import java.util.Optional;
+
+public interface UserRepository extends JpaRepository<UserEntity, Long> {
+
+    Optional<UserEntity> findByLogin(String login);
 }

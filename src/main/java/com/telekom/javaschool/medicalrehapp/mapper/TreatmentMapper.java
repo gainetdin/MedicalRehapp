@@ -1,13 +1,21 @@
 package com.telekom.javaschool.medicalrehapp.mapper;
 
+import com.telekom.javaschool.medicalrehapp.dto.PatientDto;
 import com.telekom.javaschool.medicalrehapp.dto.TreatmentDto;
-import com.telekom.javaschool.medicalrehapp.entity.Treatment;
+import com.telekom.javaschool.medicalrehapp.entity.PatientEntity;
+import com.telekom.javaschool.medicalrehapp.entity.TreatmentEntity;
 import org.mapstruct.Mapper;
+
+import java.util.List;
 
 @Mapper(componentModel = "spring")
 public interface TreatmentMapper {
 
-    Treatment dtoToEntity(TreatmentDto dto);
+    TreatmentEntity dtoToEntity(TreatmentDto dto);
 
-    TreatmentDto entityToDto(Treatment entity);
+    TreatmentDto entityToDto(TreatmentEntity entity);
+
+    List<TreatmentEntity> dtoListToEntityList(List<TreatmentDto> dtoList);
+
+    List<TreatmentDto> entityListToDtoList(List<TreatmentEntity> entityList);
 }

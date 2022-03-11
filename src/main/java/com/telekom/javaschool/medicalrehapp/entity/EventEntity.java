@@ -19,11 +19,11 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Entity
 @Table(name = "event")
-public class Event extends AbstractEntity {
+public class EventEntity extends AbstractEntity {
 
     @ManyToOne
     @JoinColumn(name = "patient_id")
-    private Patient patient;
+    private PatientEntity patient;
 
     @Column(name = "date_time")
     private LocalDateTime dateTime;
@@ -34,7 +34,7 @@ public class Event extends AbstractEntity {
 
     @OneToOne
     @JoinColumn(name = "treatment_id")
-    private Treatment treatment;
+    private TreatmentEntity treatment;
 
     @Column(name = "cancel_reason")
     private String cancelReason;

@@ -3,7 +3,7 @@ package com.telekom.javaschool.medicalrehapp.service;
 import com.telekom.javaschool.medicalrehapp.dao.UserRepository;
 import com.telekom.javaschool.medicalrehapp.dto.UserDto;
 import com.telekom.javaschool.medicalrehapp.entity.Role;
-import com.telekom.javaschool.medicalrehapp.entity.User;
+import com.telekom.javaschool.medicalrehapp.entity.UserEntity;
 import com.telekom.javaschool.medicalrehapp.mapper.UserMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,8 +12,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityExistsException;
+import javax.persistence.EntityNotFoundException;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -35,9 +36,8 @@ public class UserServiceImpl implements UserService{
     @Override
     @Transactional
     public void create(UserDto user) {
-        if (userRepository.findByLogin(user.getLogin()) != null) {
-            log.debug("User with this login already exists");
-            return;
+        if (userRepository.findByLogin(user.getLogin()).isPresent()) {
+            throw new EntityExistsException("User with this login already exists");
         }
         UserDto userDto = UserDto.builder()
                 .login(user.getLogin())
@@ -52,24 +52,26 @@ public class UserServiceImpl implements UserService{
     @Override
     @Transactional
     public void update(UserDto user) {
-        User userFromDb = userRepository.findByLogin(user.getLogin());
-        userFromDb.setName(user.getName());
-        userFromDb.setRole(user.getRole());
-        userRepository.save(userFromDb);
+        UserEntity userEntity = getUserEntityByLogin(user.getLogin());
+        userEntity.setName(user.getName());
+        userEntity.setRole(user.getRole());
+        userRepository.save(userEntity);
     }
 
     @Override
     @Transactional(readOnly = true)
     public UserDto findByLogin(String login) {
-        return userMapper.entityToDto(userRepository.findByLogin(login));
+        return userMapper.entityToDto(getUserEntityByLogin(login));
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<UserDto> findAll() {
-        return userRepository.findAll()
-                .stream()
-                .map(userMapper::entityToDto)
-                .collect(Collectors.toList());
+        return userMapper.entityListToDtoList(userRepository.findAll());
+    }
+
+    private UserEntity getUserEntityByLogin(String login) {
+        return userRepository.findByLogin(login)
+                .orElseThrow(() -> new EntityNotFoundException("User with this login doesn't exists"));
     }
 }

@@ -55,7 +55,7 @@
                 <input type="submit" value="Save" class="btn btn-primary m-1">
                 <a th:href="@{/patient}" role="button"
                    class="btn btn-primary m-1">Return</a>
-                <a th:href="@{/prescription(insurance=*{insuranceNumber})}" role="button"
+                <a th:href="@{/patient/{insuranceNumber}/prescription(insuranceNumber=*{insuranceNumber})}" role="button"
                    class="btn btn-primary m-1">Prescriptions</a>
             </form>
         </div>

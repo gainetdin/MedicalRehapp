@@ -4,7 +4,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -18,7 +17,7 @@ import javax.persistence.Table;
 @NoArgsConstructor
 @Entity
 @Table(name = "patient")
-public class Patient extends AbstractEntity {
+public class PatientEntity extends AbstractEntity {
 
     @Column(name = "name", nullable = false)
     private String name;
@@ -31,7 +30,7 @@ public class Patient extends AbstractEntity {
 
     @ManyToOne
     @JoinColumn(name = "doctor_id", nullable = false)
-    private Doctor doctor;
+    private DoctorEntity doctor;
 
     @Enumerated(value = EnumType.STRING)
     @Column(name = "patient_status", nullable = false)

@@ -2,13 +2,14 @@ package com.telekom.javaschool.medicalrehapp.service;
 
 import com.telekom.javaschool.medicalrehapp.dao.DoctorRepository;
 import com.telekom.javaschool.medicalrehapp.dto.DoctorDto;
+import com.telekom.javaschool.medicalrehapp.entity.DoctorEntity;
 import com.telekom.javaschool.medicalrehapp.mapper.DoctorMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class DoctorServiceImpl implements DoctorService {
@@ -31,15 +32,14 @@ public class DoctorServiceImpl implements DoctorService {
     @Override
     @Transactional(readOnly = true)
     public List<DoctorDto> findAll() {
-        return doctorRepository.findAll()
-                .stream()
-                .map(doctorMapper::entityToDto)
-                .collect(Collectors.toList());
+        return doctorMapper.entityListToDtoList(doctorRepository.findAll());
     }
 
     @Override
     @Transactional(readOnly = true)
-    public DoctorDto find(String name) {
-        return doctorMapper.entityToDto(doctorRepository.findByName(name));
+    public DoctorDto findByName(String name) {
+        DoctorEntity doctorEntity = doctorRepository.findByName(name)
+                .orElseThrow(() -> new EntityNotFoundException("Doctor with this name doesn't exist"));
+        return doctorMapper.entityToDto(doctorEntity);
     }
 }

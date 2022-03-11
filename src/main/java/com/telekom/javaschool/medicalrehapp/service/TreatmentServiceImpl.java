@@ -7,8 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityExistsException;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class TreatmentServiceImpl implements TreatmentService {
@@ -26,7 +26,10 @@ public class TreatmentServiceImpl implements TreatmentService {
     @Override
     @Transactional
     public void create(TreatmentDto treatmentDto) {
-
+        if (treatmentRepository.findByName(treatmentDto.getName()).isPresent()) {
+            throw new EntityExistsException("Treatment with this name already exist");
+        }
+        treatmentRepository.save(treatmentMapper.dtoToEntity(treatmentDto));
     }
 
     @Override
@@ -38,10 +41,7 @@ public class TreatmentServiceImpl implements TreatmentService {
     @Override
     @Transactional(readOnly = true)
     public List<TreatmentDto> findAll() {
-        return treatmentRepository.findAll()
-                .stream()
-                .map(treatmentMapper::entityToDto)
-                .collect(Collectors.toList());
+        return treatmentMapper.entityListToDtoList(treatmentRepository.findAll());
     }
 
     @Override

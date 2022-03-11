@@ -1,23 +1,23 @@
 package com.telekom.javaschool.medicalrehapp.mapper;
 
 import com.telekom.javaschool.medicalrehapp.dto.DoctorDto;
-import com.telekom.javaschool.medicalrehapp.entity.Doctor;
+import com.telekom.javaschool.medicalrehapp.entity.DoctorEntity;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
 
-class DoctorMapperTest {
+class DoctorEntityMapperTest {
 
     private final DoctorMapper mapper = Mappers.getMapper(DoctorMapper.class);
 
     @Test
     void shouldMapEntityToDto() {
-        Doctor doctor = new Doctor();
-        doctor.setName("Gregory House");
+        DoctorEntity doctorEntity = new DoctorEntity();
+        doctorEntity.setName("Gregory House");
 
-        DoctorDto doctorDto = mapper.entityToDto(doctor);
+        DoctorDto doctorDto = mapper.entityToDto(doctorEntity);
 
-        Assertions.assertEquals(doctor.getName(), doctorDto.getName());
+        Assertions.assertEquals(doctorEntity.getName(), doctorDto.getName());
     }
 
     @Test
@@ -25,8 +25,8 @@ class DoctorMapperTest {
         DoctorDto doctorDto = new DoctorDto();
         doctorDto.setName("James Wilson");
 
-        Doctor doctor = mapper.dtoToEntity(doctorDto);
+        DoctorEntity doctorEntity = mapper.dtoToEntity(doctorDto);
 
-        Assertions.assertEquals(doctorDto.getName(), doctor.getName());
+        Assertions.assertEquals(doctorDto.getName(), doctorEntity.getName());
     }
 }

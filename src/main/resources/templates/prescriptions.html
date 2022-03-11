@@ -28,9 +28,9 @@
                         </div>
                     </div>
                     <a th:href="@{/patient}" role="button"
-                       class="btn btn-primary m-1">Return</a>
-                    <a th:href="@{/prescription/add(insurance=${patient.insuranceNumber})}" role="button"
-                       class="btn btn-primary m-1">Add new prescription</a>
+                       class="btn btn-primary m-1">To patients list</a>
+                    <a th:href="@{/patient/{insuranceNumber}/prescription/add(insuranceNumber=${patient.insuranceNumber})}"
+                       role="button" class="btn btn-primary m-1">Add new prescription</a>
                 </div>
                 <div class="col-sm-8">
                     <div th:switch="${prescriptions}">
@@ -55,8 +55,8 @@
                                     <td th:unless="${prescription.treatment.type.name() == 'MEDICINE'}"></td>
                                     <td th:text="${prescription.endDateTime.getDayOfMonth() + ' of ' +
                                     #strings.capitalize(#strings.toLowerCase(prescription.endDateTime.getMonth()))}"></td>
-                                    <td><a th:href="@{/prescription(insurance=${patient.insuranceNumber},
-                                           id=${prescription.id})}" role="button"
+                                    <td><a th:href="@{/patient/{insuranceNumber}/prescription/{uuid}
+                                           (insuranceNumber=${patient.insuranceNumber}, uuid=${prescription.uuid})}" role="button"
                                            class="btn btn-sm btn-primary">Edit</a></td>
                                 </tr>
                                 </tbody>
@@ -65,7 +65,6 @@
                     </div>
                 </div>
             </div>
-
         </div>
     </div>
 

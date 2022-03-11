@@ -44,9 +44,11 @@
                                     <td th:text="${patient.doctor.name}"></td>
                                     <td th:text="${patient.patientStatus.label}"></td>
                                     <td>
-                                        <a th:href="@{/prescription(insurance=${patient.insuranceNumber})}"
+                                        <a th:href="@{/patient/{insuranceNumber}/prescription
+                                        (insuranceNumber=${patient.insuranceNumber})}"
                                            role="button" class="btn btn-sm btn-primary">Prescriptions</a>
-                                        <a th:href="@{/patient(id=${patient.insuranceNumber})}"
+                                        <a th:href="@{/patient/{insuranceNumber}/edit
+                                        (insuranceNumber=${patient.insuranceNumber})}"
                                         role="button" class="btn btn-sm btn-primary">Edit</a>
                                     </td>
                                 </tr>

@@ -20,7 +20,7 @@ import java.util.Set;
 @NoArgsConstructor
 @Entity
 @Table(name = "user")
-public class User extends AbstractEntity {
+public class UserEntity extends AbstractEntity {
 
     @Column(name = "login", unique = true, nullable = false)
     private String login;
