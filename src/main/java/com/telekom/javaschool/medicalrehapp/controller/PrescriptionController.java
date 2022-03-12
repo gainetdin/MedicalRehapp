@@ -2,6 +2,7 @@ package com.telekom.javaschool.medicalrehapp.controller;
 
 import com.telekom.javaschool.medicalrehapp.dto.PatientDto;
 import com.telekom.javaschool.medicalrehapp.dto.PrescriptionDto;
+import com.telekom.javaschool.medicalrehapp.dto.TimePatternElementDto;
 import com.telekom.javaschool.medicalrehapp.entity.DosageUnit;
 import com.telekom.javaschool.medicalrehapp.service.PatientService;
 import com.telekom.javaschool.medicalrehapp.service.PrescriptionService;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.time.DayOfWeek;
+import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -33,6 +35,7 @@ public class PrescriptionController {
     private final PrescriptionService prescriptionService;
     private final PatientService patientService;
     private final TreatmentService treatmentService;
+    private final List<TimePatternElementDto> elementsList = new ArrayList<>();
 
     @Autowired
     public PrescriptionController(PrescriptionService prescriptionService,
@@ -41,6 +44,12 @@ public class PrescriptionController {
         this.prescriptionService = prescriptionService;
         this.patientService = patientService;
         this.treatmentService = treatmentService;
+    }
+
+    {
+        for (DayOfWeek dayOfWeek : DayOfWeek.values()) {
+            elementsList.add(new TimePatternElementDto(dayOfWeek));
+        }
     }
 
     @GetMapping
@@ -59,7 +68,7 @@ public class PrescriptionController {
         prescriptionDto.setPatient(patientService.findByInsuranceNumber(insuranceNumber));
         model.addAttribute(PRESCRIPTION, prescriptionDto);
         model.addAttribute(TREATMENTS, treatmentService.findAll());
-        model.addAttribute(DAYS_OF_WEEK, DayOfWeek.values());
+        model.addAttribute(DAYS_OF_WEEK, elementsList);
         model.addAttribute(DOSAGE_UNITS, DosageUnit.values());
         return PRESCRIPTION;
     }
@@ -78,7 +87,7 @@ public class PrescriptionController {
         log.debug(prescriptionDto.toString());
         model.addAttribute(PRESCRIPTION, prescriptionDto);
         model.addAttribute(TREATMENTS, treatmentService.findAll());
-        model.addAttribute(DAYS_OF_WEEK, DayOfWeek.values());
+        model.addAttribute(DAYS_OF_WEEK, elementsList);
         model.addAttribute(DOSAGE_UNITS, DosageUnit.values());
         return PRESCRIPTION;
     }

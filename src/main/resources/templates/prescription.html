@@ -88,9 +88,10 @@
                                             <div class="card card-body">
                                                 Choose days of week:
                                                 <div class="form-check" th:each="day : ${daysOfWeek}">
-                                                    <input type="checkbox" class="form-check-input" id="week-day" th:id="${day}"
-                                                           th:field="*{timePattern.timePatternElement}" th:value="${day}">
-                                                    <label class="form-check-label" th:for="${day}" th:text="${day}"></label>
+                                                    <input type="checkbox" class="form-check-input" id="week-day" th:id="${day.dayOfWeek}"
+                                                           th:field="*{timePattern.timePatternElement}"
+                                                           th:value="${day}">
+                                                    <label class="form-check-label" th:for="${day.dayOfWeek}" th:text="${day.dayOfWeek}"></label>
                                                 </div>
                                             </div>
                                         </div>

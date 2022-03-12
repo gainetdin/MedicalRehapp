@@ -2,14 +2,20 @@ package com.telekom.javaschool.medicalrehapp.service;
 
 import com.telekom.javaschool.medicalrehapp.dao.PatientRepository;
 import com.telekom.javaschool.medicalrehapp.dao.PrescriptionRepository;
+import com.telekom.javaschool.medicalrehapp.dao.TimePatternElementRepository;
 import com.telekom.javaschool.medicalrehapp.dao.TimePatternRepository;
 import com.telekom.javaschool.medicalrehapp.dao.TreatmentRepository;
 import com.telekom.javaschool.medicalrehapp.dto.PrescriptionDto;
+import com.telekom.javaschool.medicalrehapp.dto.TimePatternDto;
+import com.telekom.javaschool.medicalrehapp.dto.TimePatternElementDto;
 import com.telekom.javaschool.medicalrehapp.entity.PatientEntity;
 import com.telekom.javaschool.medicalrehapp.entity.PrescriptionEntity;
+import com.telekom.javaschool.medicalrehapp.entity.TimeBasis;
+import com.telekom.javaschool.medicalrehapp.entity.TimePatternElementEntity;
 import com.telekom.javaschool.medicalrehapp.entity.TimePatternEntity;
 import com.telekom.javaschool.medicalrehapp.entity.TreatmentEntity;
 import com.telekom.javaschool.medicalrehapp.mapper.PrescriptionMapper;
+import com.telekom.javaschool.medicalrehapp.mapper.TimePatternElementMapper;
 import com.telekom.javaschool.medicalrehapp.mapper.TimePatternMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +40,8 @@ public class PrescriptionServiceImpl implements PrescriptionService {
     private final PatientRepository patientRepository;
     private final TimePatternRepository timePatternRepository;
     private final TimePatternMapper timePatternMapper;
+    private final TimePatternElementRepository timePatternElementRepository;
+    private final TimePatternElementMapper timePatternElementMapper;
     private final TreatmentRepository treatmentRepository;
 
     @Autowired
@@ -42,12 +50,16 @@ public class PrescriptionServiceImpl implements PrescriptionService {
                                    PatientRepository patientRepository,
                                    TimePatternRepository timePatternRepository,
                                    TimePatternMapper timePatternMapper,
+                                   TimePatternElementRepository timePatternElementRepository,
+                                   TimePatternElementMapper timePatternElementMapper,
                                    TreatmentRepository treatmentRepository) {
         this.prescriptionRepository = prescriptionRepository;
         this.prescriptionMapper = prescriptionMapper;
         this.patientRepository = patientRepository;
         this.timePatternRepository = timePatternRepository;
         this.timePatternMapper = timePatternMapper;
+        this.timePatternElementRepository = timePatternElementRepository;
+        this.timePatternElementMapper = timePatternElementMapper;
         this.treatmentRepository = treatmentRepository;
     }
 
@@ -58,11 +70,12 @@ public class PrescriptionServiceImpl implements PrescriptionService {
         PrescriptionEntity prescriptionEntity = prescriptionMapper.dtoToEntity(prescriptionDto);
         prescriptionEntity.setPatient(getPatientEntityByInsuranceNumber(prescriptionDto
                 .getPatient().getInsuranceNumber()));
-        TimePatternEntity timePatternEntity = timePatternMapper.dtoToEntity(prescriptionDto.getTimePattern());
+        TimePatternEntity timePatternEntity = setTimePatternElementsToEntity(prescriptionDto.getTimePattern());
         timePatternRepository.save(timePatternEntity);
         prescriptionEntity.setTimePattern(timePatternEntity);
         prescriptionEntity.setTreatment(getTreatmentEntityByName(prescriptionDto.getTreatment().getName()));
         prescriptionRepository.save(prescriptionEntity);
+        log.info("Prescription created");
     }
 
     @Override
@@ -81,12 +94,12 @@ public class PrescriptionServiceImpl implements PrescriptionService {
                 .getPatient().getInsuranceNumber()));
         prescriptionEntity.setStartDateTime(LocalDateTime.now());
         prescriptionEntity.setEndDate(prescriptionDto.getEndDate());
-        TimePatternEntity timePatternEntity = timePatternMapper.dtoToEntity(prescriptionDto.getTimePattern());
+        TimePatternEntity timePatternEntity = setTimePatternElementsToEntity(prescriptionDto.getTimePattern());
         timePatternRepository.save(timePatternEntity);
         prescriptionEntity.setTimePattern(timePatternEntity);
         prescriptionEntity.setTreatment(getTreatmentEntityByName(prescriptionDto.getTreatment().getName()));
-        log.debug(prescriptionEntity.toString());
         prescriptionRepository.save(prescriptionEntity);
+        log.info("Prescription updated");
     }
 
     @Override
@@ -117,6 +130,21 @@ public class PrescriptionServiceImpl implements PrescriptionService {
         LocalDate endDate = startDateTime.plus(period).toLocalDate();
         prescriptionDto.setStartDateTime(startDateTime);
         prescriptionDto.setEndDate(endDate);
+    }
+
+    private TimePatternEntity setTimePatternElementsToEntity(TimePatternDto timePatternDto) {
+        TimePatternEntity timePatternEntity = timePatternMapper.dtoToEntity(timePatternDto);
+        if (timePatternDto.getTimeBasis() == TimeBasis.WEEKLY) {
+            List<TimePatternElementDto> timePatternElementDtoList = timePatternDto.getTimePatternElement();
+            timePatternElementDtoList.removeIf(element -> element.getDayOfWeek() == null);
+            List<TimePatternElementEntity> elementList = timePatternElementMapper
+                    .dtoListToEntityList(timePatternElementDtoList);
+            elementList.forEach(element -> {
+                element.setTimePattern(timePatternEntity);
+                timePatternElementRepository.save(element);
+            });
+        }
+        return timePatternEntity;
     }
 
     private PatientEntity getPatientEntityByInsuranceNumber(String insuranceNumber) {
