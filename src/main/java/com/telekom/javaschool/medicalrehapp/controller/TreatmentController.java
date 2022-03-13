@@ -1,6 +1,5 @@
 package com.telekom.javaschool.medicalrehapp.controller;
 
-import com.telekom.javaschool.medicalrehapp.dto.PrescriptionDto;
 import com.telekom.javaschool.medicalrehapp.dto.TreatmentDto;
 import com.telekom.javaschool.medicalrehapp.entity.TreatmentType;
 import com.telekom.javaschool.medicalrehapp.service.TreatmentService;
@@ -13,11 +12,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Slf4j
-@PreAuthorize("hasRole('ROLE_DOCTOR')")
 @Controller
 @RequestMapping("/treatment")
 public class TreatmentController {
@@ -30,6 +26,7 @@ public class TreatmentController {
         this.treatmentService = treatmentService;
     }
 
+    @PreAuthorize("hasRole('ROLE_DOCTOR')")
     @GetMapping("/add")
     public String showTreatmentAddForm(@RequestHeader("referer") String referer, Model model) {
         TreatmentDto treatmentDto = new TreatmentDto();
@@ -39,10 +36,17 @@ public class TreatmentController {
         return "treatment-add";
     }
 
+    @PreAuthorize("hasRole('ROLE_DOCTOR')")
     @PostMapping("/add")
     public String addTreatment(TreatmentDto treatmentDto) {
         log.debug(treatmentDto.toString());
         treatmentService.create(treatmentDto);
         return "redirect:" + previousReference;
+    }
+
+    @GetMapping
+    public String showTreatments(Model model) {
+        model.addAttribute("treatments", treatmentService.findAll());
+        return "treatments";
     }
 }

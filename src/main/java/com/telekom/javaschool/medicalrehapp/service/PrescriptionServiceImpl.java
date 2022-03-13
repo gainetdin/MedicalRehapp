@@ -43,6 +43,7 @@ public class PrescriptionServiceImpl implements PrescriptionService {
     private final TimePatternElementRepository timePatternElementRepository;
     private final TimePatternElementMapper timePatternElementMapper;
     private final TreatmentRepository treatmentRepository;
+    private final EventService eventService;
 
     @Autowired
     public PrescriptionServiceImpl(PrescriptionRepository prescriptionRepository,
@@ -52,7 +53,8 @@ public class PrescriptionServiceImpl implements PrescriptionService {
                                    TimePatternMapper timePatternMapper,
                                    TimePatternElementRepository timePatternElementRepository,
                                    TimePatternElementMapper timePatternElementMapper,
-                                   TreatmentRepository treatmentRepository) {
+                                   TreatmentRepository treatmentRepository,
+                                   EventService eventService) {
         this.prescriptionRepository = prescriptionRepository;
         this.prescriptionMapper = prescriptionMapper;
         this.patientRepository = patientRepository;
@@ -61,6 +63,7 @@ public class PrescriptionServiceImpl implements PrescriptionService {
         this.timePatternElementRepository = timePatternElementRepository;
         this.timePatternElementMapper = timePatternElementMapper;
         this.treatmentRepository = treatmentRepository;
+        this.eventService = eventService;
     }
 
     @Override
@@ -74,8 +77,10 @@ public class PrescriptionServiceImpl implements PrescriptionService {
         timePatternRepository.save(timePatternEntity);
         prescriptionEntity.setTimePattern(timePatternEntity);
         prescriptionEntity.setTreatment(getTreatmentEntityByName(prescriptionDto.getTreatment().getName()));
-        prescriptionRepository.save(prescriptionEntity);
+        PrescriptionDto savedPrescriptionDto = prescriptionMapper
+                .entityToDto(prescriptionRepository.save(prescriptionEntity));
         log.info("Prescription created");
+        eventService.create(savedPrescriptionDto);
     }
 
     @Override
@@ -107,6 +112,18 @@ public class PrescriptionServiceImpl implements PrescriptionService {
     public List<PrescriptionDto> findPrescriptionsByPatient(String insuranceNumber) {
         PatientEntity patientEntity = getPatientEntityByInsuranceNumber(insuranceNumber);
         return prescriptionMapper.entityListToDtoList(prescriptionRepository.findPrescriptionsByPatient(patientEntity));
+    }
+
+    @Override
+    @Transactional
+    public void deleteByUuid(String uuid) {
+        PrescriptionEntity prescriptionEntity = prescriptionRepository.findByUuid(UUID.fromString(uuid))
+                .orElseThrow(() -> new EntityNotFoundException(PRESCRIPTION_NOT_EXISTS));
+        TimePatternEntity timePatternEntity = prescriptionEntity.getTimePattern();
+        List<TimePatternElementEntity> elementList = timePatternEntity.getTimePatternElement();
+        prescriptionRepository.deleteByUuid(UUID.fromString(uuid));
+        timePatternElementRepository.deleteAll(elementList);
+        timePatternRepository.delete(timePatternEntity);
     }
 
     private void convertPeriodToDates(PrescriptionDto prescriptionDto) {

@@ -2,6 +2,7 @@ package com.telekom.javaschool.medicalrehapp.dto;
 
 import com.telekom.javaschool.medicalrehapp.entity.DosageUnit;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -13,6 +14,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.UUID;
 
 @Data
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class PrescriptionDto extends AbstractDto implements Serializable {

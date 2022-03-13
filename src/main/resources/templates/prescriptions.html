@@ -55,9 +55,14 @@
                                         <td th:unless="${prescription.treatment.type.name() == 'MEDICINE'}"></td>
                                         <td th:text="${#strings.capitalize(#strings.toLowerCase(prescription.endDate.getMonth())) + ' ' +
                                         prescription.endDate.getDayOfMonth()}"></td>
-                                        <td><a th:href="@{/patient/{insuranceNumber}/prescription/{uuid}
+                                        <td>
+                                            <a th:href="@{/patient/{insuranceNumber}/prescription/{uuid}
                                                (insuranceNumber=${patient.insuranceNumber}, uuid=${prescription.uuid})}" role="button"
-                                               class="btn btn-sm btn-primary">Edit</a></td>
+                                               class="btn btn-sm btn-primary">Edit</a>
+                                            <a th:href="@{/patient/{insuranceNumber}/prescription/delete/{uuid}
+                                               (insuranceNumber=*{patient.insuranceNumber}, uuid=*{prescription.uuid})}" role="button"
+                                               class="btn btn-sm btn-danger">Delete</a>
+                                        </td>
                                     </tr>
                                 </tbody>
                             </table>

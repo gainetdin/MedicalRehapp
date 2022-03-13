@@ -4,6 +4,7 @@ import com.telekom.javaschool.medicalrehapp.dto.PatientDto;
 import com.telekom.javaschool.medicalrehapp.dto.PrescriptionDto;
 import com.telekom.javaschool.medicalrehapp.dto.TimePatternElementDto;
 import com.telekom.javaschool.medicalrehapp.entity.DosageUnit;
+import com.telekom.javaschool.medicalrehapp.service.EventService;
 import com.telekom.javaschool.medicalrehapp.service.PatientService;
 import com.telekom.javaschool.medicalrehapp.service.PrescriptionService;
 import com.telekom.javaschool.medicalrehapp.service.TreatmentService;
@@ -35,15 +36,18 @@ public class PrescriptionController {
     private final PrescriptionService prescriptionService;
     private final PatientService patientService;
     private final TreatmentService treatmentService;
+    private final EventService eventService;
     private final List<TimePatternElementDto> elementsList = new ArrayList<>();
 
     @Autowired
     public PrescriptionController(PrescriptionService prescriptionService,
                                   PatientService patientService,
-                                  TreatmentService treatmentService) {
+                                  TreatmentService treatmentService,
+                                  EventService eventService) {
         this.prescriptionService = prescriptionService;
         this.patientService = patientService;
         this.treatmentService = treatmentService;
+        this.eventService = eventService;
     }
 
     {
@@ -94,8 +98,15 @@ public class PrescriptionController {
 
     @PostMapping("/{uuid}")
     public String editPrescription(@PathVariable(INSURANCE_NUMBER) String insuranceNumber,
-                                  PrescriptionDto prescriptionDto) {
+                                   PrescriptionDto prescriptionDto) {
         prescriptionService.update(prescriptionDto);
+        return "redirect:/patient/" + insuranceNumber + "/prescription";
+    }
+
+    @GetMapping("/delete/{uuid}")
+    public String handleDeletePrescription(@PathVariable("uuid") String uuid,
+                                           @PathVariable(INSURANCE_NUMBER) String insuranceNumber) {
+        prescriptionService.deleteByUuid(uuid);
         return "redirect:/patient/" + insuranceNumber + "/prescription";
     }
 }

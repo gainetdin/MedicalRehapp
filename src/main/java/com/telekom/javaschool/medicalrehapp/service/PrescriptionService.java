@@ -13,4 +13,6 @@ public interface PrescriptionService {
     PrescriptionDto findByUuid(String uuid);
 
     List<PrescriptionDto> findPrescriptionsByPatient(String insuranceNumber);
+
+    void deleteByUuid(String uuid);
 }

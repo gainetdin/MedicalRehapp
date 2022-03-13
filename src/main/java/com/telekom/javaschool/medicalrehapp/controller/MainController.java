@@ -14,9 +14,8 @@ public class MainController {
         return "index";
     }
 
-    @GetMapping("/hello")
-    public String sayHello() {
-        log.debug("Hello page requested");
-        return "hello";
+    @GetMapping("/about")
+    public String showAboutPage() {
+        return "about";
     }
 }

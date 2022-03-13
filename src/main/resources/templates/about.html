@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="https://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<head>
+    <meta charset="UTF-8">
+    <title>Home page</title>
+    <div th:replace="doc-style :: content"></div>
+</head>
+<body class="d-flex flex-column">
+    <div th:replace="header :: content"></div>
+    <div id="page-content">
+        <div class="container w-50 p-3">
+            <div class="row justify-content-center">
+                <h1 class="text-center">Who We Are</h1>
+                <h3 class="text-center">Medical Rehapp Group</h3>
+                <hr>
+                <p>Medical Rehapp Group, is composed by a group of skilled physicians and specialists ready to assist you and help you recover.</p>
+                <p>Our friendly staff is always ready to help guide you through your rehabilitation process while our doctors are hard at work making you better.</p>
+                <p>Among our staff - specialists in micro-hand surgery, orthopedics, trauma, mental health, chiropractics, physical therapy, and general medicine.</p>
+                <p>At Medical Rehapp Group we know how to facilitate the process of your recovery.
+                    Not only do we know what it takes to get you back to top form, but we also assure
+                    our patients have clear and precise documentation, all along the way. For more details about our doctors, please see their bios. </p>
+            </div>
+        </div>
+    </div>
+    <div th:replace="footer :: content"></div>
+</body>
+</html>

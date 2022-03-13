@@ -31,6 +31,9 @@
                             </div>
                         </div>
                         <input type="submit" value="Save" class="btn btn-primary m-1">
+                        <a th:href="@{/patient/{insuranceNumber}/prescription/delete/{uuid}
+                           (insuranceNumber=*{patient.insuranceNumber}, uuid=*{uuid})}" role="button"
+                           class="btn btn-danger">Delete prescription</a>
                     </div>
                     <div class="col-sm-8">
                         <label for="treatment-type" class="fw-bold">Treatment type</label>
