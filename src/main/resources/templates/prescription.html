@@ -45,7 +45,7 @@
                                     <select th:field="*{treatment.name}" class="form-select">
                                         <option th:each="treatment : ${treatments}"
                                                 th:value="${treatment.name}"
-                                                th:text="${treatment.name + ' (' + treatment.type + ')'}">
+                                                th:text="${treatment.name + ' (' + treatment.type.label + ')'}">
                                         </option>
                                     </select>
                                 </div>

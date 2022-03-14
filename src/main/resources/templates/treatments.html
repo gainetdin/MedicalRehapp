@@ -35,7 +35,7 @@
                             <tbody>
                                 <tr th:each="treatment : ${treatments}">
                                     <td th:text="${treatment.name}"></td>
-                                    <td th:text="${treatment.type}"></td>
+                                    <td th:text="${treatment.type.label}"></td>
                                 </tr>
                             </tbody>
                         </table>

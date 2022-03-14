@@ -88,7 +88,7 @@ public class EventServiceImpl implements EventService {
         List<EventDto> eventList = new ArrayList<>();
         for (LocalDateTime eventDateTime : dateTimeOfEvents) {
             EventDto eventDto = EventDto.builder()
-                    .eventStatus(EventStatus.PLANNED)
+                    .eventStatus(EventStatus.SCHEDULED)
                     .dateTime(eventDateTime)
                     .build();
             eventList.add(eventDto);
@@ -140,7 +140,7 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public List<EventDto> showAllEvents() {
-        return null;
+        return eventMapper.entityListToDtoList(eventRepository.findAll());
     }
 
     @Override

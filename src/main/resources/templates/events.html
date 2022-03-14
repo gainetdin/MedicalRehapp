@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="https://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<head>
+    <meta charset="UTF-8">
+    <title>Patients</title>
+    <div th:replace="doc-style :: content"></div>
+</head>
+<body class="d-flex flex-column">
+    <div th:replace="header :: content"></div>
+    <div id="page-content">
+        <div class="container text-center">
+            <div class="row justify-content-center">
+                <div class="row">
+                    <div class="col-sm text-start">
+                        <h2>Events</h2>
+                    </div>
+                    <div class="col-sm text-end">
+
+                    </div>
+                </div>
+                <div th:switch="${allEvents}">
+                    <h4 th:case="null">No events created</h4>
+                    <div th:case="*">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Time</th>
+                                    <th scope="col">Date</th>
+                                    <th scope="col">Patient</th>
+                                    <th scope="col">Treatment</th>
+                                    <th scope="col">Status</th>
+                                    <th scope="col">Cancel reason</th>
+                                    <th scope="col"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="event : ${allEvents}">
+                                    <td th:text="${event.dateTime.toLocalTime()}"></td>
+                                    <td th:text="${event.dateTime.toLocalDate()}"></td>
+                                    <td th:text="${event.patient.name}"></td>
+                                    <td th:text="${event.treatment.name}"></td>
+                                    <td th:text="${event.eventStatus.label}"></td>
+                                    <td th:text="${event.cancelReason}"></td>
+                                    <td>
+<!--                                        <a th:href="@{/patient/{insuranceNumber}/prescription-->
+<!--                                        (insuranceNumber=${patient.insuranceNumber})}"-->
+<!--                                           role="button" class="btn btn-sm btn-primary">Prescriptions</a>-->
+<!--                                        <a th:href="@{/patient/{insuranceNumber}/edit-->
+<!--                                        (insuranceNumber=${patient.insuranceNumber})}"-->
+<!--                                        role="button" class="btn btn-sm btn-primary">Edit</a>-->
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div th:replace="footer :: content"></div>
+</body>
+</html>
