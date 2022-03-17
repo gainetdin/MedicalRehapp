@@ -1,10 +1,15 @@
 package com.telekom.javaschool.medicalrehapp.service;
 
+import com.telekom.javaschool.medicalrehapp.dao.PrescriptionRepository;
 import com.telekom.javaschool.medicalrehapp.dto.EventDto;
 import com.telekom.javaschool.medicalrehapp.dto.PrescriptionDto;
 import com.telekom.javaschool.medicalrehapp.dto.TimePatternDto;
 import com.telekom.javaschool.medicalrehapp.dto.TimePatternElementDto;
+import com.telekom.javaschool.medicalrehapp.entity.PrescriptionEntity;
 import com.telekom.javaschool.medicalrehapp.entity.TimeBasis;
+import com.telekom.javaschool.medicalrehapp.entity.TimePatternElementEntity;
+import com.telekom.javaschool.medicalrehapp.entity.TimePatternEntity;
+import com.telekom.javaschool.medicalrehapp.mapper.EventMapper;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -25,32 +30,37 @@ class EventServiceTest {
 
     @Mock
     private PrescriptionService prescriptionService;
-    private static PrescriptionDto prescriptionDto;
+    @Mock
+    private PrescriptionRepository prescriptionRepository;
+    @Mock
+    private EventMapper eventMapper;
+    private static PrescriptionEntity prescriptionEntity;
     @InjectMocks
     private EventServiceImpl eventService;
 
     @BeforeAll
     static void initPrescription() {
-        List<TimePatternElementDto> daysList = new ArrayList<>();
-        daysList.add(new TimePatternElementDto(DayOfWeek.MONDAY));
-        daysList.add(new TimePatternElementDto(DayOfWeek.TUESDAY));
+        List<TimePatternElementEntity> daysList = new ArrayList<>();
+        TimePatternElementEntity monday = new TimePatternElementEntity();
+        monday.setDayOfWeek(DayOfWeek.MONDAY);
+        TimePatternElementEntity tuesday = new TimePatternElementEntity();
+        tuesday.setDayOfWeek(DayOfWeek.TUESDAY);
+        daysList.add(monday);
+        daysList.add(tuesday);
 
-        prescriptionDto = PrescriptionDto.builder()
-                .startDateTime(LocalDateTime.of(2022, Month.MARCH, 14, 15, 0))
-                .endDate(LocalDate.of(2022, Month.MARCH, 21))
-                .timePattern(TimePatternDto.builder()
-                        .dailyFrequency(2)
-                        .timeBasis(TimeBasis.WEEKLY)
-                        .timePatternElement(daysList)
-                        .build())
-                .build();
+        prescriptionEntity = new PrescriptionEntity();
+        prescriptionEntity.setStartDateTime(LocalDateTime.of(2022, Month.MARCH, 14, 15, 0));
+        prescriptionEntity.setEndDate(LocalDate.of(2022, Month.MARCH, 28));
+        TimePatternEntity timePattern = new TimePatternEntity();
+        timePattern.setDailyFrequency(2);
+        timePattern.setTimeBasis(TimeBasis.WEEKLY);
+        timePattern.setTimePatternElement(daysList);
+        prescriptionEntity.setTimePattern(timePattern);
     }
 
     @Test
     void shouldCreateEvents() {
-//        List<EventDto> eventList = new ArrayList<>();
-//        eventList.add(new EventDto());
-        eventService.create(prescriptionDto);
+//        eventService.create(prescriptionEntity);
 //        Assertions.assertEquals();
     }
 }

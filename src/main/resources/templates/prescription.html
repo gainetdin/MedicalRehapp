@@ -33,27 +33,19 @@
                         <input type="submit" value="Save" class="btn btn-primary m-1">
                         <a th:href="@{/patient/{insuranceNumber}/prescription/delete/{uuid}
                            (insuranceNumber=*{patient.insuranceNumber}, uuid=*{uuid})}" role="button"
-                           class="btn btn-danger">Delete prescription</a>
+                           th:unless="${uuid == null}" class="btn btn-danger">Delete prescription</a>
                     </div>
                     <div class="col-sm-8">
                         <label for="treatment-type" class="fw-bold">Treatment type</label>
                         <br>
                         <div id="treatment-type">
                             Select treatment:
-                            <div class="row">
-                                <div class="col-sm">
-                                    <select th:field="*{treatment.name}" class="form-select">
-                                        <option th:each="treatment : ${treatments}"
-                                                th:value="${treatment.name}"
-                                                th:text="${treatment.name + ' (' + treatment.type.label + ')'}">
-                                        </option>
-                                    </select>
-                                </div>
-                                <div class="col-sm-4">
-                                    <a th:href="@{/treatment/add}" role="button"
-                                       class="btn btn-primary">Add new treatment</a>
-                                </div>
-                            </div>
+                            <select th:field="*{treatment.name}" class="form-select">
+                                <option th:each="treatment : ${treatments}"
+                                        th:value="${treatment.name}"
+                                        th:text="${treatment.name + ' (' + treatment.type.label + ')'}">
+                                </option>
+                            </select>
                             <br>
                             <label for="dosage">Dosage (of medicine): </label>
                             <div class="row" id="dosage">

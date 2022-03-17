@@ -1,5 +1,6 @@
 package com.telekom.javaschool.medicalrehapp.service;
 
+import com.telekom.javaschool.medicalrehapp.constant.LogMessages;
 import com.telekom.javaschool.medicalrehapp.dao.DoctorRepository;
 import com.telekom.javaschool.medicalrehapp.dao.PatientRepository;
 import com.telekom.javaschool.medicalrehapp.dto.PatientDto;
@@ -36,8 +37,9 @@ public class PatientServiceImpl implements PatientService {
     @Override
     @Transactional
     public void create(PatientDto patientDto) {
-        if (patientRepository.findByInsuranceNumber(patientDto.getInsuranceNumber()).isPresent()) {
-            throw new EntityExistsException("Patient with this insurance number already exists");
+        String insuranceNumber = patientDto.getInsuranceNumber();
+        if (patientRepository.findByInsuranceNumber(insuranceNumber).isPresent()) {
+            throw new EntityExistsException(String.format(LogMessages.PATIENT_EXISTS, insuranceNumber));
         }
         patientDto.setPatientStatus(PatientStatus.BEING_TREATED);
         PatientEntity patientEntity = patientMapper.dtoToEntity(patientDto);
@@ -78,11 +80,12 @@ public class PatientServiceImpl implements PatientService {
 
     private PatientEntity getPatientEntityByInsuranceNumber(String insuranceNumber) {
         return patientRepository.findByInsuranceNumber(insuranceNumber)
-                .orElseThrow(() -> new EntityNotFoundException("Patient with this insurance number doesn't exist"));
+                .orElseThrow(() -> new EntityNotFoundException(String.format(LogMessages.PATIENT_NOT_FOUND, insuranceNumber)));
     }
 
     private DoctorEntity getDoctorEntity(PatientDto patientDto) {
-        return doctorRepository.findByName(patientDto.getDoctor().getName())
-                .orElseThrow(() -> new EntityNotFoundException("Doctor with this name doesn't exist"));
+        String name = patientDto.getDoctor().getName();
+        return doctorRepository.findByName(name)
+                .orElseThrow(() -> new EntityNotFoundException(String.format(LogMessages.DOCTOR_NOT_FOUND, name)));
     }
 }

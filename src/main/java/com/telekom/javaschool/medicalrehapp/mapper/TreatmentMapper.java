@@ -1,8 +1,6 @@
 package com.telekom.javaschool.medicalrehapp.mapper;
 
-import com.telekom.javaschool.medicalrehapp.dto.PatientDto;
 import com.telekom.javaschool.medicalrehapp.dto.TreatmentDto;
-import com.telekom.javaschool.medicalrehapp.entity.PatientEntity;
 import com.telekom.javaschool.medicalrehapp.entity.TreatmentEntity;
 import org.mapstruct.Mapper;
 

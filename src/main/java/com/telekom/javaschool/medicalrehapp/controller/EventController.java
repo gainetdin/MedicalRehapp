@@ -1,8 +1,6 @@
 package com.telekom.javaschool.medicalrehapp.controller;
 
 import com.telekom.javaschool.medicalrehapp.dto.EventDto;
-import com.telekom.javaschool.medicalrehapp.dto.PatientDto;
-import com.telekom.javaschool.medicalrehapp.dto.PrescriptionDto;
 import com.telekom.javaschool.medicalrehapp.service.EventService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,7 +8,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.List;
@@ -30,7 +27,7 @@ public class EventController {
 
     @GetMapping
     public String showAllEvents(Model model) {
-        List<EventDto> allEvents = eventService.showAllEvents();
+        List<EventDto> allEvents = eventService.showEventsByDateTime();
         model.addAttribute("allEvents", allEvents);
         log.debug("Event page requested");
         return "events";

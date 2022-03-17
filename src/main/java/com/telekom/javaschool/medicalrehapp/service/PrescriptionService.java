@@ -1,14 +1,15 @@
 package com.telekom.javaschool.medicalrehapp.service;
 
 import com.telekom.javaschool.medicalrehapp.dto.PrescriptionDto;
+import com.telekom.javaschool.medicalrehapp.entity.PrescriptionEntity;
 
 import java.util.List;
 
 public interface PrescriptionService {
 
-    void create(PrescriptionDto prescriptionDto);
+    PrescriptionEntity create(PrescriptionDto prescriptionDto);
 
-    void update(PrescriptionDto prescriptionDto);
+    PrescriptionEntity update(PrescriptionDto prescriptionDto);
 
     PrescriptionDto findByUuid(String uuid);
 

@@ -3,6 +3,7 @@ package com.telekom.javaschool.medicalrehapp.entity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -17,6 +18,7 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor
+@ToString
 @Entity
 @Table(name = "time_pattern")
 public class TimePatternEntity extends AbstractEntity {
@@ -29,6 +31,7 @@ public class TimePatternEntity extends AbstractEntity {
     private int dailyFrequency;
 
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "timePattern", orphanRemoval = true)
+    @ToString.Exclude
     private List<TimePatternElementEntity> timePatternElement;
 
     @OneToOne(mappedBy = "timePattern")

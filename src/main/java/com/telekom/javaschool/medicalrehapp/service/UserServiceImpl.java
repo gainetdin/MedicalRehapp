@@ -1,5 +1,6 @@
 package com.telekom.javaschool.medicalrehapp.service;
 
+import com.telekom.javaschool.medicalrehapp.constant.LogMessages;
 import com.telekom.javaschool.medicalrehapp.dao.UserRepository;
 import com.telekom.javaschool.medicalrehapp.dto.UserDto;
 import com.telekom.javaschool.medicalrehapp.entity.Role;
@@ -35,8 +36,9 @@ public class UserServiceImpl implements UserService{
     @Override
     @Transactional
     public void create(UserDto user) {
-        if (userRepository.findByLogin(user.getLogin()).isPresent()) {
-            throw new EntityExistsException("User with this login already exists");
+        String login = user.getLogin();
+        if (userRepository.findByLogin(login).isPresent()) {
+            throw new EntityExistsException(String.format(LogMessages.USER_EXISTS, login));
         }
         UserDto userDto = UserDto.builder()
                 .login(user.getLogin())
@@ -71,6 +73,6 @@ public class UserServiceImpl implements UserService{
 
     private UserEntity getUserEntityByLogin(String login) {
         return userRepository.findByLogin(login)
-                .orElseThrow(() -> new EntityNotFoundException("User with this login doesn't exist"));
+                .orElseThrow(() -> new EntityNotFoundException(String.format(LogMessages.USER_NOT_FOUND, login)));
     }
 }

@@ -15,14 +15,14 @@
         <div class="container w-50 p-4">
             <div class="row justify-content-center">
 
-                <h2 class="text-center mb-5">Something went wrong...</h2>
+                <h3 class="text-center mb-5">Oops!</h3>
                 <div class="alert alert-danger d-flex align-items-center" role="alert">
                     <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:">
                         <use xlink:href="#exclamation-triangle-fill"/>
                     </svg>
                     <div>
-                        <p th:text="${exception.getMessage()}">Message</p>
-                        <p th:text="'(' + ${exception.getClass().getName()} + ')'">(Name)</p>
+                        <p th:text="${message}">Message</p>
+                        <p th:if="${message == null}">Something unexpected happened</p>
                     </div>
                 </div>
                 <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">

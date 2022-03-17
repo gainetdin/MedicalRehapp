@@ -1,5 +1,6 @@
 package com.telekom.javaschool.medicalrehapp.service;
 
+import com.telekom.javaschool.medicalrehapp.constant.LogMessages;
 import com.telekom.javaschool.medicalrehapp.dao.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.User;
@@ -21,10 +22,19 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String login) throws UsernameNotFoundException {
         return userRepository.findByLogin(login)
-                .map(user -> User.withUsername(user.getLogin())
+                .map(user -> User.withUsername(login)
                         .password(user.getPassword())
-                        .roles(user.getRole().name())
+                        .roles(user.getRole().getAuthority())
                         .build())
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+                .orElseThrow(() -> new UsernameNotFoundException(String.format(LogMessages.USER_NOT_FOUND, login)));
     }
+
+//    private CurrentUser setUserDetails(UserEntity user) {
+//        return new CurrentUser(user.getLogin(),
+//                user.getPassword(),
+//                true, true, true, true,
+//                List.of(user.getRole()),
+//                user.getName(),
+//                user.getRole());
+//    }
 }

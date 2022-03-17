@@ -1,22 +1,19 @@
 package com.telekom.javaschool.medicalrehapp.service;
 
 import com.telekom.javaschool.medicalrehapp.dao.EventRepository;
-import com.telekom.javaschool.medicalrehapp.dao.PrescriptionRepository;
 import com.telekom.javaschool.medicalrehapp.dto.EventDto;
-import com.telekom.javaschool.medicalrehapp.dto.PrescriptionDto;
-import com.telekom.javaschool.medicalrehapp.dto.TimePatternDto;
-import com.telekom.javaschool.medicalrehapp.dto.TimePatternElementDto;
 import com.telekom.javaschool.medicalrehapp.entity.EventEntity;
 import com.telekom.javaschool.medicalrehapp.entity.EventStatus;
 import com.telekom.javaschool.medicalrehapp.entity.PrescriptionEntity;
 import com.telekom.javaschool.medicalrehapp.entity.TimeBasis;
+import com.telekom.javaschool.medicalrehapp.entity.TimePatternElementEntity;
+import com.telekom.javaschool.medicalrehapp.entity.TimePatternEntity;
 import com.telekom.javaschool.medicalrehapp.mapper.EventMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityNotFoundException;
 import java.time.DayOfWeek;
 import java.time.Duration;
 import java.time.LocalDate;
@@ -31,47 +28,36 @@ public class EventServiceImpl implements EventService {
 
     private final EventMapper eventMapper;
     private final EventRepository eventRepository;
-    private final PrescriptionRepository prescriptionRepository;
 
     @Autowired
-    public EventServiceImpl(EventMapper eventMapper,
-                            EventRepository eventRepository, PrescriptionRepository prescriptionRepository) {
+    public EventServiceImpl(EventMapper eventMapper, EventRepository eventRepository) {
         this.eventMapper = eventMapper;
         this.eventRepository = eventRepository;
-        this.prescriptionRepository = prescriptionRepository;
     }
 
     @Override
     @Transactional
-    public void create(PrescriptionDto prescriptionDto) {
+    public void create(PrescriptionEntity prescriptionEntity) {
         log.debug("Events creation started");
-        List<LocalDateTime> dateTimeOfEvents = createDateTimeOfEvents(prescriptionDto);
-        List<EventDto> eventDtoList = convertDateTimeToEvents(prescriptionDto, dateTimeOfEvents);
-        PrescriptionEntity prescriptionEntity = prescriptionRepository.findByUuid(prescriptionDto.getUuid())
-                .orElseThrow(EntityNotFoundException::new);
-        List<EventEntity> eventEntityList = eventMapper.dtoListToEntityList(eventDtoList);
-        eventEntityList.forEach(entity -> {
-            entity.setPatient(prescriptionEntity.getPatient());
-            entity.setTreatment(prescriptionEntity.getTreatment());
-        });
+        List<LocalDateTime> dateTimeOfEvents = createDateTimeOfEvents(prescriptionEntity);
+        List<EventEntity> eventEntityList = convertDateTimeToEvents(prescriptionEntity, dateTimeOfEvents);
         eventRepository.saveAll(eventEntityList);
         log.debug("Events saved to repository");
     }
 
-    private List<LocalDateTime> createDateTimeOfEvents(PrescriptionDto prescriptionDto) {
+    private List<LocalDateTime> createDateTimeOfEvents(PrescriptionEntity prescriptionEntity) {
         List<LocalDateTime> dateTimeOfEventList = new ArrayList<>();
-        TimePatternDto timePatternDto = prescriptionDto.getTimePattern();
-        LocalDateTime startDateTime = prescriptionDto.getStartDateTime();
-        LocalDateTime endDateTime = prescriptionDto.getEndDate().atTime(LocalTime.MAX);
-        List<LocalTime> timeSchedule = getTimeSchedule(timePatternDto.getDailyFrequency());
-        List<DayOfWeek> daySchedule = getDaySchedule(timePatternDto);
-
+        TimePatternEntity timePatternEntity = prescriptionEntity.getTimePattern();
+        LocalDateTime startDateTime = prescriptionEntity.getStartDateTime();
+        LocalDateTime endDateTime = prescriptionEntity.getEndDate().atTime(LocalTime.MAX);
+        List<LocalTime> timeSchedule = getTimeSchedule(timePatternEntity.getDailyFrequency());
+        List<DayOfWeek> daySchedule = getDaySchedule(timePatternEntity);
         LocalDate eventDate;
         LocalDateTime eventDateTime = startDateTime;
         while (eventDateTime.isBefore(endDateTime)) {
             eventDate = eventDateTime.toLocalDate();
             eventDateTime = eventDateTime.plusDays(1);
-            if (timePatternDto.getTimeBasis() == TimeBasis.WEEKLY && !daySchedule.contains(eventDate.getDayOfWeek())) {
+            if (timePatternEntity.getTimeBasis() == TimeBasis.WEEKLY && !daySchedule.contains(eventDate.getDayOfWeek())) {
                 continue;
             }
             for (LocalTime eventTime : timeSchedule) {
@@ -84,17 +70,18 @@ public class EventServiceImpl implements EventService {
         return dateTimeOfEventList;
     }
 
-    private List<EventDto> convertDateTimeToEvents(PrescriptionDto prescriptionDto, List<LocalDateTime> dateTimeOfEvents) {
-        List<EventDto> eventList = new ArrayList<>();
-        for (LocalDateTime eventDateTime : dateTimeOfEvents) {
-            EventDto eventDto = EventDto.builder()
-                    .eventStatus(EventStatus.SCHEDULED)
-                    .dateTime(eventDateTime)
-                    .build();
-            eventList.add(eventDto);
-        }
-        if (eventList.isEmpty()) {
+    private List<EventEntity> convertDateTimeToEvents(PrescriptionEntity prescriptionEntity, List<LocalDateTime> dateTimeOfEvents) {
+        if (dateTimeOfEvents.isEmpty()) {
             throw new IllegalArgumentException("Cannot create any event");
+        }
+        List<EventEntity> eventList = new ArrayList<>();
+        for (LocalDateTime eventDateTime : dateTimeOfEvents) {
+            EventEntity eventEntity = new EventEntity();
+            eventEntity.setEventStatus(EventStatus.SCHEDULED);
+            eventEntity.setDateTime(eventDateTime);
+            eventEntity.setPatient(prescriptionEntity.getPatient());
+            eventEntity.setTreatment(prescriptionEntity.getTreatment());
+            eventList.add(eventEntity);
         }
         return eventList;
     }
@@ -117,11 +104,11 @@ public class EventServiceImpl implements EventService {
         return timeList;
     }
 
-    private List<DayOfWeek> getDaySchedule(TimePatternDto timePattern) {
+    private List<DayOfWeek> getDaySchedule(TimePatternEntity timePattern) {
         List<DayOfWeek> dayOfWeekList = new ArrayList<>();
         if (timePattern.getTimeBasis() == TimeBasis.WEEKLY) {
-            List<TimePatternElementDto> elementList = timePattern.getTimePatternElement();
-            for (TimePatternElementDto element : elementList) {
+            List<TimePatternElementEntity> elementList = timePattern.getTimePatternElement();
+            for (TimePatternElementEntity element : elementList) {
                 dayOfWeekList.add(element.getDayOfWeek());
             }
         }
@@ -129,12 +116,12 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public void update(PrescriptionDto prescriptionDto) {
+    public void update(PrescriptionEntity prescriptionEntity) {
 
     }
 
     @Override
-    public void deleteByPrescription(PrescriptionDto prescriptionDto) {
+    public void deleteByPrescription(PrescriptionEntity prescriptionEntity) {
 
     }
 
@@ -149,7 +136,7 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public List<EventDto> showEventsByTime() {
-        return null;
+    public List<EventDto> showEventsByDateTime() {
+        return eventMapper.entityListToDtoList(eventRepository.findAllByOrderByDateTimeAsc());
     }
 }

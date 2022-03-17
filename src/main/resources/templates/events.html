@@ -7,6 +7,8 @@
     <meta charset="UTF-8">
     <title>Patients</title>
     <div th:replace="doc-style :: content"></div>
+    <script src="../static/js/datatables.min.js" th:src="@{/js/datatables.min.js}"></script>
+    <link rel="stylesheet" href="../static/css/datatables.min.css" th:href="@{/css/datatables.min.css}">
 </head>
 <body class="d-flex flex-column">
     <div th:replace="header :: content"></div>
@@ -24,11 +26,11 @@
                 <div th:switch="${allEvents}">
                     <h4 th:case="null">No events created</h4>
                     <div th:case="*">
-                        <table class="table">
+                        <table id="eventTable" class="table table-striped">
                             <thead>
                                 <tr>
-                                    <th scope="col">Time</th>
                                     <th scope="col">Date</th>
+                                    <th scope="col">Time</th>
                                     <th scope="col">Patient</th>
                                     <th scope="col">Treatment</th>
                                     <th scope="col">Status</th>
@@ -38,8 +40,8 @@
                             </thead>
                             <tbody>
                                 <tr th:each="event : ${allEvents}">
-                                    <td th:text="${event.dateTime.toLocalTime()}"></td>
                                     <td th:text="${event.dateTime.toLocalDate()}"></td>
+                                    <td th:text="${event.dateTime.toLocalTime()}"></td>
                                     <td th:text="${event.patient.name}"></td>
                                     <td th:text="${event.treatment.name}"></td>
                                     <td th:text="${event.eventStatus.label}"></td>
@@ -61,5 +63,10 @@
         </div>
     </div>
     <div th:replace="footer :: content"></div>
+    <script>
+        $(document).ready(function() {
+            $('#eventTable').DataTable();
+        } );
+    </script>
 </body>
 </html>

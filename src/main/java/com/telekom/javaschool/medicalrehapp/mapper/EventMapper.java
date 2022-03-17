@@ -1,8 +1,6 @@
 package com.telekom.javaschool.medicalrehapp.mapper;
 
-import com.telekom.javaschool.medicalrehapp.dto.DoctorDto;
 import com.telekom.javaschool.medicalrehapp.dto.EventDto;
-import com.telekom.javaschool.medicalrehapp.entity.DoctorEntity;
 import com.telekom.javaschool.medicalrehapp.entity.EventEntity;
 import org.mapstruct.Mapper;
 

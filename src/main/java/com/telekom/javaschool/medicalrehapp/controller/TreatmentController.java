@@ -26,7 +26,7 @@ public class TreatmentController {
         this.treatmentService = treatmentService;
     }
 
-    @PreAuthorize("hasRole('ROLE_DOCTOR')")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping("/add")
     public String showTreatmentAddForm(@RequestHeader("referer") String referer, Model model) {
         TreatmentDto treatmentDto = new TreatmentDto();
@@ -36,7 +36,7 @@ public class TreatmentController {
         return "treatment-add";
     }
 
-    @PreAuthorize("hasRole('ROLE_DOCTOR')")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping("/add")
     public String addTreatment(TreatmentDto treatmentDto) {
         log.debug(treatmentDto.toString());
