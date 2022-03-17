@@ -14,8 +14,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import org.springframework.web.servlet.view.RedirectView;
 
 import java.util.List;
 
@@ -54,10 +52,9 @@ public class PatientController {
     }
 
     @PostMapping("/add")
-    public RedirectView addPatient(PatientDto patientDto, RedirectAttributes attributes) {
+    public String addPatient(PatientDto patientDto) {
         patientService.create(patientDto);
-        attributes.addAttribute("id", patientDto.getInsuranceNumber());
-        return new RedirectView("/patient");
+        return "redirect:/patient";
     }
 
     @GetMapping("/{insuranceNumber}/edit")

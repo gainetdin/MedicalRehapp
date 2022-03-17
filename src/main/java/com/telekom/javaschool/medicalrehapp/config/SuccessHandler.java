@@ -52,7 +52,7 @@ public class SuccessHandler implements AuthenticationSuccessHandler {
                 successUrl = "/user";
                 break;
             case USER:
-                successUrl = "/prescription";
+                successUrl = "/treatment";
                 break;
             default:
                 successUrl = "/index";

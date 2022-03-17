@@ -2,7 +2,9 @@ package com.telekom.javaschool.medicalrehapp.controller;
 
 import com.telekom.javaschool.medicalrehapp.dto.PatientDto;
 import com.telekom.javaschool.medicalrehapp.dto.PrescriptionDto;
+import com.telekom.javaschool.medicalrehapp.dto.TimePatternElementDto;
 import com.telekom.javaschool.medicalrehapp.entity.DosageUnit;
+import com.telekom.javaschool.medicalrehapp.service.EventService;
 import com.telekom.javaschool.medicalrehapp.service.PatientService;
 import com.telekom.javaschool.medicalrehapp.service.PrescriptionService;
 import com.telekom.javaschool.medicalrehapp.service.TreatmentService;
@@ -17,6 +19,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.time.DayOfWeek;
+import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -33,14 +36,24 @@ public class PrescriptionController {
     private final PrescriptionService prescriptionService;
     private final PatientService patientService;
     private final TreatmentService treatmentService;
+    private final EventService eventService;
+    private final List<TimePatternElementDto> elementsList = new ArrayList<>();
 
     @Autowired
     public PrescriptionController(PrescriptionService prescriptionService,
                                   PatientService patientService,
-                                  TreatmentService treatmentService) {
+                                  TreatmentService treatmentService,
+                                  EventService eventService) {
         this.prescriptionService = prescriptionService;
         this.patientService = patientService;
         this.treatmentService = treatmentService;
+        this.eventService = eventService;
+    }
+
+    {
+        for (DayOfWeek dayOfWeek : DayOfWeek.values()) {
+            elementsList.add(new TimePatternElementDto(dayOfWeek));
+        }
     }
 
     @GetMapping
@@ -59,16 +72,16 @@ public class PrescriptionController {
         prescriptionDto.setPatient(patientService.findByInsuranceNumber(insuranceNumber));
         model.addAttribute(PRESCRIPTION, prescriptionDto);
         model.addAttribute(TREATMENTS, treatmentService.findAll());
-        model.addAttribute(DAYS_OF_WEEK, DayOfWeek.values());
+        model.addAttribute(DAYS_OF_WEEK, elementsList);
         model.addAttribute(DOSAGE_UNITS, DosageUnit.values());
         return PRESCRIPTION;
     }
 
-    @PostMapping({"/{uuid}", "/"})
-    public String savePrescription(@PathVariable(INSURANCE_NUMBER) String insuranceNumber,
+    @PostMapping
+    public String addPrescription(@PathVariable(INSURANCE_NUMBER) String insuranceNumber,
                                    PrescriptionDto prescriptionDto) {
         log.debug(prescriptionDto.toString());
-        prescriptionService.save(prescriptionDto);
+        prescriptionService.create(prescriptionDto);
         return "redirect:/patient/" + insuranceNumber + "/prescription";
     }
 
@@ -78,8 +91,22 @@ public class PrescriptionController {
         log.debug(prescriptionDto.toString());
         model.addAttribute(PRESCRIPTION, prescriptionDto);
         model.addAttribute(TREATMENTS, treatmentService.findAll());
-        model.addAttribute(DAYS_OF_WEEK, DayOfWeek.values());
+        model.addAttribute(DAYS_OF_WEEK, elementsList);
         model.addAttribute(DOSAGE_UNITS, DosageUnit.values());
         return PRESCRIPTION;
+    }
+
+    @PostMapping("/{uuid}")
+    public String editPrescription(@PathVariable(INSURANCE_NUMBER) String insuranceNumber,
+                                   PrescriptionDto prescriptionDto) {
+        prescriptionService.update(prescriptionDto);
+        return "redirect:/patient/" + insuranceNumber + "/prescription";
+    }
+
+    @GetMapping("/delete/{uuid}")
+    public String handleDeletePrescription(@PathVariable("uuid") String uuid,
+                                           @PathVariable(INSURANCE_NUMBER) String insuranceNumber) {
+        prescriptionService.deleteByUuid(uuid);
+        return "redirect:/patient/" + insuranceNumber + "/prescription";
     }
 }

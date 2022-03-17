@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="https://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<head>
+    <meta charset="UTF-8">
+    <title>Patients</title>
+    <div th:replace="doc-style :: content"></div>
+</head>
+<body class="d-flex flex-column">
+    <div th:replace="header :: content"></div>
+    <div id="page-content">
+        <div class="container text-center w-50">
+            <div class="row justify-content-center">
+                <h2>Our doctors</h2>
+                <div th:switch="${doctors}">
+                    <h3 th:case="null">We are hiring doctors at this moment...</h3>
+                    <div th:case="*">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Name</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="doctor : ${doctors}">
+                                    <td th:text="${doctor.name}"></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div th:replace="footer :: content"></div>
+</body>
+</html>

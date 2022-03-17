@@ -43,10 +43,4 @@ public class TreatmentServiceImpl implements TreatmentService {
     public List<TreatmentDto> findAll() {
         return treatmentMapper.entityListToDtoList(treatmentRepository.findAll());
     }
-
-    @Override
-    @Transactional(readOnly = true)
-    public TreatmentDto findById(String id) {
-        return null;
-    }
 }

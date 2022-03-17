@@ -10,7 +10,6 @@ import java.time.DayOfWeek;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class TimePatternElementDto implements Serializable {
+public class TimePatternElementDto extends AbstractDto implements Serializable {
     private DayOfWeek dayOfWeek;
-    private TimePatternDto timePattern;
 }

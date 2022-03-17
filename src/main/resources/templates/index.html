@@ -12,10 +12,13 @@
     <div th:replace="header :: content"></div>
 
     <div id="page-content">
-        <div class="container text-center">
+        <div class="container w-50 p-4">
             <div class="row justify-content-center">
-                <h1>Welcome!</h1>
-                <p>Click <a th:href="@{/hello}">here</a> to see a greeting.</p>
+                <h2 class="text-center mb-5">Welcome to Medical Rehapp!</h2>
+                <p>Our friendly staff is always ready to help guide you through your rehabilitation process while our doctors are hard at work making you better.</p>
+                <p>You can read more about us <a th:href="@{/about}">here</a>.</p>
+                <p>Sign up to read more about our doctors and treatments.</p>
+                <p>If you are a new employee of the company, wait for the administrator to open access.</p>
             </div>
         </div>
     </div>

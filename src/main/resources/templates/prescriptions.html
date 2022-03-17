@@ -38,27 +38,32 @@
                         <div th:case="*">
                             <table class="table">
                                 <thead>
-                                <tr>
-                                    <th scope="col">Treatment</th>
-                                    <th scope="col">Type</th>
-                                    <th scope="col">Dosage</th>
-                                    <th scope="col">Until</th>
-                                    <th scope="col"></th>
-                                </tr>
+                                    <tr>
+                                        <th scope="col">Treatment</th>
+                                        <th scope="col">Type</th>
+                                        <th scope="col">Dosage</th>
+                                        <th scope="col">Until</th>
+                                        <th scope="col"></th>
+                                    </tr>
                                 </thead>
                                 <tbody>
-                                <tr th:each="prescription : ${prescriptions}">
-                                    <td th:text="${prescription.treatment.name}"></td>
-                                    <td th:text="${#strings.capitalize(#strings.toLowerCase(prescription.treatment.type))}"></td>
-                                    <td th:if="${prescription.treatment.type.name() == 'MEDICINE'}"
-                                        th:text="${prescription.dosage + ' ' + prescription.dosageUnit.label}"></td>
-                                    <td th:unless="${prescription.treatment.type.name() == 'MEDICINE'}"></td>
-                                    <td th:text="${prescription.endDateTime.getDayOfMonth() + ' of ' +
-                                    #strings.capitalize(#strings.toLowerCase(prescription.endDateTime.getMonth()))}"></td>
-                                    <td><a th:href="@{/patient/{insuranceNumber}/prescription/{uuid}
-                                           (insuranceNumber=${patient.insuranceNumber}, uuid=${prescription.uuid})}" role="button"
-                                           class="btn btn-sm btn-primary">Edit</a></td>
-                                </tr>
+                                    <tr th:each="prescription : ${prescriptions}">
+                                        <td th:text="${prescription.treatment.name}"></td>
+                                        <td th:text="${#strings.capitalize(#strings.toLowerCase(prescription.treatment.type))}"></td>
+                                        <td th:if="${prescription.treatment.type.name() == 'MEDICINE'}"
+                                            th:text="${prescription.dosage + ' ' + prescription.dosageUnit.label}"></td>
+                                        <td th:unless="${prescription.treatment.type.name() == 'MEDICINE'}"></td>
+                                        <td th:text="${#strings.capitalize(#strings.toLowerCase(prescription.endDate.getMonth())) + ' ' +
+                                        prescription.endDate.getDayOfMonth()}"></td>
+                                        <td>
+                                            <a th:href="@{/patient/{insuranceNumber}/prescription/{uuid}
+                                               (insuranceNumber=${patient.insuranceNumber}, uuid=${prescription.uuid})}" role="button"
+                                               class="btn btn-sm btn-primary">Edit</a>
+                                            <a th:href="@{/patient/{insuranceNumber}/prescription/delete/{uuid}
+                                               (insuranceNumber=*{patient.insuranceNumber}, uuid=*{prescription.uuid})}" role="button"
+                                               class="btn btn-sm btn-danger">Delete</a>
+                                        </td>
+                                    </tr>
                                 </tbody>
                             </table>
                         </div>

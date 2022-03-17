@@ -2,6 +2,7 @@ package com.telekom.javaschool.medicalrehapp.dto;
 
 import com.telekom.javaschool.medicalrehapp.entity.TimeBasis;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -9,9 +10,10 @@ import java.io.Serializable;
 import java.util.List;
 
 @Data
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class TimePatternDto implements Serializable {
+public class TimePatternDto extends AbstractDto implements Serializable {
     private TimeBasis timeBasis;
     private int dailyFrequency;
     private List<TimePatternElementDto> timePatternElement;

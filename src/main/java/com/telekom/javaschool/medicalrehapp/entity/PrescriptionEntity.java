@@ -13,6 +13,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.PrePersist;
 import javax.persistence.Table;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -41,8 +42,8 @@ public class PrescriptionEntity extends AbstractEntity {
     @Column(name = "start_date_time")
     private LocalDateTime startDateTime;
 
-    @Column(name = "end_date_time")
-    private LocalDateTime endDateTime;
+    @Column(name = "end_date")
+    private LocalDate endDate;
 
     @Column(name = "dosage")
     private double dosage;

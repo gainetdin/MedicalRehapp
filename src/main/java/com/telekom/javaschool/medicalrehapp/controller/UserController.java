@@ -5,6 +5,7 @@ import com.telekom.javaschool.medicalrehapp.entity.Role;
 import com.telekom.javaschool.medicalrehapp.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -35,12 +36,14 @@ public class UserController {
         return "redirect:/login";
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping
     public String showUsers(Model model) {
         model.addAttribute("users", userService.findAll());
         return "user-list";
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping("/{login}")
     public String showUserEditForm(@PathVariable("login") String login, Model model) {
         model.addAttribute("user", userService.findByLogin(login));
@@ -48,6 +51,7 @@ public class UserController {
         return "user-edit";
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping("/edit")
     public String editUser(UserDto user) {
         log.debug(user.toString());
