@@ -1,5 +1,6 @@
 package com.telekom.javaschool.medicalrehapp.service;
 
+import com.telekom.javaschool.medicalrehapp.constant.LogMessages;
 import com.telekom.javaschool.medicalrehapp.dao.TreatmentRepository;
 import com.telekom.javaschool.medicalrehapp.dto.TreatmentDto;
 import com.telekom.javaschool.medicalrehapp.mapper.TreatmentMapper;
@@ -26,8 +27,9 @@ public class TreatmentServiceImpl implements TreatmentService {
     @Override
     @Transactional
     public void create(TreatmentDto treatmentDto) {
-        if (treatmentRepository.findByName(treatmentDto.getName()).isPresent()) {
-            throw new EntityExistsException("Treatment with this name already exist");
+        String name = treatmentDto.getName();
+        if (treatmentRepository.findByName(name).isPresent()) {
+            throw new EntityExistsException(String.format(LogMessages.TREATMENT_EXISTS, name));
         }
         treatmentRepository.save(treatmentMapper.dtoToEntity(treatmentDto));
     }

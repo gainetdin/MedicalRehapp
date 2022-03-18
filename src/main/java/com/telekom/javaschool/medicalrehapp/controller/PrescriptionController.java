@@ -4,7 +4,7 @@ import com.telekom.javaschool.medicalrehapp.dto.PatientDto;
 import com.telekom.javaschool.medicalrehapp.dto.PrescriptionDto;
 import com.telekom.javaschool.medicalrehapp.dto.TimePatternElementDto;
 import com.telekom.javaschool.medicalrehapp.entity.DosageUnit;
-import com.telekom.javaschool.medicalrehapp.service.EventService;
+import com.telekom.javaschool.medicalrehapp.manager.PrescriptionManager;
 import com.telekom.javaschool.medicalrehapp.service.PatientService;
 import com.telekom.javaschool.medicalrehapp.service.PrescriptionService;
 import com.telekom.javaschool.medicalrehapp.service.TreatmentService;
@@ -18,8 +18,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import java.time.DayOfWeek;
-import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -33,27 +31,21 @@ public class PrescriptionController {
     private static final String TREATMENTS = "treatments";
     private static final String DAYS_OF_WEEK = "daysOfWeek";
     private static final String DOSAGE_UNITS = "dosageUnits";
+    private static final List<TimePatternElementDto> WRAPPED_DAYS_OF_WEEK = TimePatternElementDto.getWrappedDaysOfWeek();
     private final PrescriptionService prescriptionService;
     private final PatientService patientService;
     private final TreatmentService treatmentService;
-    private final EventService eventService;
-    private final List<TimePatternElementDto> elementsList = new ArrayList<>();
+    private final PrescriptionManager prescriptionManager;
 
     @Autowired
     public PrescriptionController(PrescriptionService prescriptionService,
                                   PatientService patientService,
                                   TreatmentService treatmentService,
-                                  EventService eventService) {
+                                  PrescriptionManager prescriptionManager) {
         this.prescriptionService = prescriptionService;
         this.patientService = patientService;
         this.treatmentService = treatmentService;
-        this.eventService = eventService;
-    }
-
-    {
-        for (DayOfWeek dayOfWeek : DayOfWeek.values()) {
-            elementsList.add(new TimePatternElementDto(dayOfWeek));
-        }
+        this.prescriptionManager = prescriptionManager;
     }
 
     @GetMapping
@@ -72,7 +64,7 @@ public class PrescriptionController {
         prescriptionDto.setPatient(patientService.findByInsuranceNumber(insuranceNumber));
         model.addAttribute(PRESCRIPTION, prescriptionDto);
         model.addAttribute(TREATMENTS, treatmentService.findAll());
-        model.addAttribute(DAYS_OF_WEEK, elementsList);
+        model.addAttribute(DAYS_OF_WEEK, WRAPPED_DAYS_OF_WEEK);
         model.addAttribute(DOSAGE_UNITS, DosageUnit.values());
         return PRESCRIPTION;
     }
@@ -81,7 +73,7 @@ public class PrescriptionController {
     public String addPrescription(@PathVariable(INSURANCE_NUMBER) String insuranceNumber,
                                    PrescriptionDto prescriptionDto) {
         log.debug(prescriptionDto.toString());
-        prescriptionService.create(prescriptionDto);
+        prescriptionManager.createPrescriptionAndEvents(prescriptionDto);
         return "redirect:/patient/" + insuranceNumber + "/prescription";
     }
 
@@ -91,7 +83,7 @@ public class PrescriptionController {
         log.debug(prescriptionDto.toString());
         model.addAttribute(PRESCRIPTION, prescriptionDto);
         model.addAttribute(TREATMENTS, treatmentService.findAll());
-        model.addAttribute(DAYS_OF_WEEK, elementsList);
+        model.addAttribute(DAYS_OF_WEEK, WRAPPED_DAYS_OF_WEEK);
         model.addAttribute(DOSAGE_UNITS, DosageUnit.values());
         return PRESCRIPTION;
     }

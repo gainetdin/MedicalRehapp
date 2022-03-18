@@ -1,18 +1,31 @@
 package com.telekom.javaschool.medicalrehapp.controller;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+
+import javax.persistence.EntityExistsException;
 
 @Slf4j
 @ControllerAdvice
 public class GlobalExceptionController {
 
-    @ExceptionHandler(Exception.class)
-    public String defaultErrorHandler(Exception exception, Model model) {
-        model.addAttribute("exception", exception);
+    private static final String ERROR = "error";
+
+    @ExceptionHandler({EntityExistsException.class, EntityExistsException.class,
+            UsernameNotFoundException.class, IllegalArgumentException.class})
+    public String expectedErrorHandler(RuntimeException exception, Model model) {
+        model.addAttribute("message", exception.getMessage());
         log.error(exception.getMessage());
-        return "error";
+        return ERROR;
     }
+
+//    @ExceptionHandler(Exception.class)
+//    public String defaultErrorHandler(Exception exception, Model model) {
+//        model.addAttribute("criticalMessage", "Something unexpected happened...");
+//        log.error(exception.getMessage());
+//        return ERROR;
+//    }
 }

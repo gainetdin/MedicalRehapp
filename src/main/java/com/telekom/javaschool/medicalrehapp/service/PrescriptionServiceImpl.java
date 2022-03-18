@@ -1,5 +1,6 @@
 package com.telekom.javaschool.medicalrehapp.service;
 
+import com.telekom.javaschool.medicalrehapp.constant.LogMessages;
 import com.telekom.javaschool.medicalrehapp.dao.PatientRepository;
 import com.telekom.javaschool.medicalrehapp.dao.PrescriptionRepository;
 import com.telekom.javaschool.medicalrehapp.dao.TimePatternElementRepository;
@@ -34,16 +35,13 @@ import java.util.UUID;
 @Service
 public class PrescriptionServiceImpl implements PrescriptionService {
 
-    private static final String PRESCRIPTION_NOT_EXISTS = "Prescription with this UUID doesn't exist";
     private final PrescriptionRepository prescriptionRepository;
     private final PrescriptionMapper prescriptionMapper;
     private final PatientRepository patientRepository;
     private final TimePatternRepository timePatternRepository;
     private final TimePatternMapper timePatternMapper;
     private final TimePatternElementRepository timePatternElementRepository;
-    private final TimePatternElementMapper timePatternElementMapper;
     private final TreatmentRepository treatmentRepository;
-    private final EventService eventService;
 
     @Autowired
     public PrescriptionServiceImpl(PrescriptionRepository prescriptionRepository,
@@ -52,73 +50,72 @@ public class PrescriptionServiceImpl implements PrescriptionService {
                                    TimePatternRepository timePatternRepository,
                                    TimePatternMapper timePatternMapper,
                                    TimePatternElementRepository timePatternElementRepository,
-                                   TimePatternElementMapper timePatternElementMapper,
-                                   TreatmentRepository treatmentRepository,
-                                   EventService eventService) {
+                                   TreatmentRepository treatmentRepository) {
         this.prescriptionRepository = prescriptionRepository;
         this.prescriptionMapper = prescriptionMapper;
         this.patientRepository = patientRepository;
         this.timePatternRepository = timePatternRepository;
         this.timePatternMapper = timePatternMapper;
         this.timePatternElementRepository = timePatternElementRepository;
-        this.timePatternElementMapper = timePatternElementMapper;
         this.treatmentRepository = treatmentRepository;
-        this.eventService = eventService;
     }
 
     @Override
     @Transactional
-    public void create(PrescriptionDto prescriptionDto) {
+    public PrescriptionEntity create(PrescriptionDto prescriptionDto) {
         convertPeriodToDates(prescriptionDto);
         PrescriptionEntity prescriptionEntity = prescriptionMapper.dtoToEntity(prescriptionDto);
         prescriptionEntity.setPatient(getPatientEntityByInsuranceNumber(prescriptionDto
                 .getPatient().getInsuranceNumber()));
-        TimePatternEntity timePatternEntity = setTimePatternElementsToEntity(prescriptionDto.getTimePattern());
+
+        TimePatternEntity timePatternEntity = timePatternMapper.dtoToEntity(prescriptionDto.getTimePattern());
         timePatternRepository.save(timePatternEntity);
+        setTimePatternElementsToEntity(timePatternEntity);
+
         prescriptionEntity.setTimePattern(timePatternEntity);
         prescriptionEntity.setTreatment(getTreatmentEntityByName(prescriptionDto.getTreatment().getName()));
-        PrescriptionDto savedPrescriptionDto = prescriptionMapper
-                .entityToDto(prescriptionRepository.save(prescriptionEntity));
+        PrescriptionEntity savedPrescriptionEntity = prescriptionRepository.save(prescriptionEntity);
+        log.debug(savedPrescriptionEntity.toString());
         log.info("Prescription created");
-        eventService.create(savedPrescriptionDto);
+        return savedPrescriptionEntity;
     }
 
     @Override
     @Transactional(readOnly = true)
     public PrescriptionDto findByUuid(String uuid) {
-        return prescriptionMapper.entityToDto(prescriptionRepository.findByUuid(UUID.fromString(uuid))
-                .orElseThrow(() -> new EntityNotFoundException(PRESCRIPTION_NOT_EXISTS)));
+        return prescriptionMapper.entityToDto(getPrescriptionEntityByUuid(uuid));
     }
 
     @Override
     @Transactional
-    public void update(PrescriptionDto prescriptionDto) {
-        PrescriptionEntity prescriptionEntity = prescriptionRepository.findByUuid(prescriptionDto.getUuid())
-                .orElseThrow(() -> new EntityNotFoundException(PRESCRIPTION_NOT_EXISTS));
+    public PrescriptionEntity update(PrescriptionDto prescriptionDto) {
+        PrescriptionEntity prescriptionEntity = getPrescriptionEntityByUuid(prescriptionDto.getUuid().toString());
         prescriptionEntity.setPatient(getPatientEntityByInsuranceNumber(prescriptionDto
                 .getPatient().getInsuranceNumber()));
         prescriptionEntity.setStartDateTime(LocalDateTime.now());
         prescriptionEntity.setEndDate(prescriptionDto.getEndDate());
-        TimePatternEntity timePatternEntity = setTimePatternElementsToEntity(prescriptionDto.getTimePattern());
+
+        TimePatternEntity timePatternEntity = timePatternMapper.dtoToEntity(prescriptionDto.getTimePattern());
         timePatternRepository.save(timePatternEntity);
+        setTimePatternElementsToEntity(timePatternEntity);
+
         prescriptionEntity.setTimePattern(timePatternEntity);
         prescriptionEntity.setTreatment(getTreatmentEntityByName(prescriptionDto.getTreatment().getName()));
-        prescriptionRepository.save(prescriptionEntity);
         log.info("Prescription updated");
+        return prescriptionRepository.save(prescriptionEntity);
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<PrescriptionDto> findPrescriptionsByPatient(String insuranceNumber) {
-        PatientEntity patientEntity = getPatientEntityByInsuranceNumber(insuranceNumber);
-        return prescriptionMapper.entityListToDtoList(prescriptionRepository.findPrescriptionsByPatient(patientEntity));
+        return prescriptionMapper.entityListToDtoList(prescriptionRepository
+                .findPrescriptionsByInsuranceNumber(insuranceNumber));
     }
 
     @Override
     @Transactional
     public void deleteByUuid(String uuid) {
-        PrescriptionEntity prescriptionEntity = prescriptionRepository.findByUuid(UUID.fromString(uuid))
-                .orElseThrow(() -> new EntityNotFoundException(PRESCRIPTION_NOT_EXISTS));
+        PrescriptionEntity prescriptionEntity = getPrescriptionEntityByUuid(uuid);
         TimePatternEntity timePatternEntity = prescriptionEntity.getTimePattern();
         List<TimePatternElementEntity> elementList = timePatternEntity.getTimePatternElement();
         prescriptionRepository.deleteByUuid(UUID.fromString(uuid));
@@ -149,33 +146,35 @@ public class PrescriptionServiceImpl implements PrescriptionService {
         prescriptionDto.setEndDate(endDate);
     }
 
-    private TimePatternEntity setTimePatternElementsToEntity(TimePatternDto timePatternDto) {
-        TimePatternEntity timePatternEntity = timePatternMapper.dtoToEntity(timePatternDto);
-        if (timePatternDto.getTimeBasis() == TimeBasis.WEEKLY) {
-            List<TimePatternElementDto> timePatternElementDtoList = timePatternDto.getTimePatternElement();
-            timePatternElementDtoList.removeIf(element -> element.getDayOfWeek() == null);
-            List<TimePatternElementEntity> elementList = timePatternElementMapper
-                    .dtoListToEntityList(timePatternElementDtoList);
-            elementList.forEach(element -> {
+    private void setTimePatternElementsToEntity(TimePatternEntity timePatternEntity) {
+        if (timePatternEntity.getTimeBasis() == TimeBasis.WEEKLY) {
+            List<TimePatternElementEntity> timePatternElementList = timePatternEntity.getTimePatternElement();
+            timePatternElementList.removeIf(element -> element.getDayOfWeek() == null);
+            for (TimePatternElementEntity element : timePatternElementList) {
                 element.setTimePattern(timePatternEntity);
                 timePatternElementRepository.save(element);
-            });
+            }
         }
-        return timePatternEntity;
+    }
+
+    private PrescriptionEntity getPrescriptionEntityByUuid(String uuid) {
+        return prescriptionRepository.findByUuid(UUID.fromString(uuid))
+                .orElseThrow(() -> new EntityNotFoundException(String.format(LogMessages.PRESCRIPTION_NOT_FOUND, uuid)));
     }
 
     private PatientEntity getPatientEntityByInsuranceNumber(String insuranceNumber) {
         return patientRepository.findByInsuranceNumber(insuranceNumber)
-                .orElseThrow(() -> new EntityNotFoundException("Patient with this insurance number doesn't exist"));
+                .orElseThrow(() -> new EntityNotFoundException(String
+                        .format(LogMessages.PATIENT_NOT_FOUND, insuranceNumber)));
     }
 
     private TreatmentEntity getTreatmentEntityByName(String name) {
         return treatmentRepository.findByName(name)
-                .orElseThrow(() -> new EntityNotFoundException("This treatment doesn't exist"));
+                .orElseThrow(() -> new EntityNotFoundException(String.format(LogMessages.TREATMENT_NOT_FOUND, name)));
     }
 
     private TimePatternEntity getTimePatternEntityById(long id) {
         return timePatternRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("This time pattern doesn't exist"));
+                .orElseThrow(() -> new EntityNotFoundException(LogMessages.TIME_PATTERN_NOT_FOUND));
     }
 }

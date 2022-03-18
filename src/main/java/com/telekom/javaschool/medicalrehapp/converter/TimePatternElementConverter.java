@@ -5,25 +5,17 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
 
-import java.time.DayOfWeek;
-import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
 @Component
 public class TimePatternElementConverter implements Converter<String, TimePatternElementDto> {
 
-    private final List<TimePatternElementDto> elementsList = new ArrayList<>();
-
-    {
-        for (DayOfWeek dayOfWeek : DayOfWeek.values()) {
-            elementsList.add(new TimePatternElementDto(dayOfWeek));
-        }
-    }
+    private static final List<TimePatternElementDto> WRAPPED_DAYS_OF_WEEK = TimePatternElementDto.getWrappedDaysOfWeek();
 
     @Override
     public TimePatternElementDto convert(String wrappedDayOfWeekName) {
-        for (TimePatternElementDto day : elementsList) {
+        for (TimePatternElementDto day : WRAPPED_DAYS_OF_WEEK) {
             if (day.toString().equals(wrappedDayOfWeekName)) {
                 return day;
             }
