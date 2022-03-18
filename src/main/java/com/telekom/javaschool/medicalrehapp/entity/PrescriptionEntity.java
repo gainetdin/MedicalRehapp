@@ -54,6 +54,10 @@ public class PrescriptionEntity extends AbstractEntity {
     @Column(name = "dosage_unit")
     private DosageUnit dosageUnit;
 
+    @Enumerated(value = EnumType.STRING)
+    @Column(name = "prescription_status")
+    private PrescriptionStatus prescriptionStatus;
+
     @PrePersist
     private void generateUuid() {
         uuid = UUID.randomUUID();

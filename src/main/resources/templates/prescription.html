@@ -5,7 +5,7 @@
       xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
 <head>
     <meta charset="UTF-8">
-    <title>Patient treatment</title>
+    <title>Prescription</title>
     <div th:replace="doc-style :: content"></div>
 
 </head>
@@ -31,108 +31,111 @@
                             </div>
                         </div>
                         <input type="submit" value="Save" class="btn btn-primary m-1">
-                        <a th:href="@{/patient/{insuranceNumber}/prescription/delete/{uuid}
+                        <a th:href="@{/patient/{insuranceNumber}/prescription/cancel/{uuid}
                            (insuranceNumber=*{patient.insuranceNumber}, uuid=*{uuid})}" role="button"
-                           th:unless="${uuid == null}" class="btn btn-danger">Delete prescription</a>
+                           th:unless="${uuid == null}" class="btn btn-danger">Cancel prescription</a>
                     </div>
                     <div class="col-sm-8">
                         <label for="treatment-type" class="fw-bold">Treatment type</label>
                         <br>
                         <div id="treatment-type">
                             Select treatment:
-                            <select th:field="*{treatment.name}" class="form-select">
+                            <select th:field="*{treatment.name}" id="treatment" class="form-select"
+                                    onchange="hideDosage(this);">
                                 <option th:each="treatment : ${treatments}"
                                         th:value="${treatment.name}"
                                         th:text="${treatment.name + ' (' + treatment.type.label + ')'}">
                                 </option>
                             </select>
                             <br>
-                            <label for="dosage">Dosage (of medicine): </label>
-                            <div class="row" id="dosage">
-                                <div class="col-sm">
-                                    <input type="number" th:field="*{dosage}" min="0" max="1e+8"
-                                           class="form-control" required>
-                                </div>
-                                <div class="col-sm">
-                                    <select th:field="*{dosageUnit}" class="form-select">
-                                        <option th:each="dosageUnit : ${dosageUnits}"
-                                                th:value="${dosageUnit}"
-                                                th:text="${dosageUnit.label}"></option>
-                                    </select>
+                            <div id="dosage-info">
+                                <label for="dosage">Dosage (of medicine): </label>
+                                <div class="row" id="dosage">
+                                    <div class="col-sm">
+                                        <input type="number" th:field="*{dosage}" min="0" max="1e+8"
+                                               class="form-control" required>
+                                    </div>
+                                    <div class="col-sm">
+                                        <select th:field="*{dosageUnit}" class="form-select">
+                                            <option th:each="dosageUnit : ${dosageUnits}"
+                                                    th:value="${dosageUnit}"
+                                                    th:text="${dosageUnit.label}"></option>
+                                        </select>
+                                    </div>
                                 </div>
                             </div>
-                            <br>
-                            <label for="time-pattern" class="fw-bold">Time pattern</label>
-                            <br>
-                            <div class="row" id="time-pattern">
-                                <div class="col-sm">
-                                    <label for="time-basis">Select time basis: </label>
-                                    <br>
-                                    <div id="time-basis">
-                                        <input type="radio" name="time-basis" class="btn-check" id="daily"
-                                               data-bs-toggle="collapse" data-bs-target=".timeCollapse.show" required
-                                               th:field="*{timePattern.timeBasis}"
-                                               th:value="${T(com.telekom.javaschool.medicalrehapp.entity.TimeBasis).DAILY}">
-                                        <label class="btn btn-outline-secondary m-1" for="daily">Daily</label>
-                                        <input type="radio" name="time-basis" class="btn-check" id="weekly"
-                                               data-bs-toggle="collapse" data-bs-target=".timeCollapse:not(.show)"
-                                               th:field="*{timePattern.timeBasis}"
-                                               th:value="${T(com.telekom.javaschool.medicalrehapp.entity.TimeBasis).WEEKLY}">
-                                        <label class="btn btn-outline-secondary m-1" for="weekly">Weekly</label>
-                                        <div class="collapse timeCollapse">
-                                            <div class="card card-body">
-                                                Choose days of week:
-                                                <div class="form-check" th:each="day : ${daysOfWeek}">
-                                                    <input type="checkbox" class="form-check-input" id="week-day" th:id="${day.dayOfWeek}"
-                                                           th:field="*{timePattern.timePatternElement}"
-                                                           th:value="${day}">
-                                                    <label class="form-check-label" th:for="${day.dayOfWeek}" th:text="${day.dayOfWeek}"></label>
-                                                </div>
+                        </div>
+                        <br>
+                        <label for="time-pattern" class="fw-bold">Time pattern</label>
+                        <br>
+                        <div class="row" id="time-pattern">
+                            <div class="col-sm">
+                                <label for="time-basis">Select time basis: </label>
+                                <br>
+                                <div id="time-basis">
+                                    <input type="radio" name="time-basis" class="btn-check" id="daily"
+                                           data-bs-toggle="collapse" data-bs-target=".timeCollapse.show" required
+                                           th:field="*{timePattern.timeBasis}"
+                                           th:value="${T(com.telekom.javaschool.medicalrehapp.entity.TimeBasis).DAILY}">
+                                    <label class="btn btn-outline-secondary m-1" for="daily">Daily</label>
+                                    <input type="radio" name="time-basis" class="btn-check" id="weekly"
+                                           data-bs-toggle="collapse" data-bs-target=".timeCollapse:not(.show)"
+                                           th:field="*{timePattern.timeBasis}"
+                                           th:value="${T(com.telekom.javaschool.medicalrehapp.entity.TimeBasis).WEEKLY}">
+                                    <label class="btn btn-outline-secondary m-1" for="weekly">Weekly</label>
+                                    <div class="collapse timeCollapse">
+                                        <div class="card card-body">
+                                            Choose days of week:
+                                            <div class="form-check" th:each="day : ${daysOfWeek}">
+                                                <input type="checkbox" class="form-check-input" id="week-day" th:id="${day.dayOfWeek}"
+                                                       th:field="*{timePattern.timePatternElement}"
+                                                       th:value="${day}">
+                                                <label class="form-check-label" th:for="${day.dayOfWeek}" th:text="${day.dayOfWeek}"></label>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-sm">
-                                    <label for="frequency" class="form-label">Frequency, per day: </label>
-                                    <output id="num">1</output>
-                                    <input type="range" th:field="*{timePattern.dailyFrequency}"
-                                           class="form-range" min="1" max="4" id="frequency"
-                                           value="1" oninput="num.value = this.value">
-                                </div>
                             </div>
-                            <br>
-                            <div th:switch="*{uuid}">
-                                <div th:case="null">
-                                    <label for="period" class="fw-bold">Period</label>
-                                    <br>
-                                    <div class="row" id="period">
-                                        <div class="col-sm">
-                                            <input type="number" th:field="*{periodValue}" min="1" max="30" step="1"
-                                                   class="form-control" placeholder="from 1 to 30" required>
-                                        </div>
-                                        <div class="col-sm">
-                                            <select th:field="*{periodUnit}" class="form-select">
-                                                <option th:value="${#strings.toUpperCase(T(java.time.temporal.ChronoUnit).DAYS)}">days</option>
-                                                <option th:value="${#strings.toUpperCase(T(java.time.temporal.ChronoUnit).WEEKS)}">weeks</option>
-                                                <option th:value="${#strings.toUpperCase(T(java.time.temporal.ChronoUnit).MONTHS)}">months</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div th:case="*">
-                                    <div class="row">
-                                        <div class="col-sm">
-                                            <label for="endDate" class="fw-bold">Date of end of treatment</label>
-                                            <br>
-                                            <input type="date" th:field="*{endDate}" id="endDate"
-                                                   class="form-control" required>
-                                        </div>
-                                        <div class="col-sm"></div>
-                                    </div>
-                                </div>
+                            <div class="col-sm">
+                                <label for="frequency" class="form-label">Frequency, per day: </label>
+                                <output id="num">1</output>
+                                <input type="range" th:field="*{timePattern.dailyFrequency}"
+                                       class="form-range" min="1" max="4" id="frequency"
+                                       value="1" oninput="num.value = this.value">
                             </div>
-                            <br>
                         </div>
+                        <br>
+                        <div th:switch="*{uuid}">
+                            <div th:case="null">
+                                <label for="period" class="fw-bold">Period</label>
+                                <br>
+                                <div class="row" id="period">
+                                    <div class="col-sm">
+                                        <input type="number" th:field="*{periodValue}" min="1" max="30" step="1"
+                                               class="form-control" placeholder="from 1 to 30" required>
+                                    </div>
+                                    <div class="col-sm">
+                                        <select th:field="*{periodUnit}" class="form-select">
+                                            <option th:value="${#strings.toUpperCase(T(java.time.temporal.ChronoUnit).DAYS)}">days</option>
+                                            <option th:value="${#strings.toUpperCase(T(java.time.temporal.ChronoUnit).WEEKS)}">weeks</option>
+                                            <option th:value="${#strings.toUpperCase(T(java.time.temporal.ChronoUnit).MONTHS)}">months</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div th:case="*">
+                                <div class="row">
+                                    <div class="col-sm">
+                                        <label for="endDate" class="fw-bold">Date of end of treatment</label>
+                                        <br>
+                                        <input type="date" th:field="*{endDate}" id="endDate"
+                                               class="form-control" required>
+                                    </div>
+                                    <div class="col-sm"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <br>
                     </div>
                 </div>
             </form>
@@ -141,6 +144,18 @@
     <div th:replace="footer :: content"></div>
     <script>
         endDate.min = new Date().toLocaleDateString('en-ca');
+    </script>
+    <script>
+        function hideDosage(treatment) {
+            const text = treatment.options[treatment.selectedIndex].text;
+            const element = document.getElementById('dosage-info');
+            if (text.includes("Medicine")) {
+                element.style.display = 'block';
+            }
+            else {
+                element.style.display = 'none';
+            }
+        }
     </script>
 </body>
 </html>

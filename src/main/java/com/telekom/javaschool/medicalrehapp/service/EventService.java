@@ -10,9 +10,13 @@ public interface EventService {
 
     void create(PrescriptionEntity prescriptionEntity);
 
-    void update(PrescriptionEntity prescriptionEntity);
+    void updateByPrescription(PrescriptionEntity prescriptionEntity);
 
-    void deleteByPrescription(PrescriptionEntity prescriptionEntity);
+    void update(EventDto eventDto);
+
+    EventDto findByUuid(String uuid);
+
+    void cancelByPrescription(PrescriptionEntity prescriptionEntity);
 
     List<EventDto> showAllEvents();
 

@@ -21,11 +21,4 @@ public class GlobalExceptionController {
         log.error(exception.getMessage());
         return ERROR;
     }
-
-//    @ExceptionHandler(Exception.class)
-//    public String defaultErrorHandler(Exception exception, Model model) {
-//        model.addAttribute("criticalMessage", "Something unexpected happened...");
-//        log.error(exception.getMessage());
-//        return ERROR;
-//    }
 }

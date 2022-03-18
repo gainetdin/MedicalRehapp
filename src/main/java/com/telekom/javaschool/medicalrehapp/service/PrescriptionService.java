@@ -15,5 +15,5 @@ public interface PrescriptionService {
 
     List<PrescriptionDto> findPrescriptionsByPatient(String insuranceNumber);
 
-    void deleteByUuid(String uuid);
+    PrescriptionEntity cancelByUuid(String uuid);
 }

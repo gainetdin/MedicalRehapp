@@ -5,7 +5,7 @@
       xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
 <head>
     <meta charset="UTF-8">
-    <title>Patients</title>
+    <title>Events</title>
     <div th:replace="doc-style :: content"></div>
     <script src="../static/js/datatables.min.js" th:src="@{/js/datatables.min.js}"></script>
     <link rel="stylesheet" href="../static/css/datatables.min.css" th:href="@{/css/datatables.min.css}">
@@ -47,12 +47,8 @@
                                     <td th:text="${event.eventStatus.label}"></td>
                                     <td th:text="${event.cancelReason}"></td>
                                     <td>
-<!--                                        <a th:href="@{/patient/{insuranceNumber}/prescription-->
-<!--                                        (insuranceNumber=${patient.insuranceNumber})}"-->
-<!--                                           role="button" class="btn btn-sm btn-primary">Prescriptions</a>-->
-<!--                                        <a th:href="@{/patient/{insuranceNumber}/edit-->
-<!--                                        (insuranceNumber=${patient.insuranceNumber})}"-->
-<!--                                        role="button" class="btn btn-sm btn-primary">Edit</a>-->
+                                        <a th:href="@{/event/{uuid}(uuid=${event.uuid})}"
+                                        role="button" class="btn btn-sm btn-primary">Edit</a>
                                     </td>
                                 </tr>
                             </tbody>

@@ -10,4 +10,5 @@ public class LogMessages {
     public static final String TIME_PATTERN_NOT_FOUND = "This time pattern doesn't exist";
     public static final String USER_EXISTS = "User with this login (%s) already exists";
     public static final String USER_NOT_FOUND = "User with this login (%s) doesn't exist";
+    public static final String EVENT_NOT_FOUND = "Event with this UUID (%s) doesn't exist";
 }

@@ -1,5 +1,6 @@
 package com.telekom.javaschool.medicalrehapp.service;
 
+import com.telekom.javaschool.medicalrehapp.constant.LogMessages;
 import com.telekom.javaschool.medicalrehapp.dao.EventRepository;
 import com.telekom.javaschool.medicalrehapp.dto.EventDto;
 import com.telekom.javaschool.medicalrehapp.entity.EventEntity;
@@ -14,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityNotFoundException;
 import java.time.DayOfWeek;
 import java.time.Duration;
 import java.time.LocalDate;
@@ -21,6 +23,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Slf4j
 @Service
@@ -43,6 +46,54 @@ public class EventServiceImpl implements EventService {
         List<EventEntity> eventEntityList = convertDateTimeToEvents(prescriptionEntity, dateTimeOfEvents);
         eventRepository.saveAll(eventEntityList);
         log.debug("Events saved to repository");
+    }
+
+    @Override
+    @Transactional
+    public void updateByPrescription(PrescriptionEntity prescriptionEntity) {
+
+    }
+
+    @Override
+    @Transactional
+    public void update(EventDto eventDto) {
+        EventEntity eventEntity = getEventEntityByUuid(eventDto.getUuid().toString());
+        eventEntity.setEventStatus(eventDto.getEventStatus());
+        eventEntity.setCancelReason(eventDto.getCancelReason());
+        eventRepository.save(eventEntity);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public EventDto findByUuid(String uuid) {
+        return eventMapper.entityToDto(getEventEntityByUuid(uuid));
+    }
+
+    @Override
+    @Transactional
+    public void cancelByPrescription(PrescriptionEntity prescriptionEntity) {
+        List<EventEntity> eventsToCancel = eventRepository.findAllByPrescription(prescriptionEntity);
+        for (EventEntity event : eventsToCancel) {
+            event.setEventStatus(EventStatus.CANCELED);
+            event.setCancelReason("Prescription canceled by doctor");
+        }
+        eventRepository.saveAll(eventsToCancel);
+        log.debug("Events canceled");
+    }
+
+    @Override
+    public List<EventDto> showAllEvents() {
+        return eventMapper.entityListToDtoList(eventRepository.findAll());
+    }
+
+    @Override
+    public List<EventDto> showEventsByPatient() {
+        return null;
+    }
+
+    @Override
+    public List<EventDto> showEventsByDateTime() {
+        return eventMapper.entityListToDtoList(eventRepository.findAllByOrderByDateTimeAsc());
     }
 
     private List<LocalDateTime> createDateTimeOfEvents(PrescriptionEntity prescriptionEntity) {
@@ -81,6 +132,7 @@ public class EventServiceImpl implements EventService {
             eventEntity.setDateTime(eventDateTime);
             eventEntity.setPatient(prescriptionEntity.getPatient());
             eventEntity.setTreatment(prescriptionEntity.getTreatment());
+            eventEntity.setPrescription(prescriptionEntity);
             eventList.add(eventEntity);
         }
         return eventList;
@@ -115,28 +167,8 @@ public class EventServiceImpl implements EventService {
         return dayOfWeekList;
     }
 
-    @Override
-    public void update(PrescriptionEntity prescriptionEntity) {
-
-    }
-
-    @Override
-    public void deleteByPrescription(PrescriptionEntity prescriptionEntity) {
-
-    }
-
-    @Override
-    public List<EventDto> showAllEvents() {
-        return eventMapper.entityListToDtoList(eventRepository.findAll());
-    }
-
-    @Override
-    public List<EventDto> showEventsByPatient() {
-        return null;
-    }
-
-    @Override
-    public List<EventDto> showEventsByDateTime() {
-        return eventMapper.entityListToDtoList(eventRepository.findAllByOrderByDateTimeAsc());
+    private EventEntity getEventEntityByUuid(String uuid) {
+        return eventRepository.findByUuid(UUID.fromString(uuid))
+                .orElseThrow(() -> new EntityNotFoundException(String.format(LogMessages.EVENT_NOT_FOUND, uuid)));
     }
 }

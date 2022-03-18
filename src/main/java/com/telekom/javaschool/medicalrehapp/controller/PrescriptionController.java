@@ -4,7 +4,7 @@ import com.telekom.javaschool.medicalrehapp.dto.PatientDto;
 import com.telekom.javaschool.medicalrehapp.dto.PrescriptionDto;
 import com.telekom.javaschool.medicalrehapp.dto.TimePatternElementDto;
 import com.telekom.javaschool.medicalrehapp.entity.DosageUnit;
-import com.telekom.javaschool.medicalrehapp.manager.PrescriptionManager;
+import com.telekom.javaschool.medicalrehapp.service.PrescriptionManagerImpl;
 import com.telekom.javaschool.medicalrehapp.service.PatientService;
 import com.telekom.javaschool.medicalrehapp.service.PrescriptionService;
 import com.telekom.javaschool.medicalrehapp.service.TreatmentService;
@@ -35,13 +35,13 @@ public class PrescriptionController {
     private final PrescriptionService prescriptionService;
     private final PatientService patientService;
     private final TreatmentService treatmentService;
-    private final PrescriptionManager prescriptionManager;
+    private final PrescriptionManagerImpl prescriptionManager;
 
     @Autowired
     public PrescriptionController(PrescriptionService prescriptionService,
                                   PatientService patientService,
                                   TreatmentService treatmentService,
-                                  PrescriptionManager prescriptionManager) {
+                                  PrescriptionManagerImpl prescriptionManager) {
         this.prescriptionService = prescriptionService;
         this.patientService = patientService;
         this.treatmentService = treatmentService;
@@ -95,10 +95,10 @@ public class PrescriptionController {
         return "redirect:/patient/" + insuranceNumber + "/prescription";
     }
 
-    @GetMapping("/delete/{uuid}")
+    @GetMapping("/cancel/{uuid}")
     public String handleDeletePrescription(@PathVariable("uuid") String uuid,
                                            @PathVariable(INSURANCE_NUMBER) String insuranceNumber) {
-        prescriptionService.deleteByUuid(uuid);
+        prescriptionManager.cancelPrescriptionAndEvents(uuid);
         return "redirect:/patient/" + insuranceNumber + "/prescription";
     }
 }

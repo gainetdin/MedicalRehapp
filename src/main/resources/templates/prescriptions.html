@@ -5,7 +5,7 @@
       xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
 <head>
     <meta charset="UTF-8">
-    <title>Patient treatment</title>
+    <title>Prescriptions</title>
     <div th:replace="doc-style :: content"></div>
 
 </head>
@@ -59,9 +59,9 @@
                                             <a th:href="@{/patient/{insuranceNumber}/prescription/{uuid}
                                                (insuranceNumber=${patient.insuranceNumber}, uuid=${prescription.uuid})}" role="button"
                                                class="btn btn-sm btn-primary">Edit</a>
-                                            <a th:href="@{/patient/{insuranceNumber}/prescription/delete/{uuid}
+                                            <a th:href="@{/patient/{insuranceNumber}/prescription/cancel/{uuid}
                                                (insuranceNumber=*{patient.insuranceNumber}, uuid=*{prescription.uuid})}" role="button"
-                                               class="btn btn-sm btn-danger">Delete</a>
+                                               class="btn btn-sm btn-danger">Cancel</a>
                                         </td>
                                     </tr>
                                 </tbody>
