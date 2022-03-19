@@ -30,15 +30,6 @@
                         <br>
                         <input type="text" th:field="*{insuranceNumber}" id="insuranceNumber"
                                onkeyup="addHyphen(this)" maxlength="14" class="form-control">
-                        <br>
-                        <label for="selectDoctor">Select doctor: </label>
-                        <br>
-                        <select th:field="*{doctor}" id="selectDoctor" class="form-select">
-                            <option th:each="doctor : ${doctors}"
-                                    th:value="${doctor.name}"
-                                    th:text="${doctor.name}">
-                            </option>
-                        </select>
                     </div>
                 </div>
                 <br>

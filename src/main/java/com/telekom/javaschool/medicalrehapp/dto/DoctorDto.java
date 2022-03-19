@@ -10,5 +10,5 @@ import java.io.Serializable;
 @AllArgsConstructor
 @NoArgsConstructor
 public class DoctorDto extends AbstractDto implements Serializable {
-    private String name;
+    private UserDto user;
 }

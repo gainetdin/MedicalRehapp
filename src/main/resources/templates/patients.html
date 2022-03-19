@@ -41,7 +41,7 @@
                                     <td th:text="${patient.name}"></td>
                                     <td th:text="${patient.diagnosis}"></td>
                                     <td th:text="${patient.insuranceNumber}"></td>
-                                    <td th:text="${patient.doctor.name}"></td>
+                                    <td th:text="${patient.doctor.user.name}"></td>
                                     <td th:text="${patient.patientStatus.label}"></td>
                                     <td>
                                         <a th:href="@{/patient/{insuranceNumber}/prescription

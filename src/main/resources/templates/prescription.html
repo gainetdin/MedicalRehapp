@@ -27,11 +27,11 @@
                                 <input type="hidden" th:field="*{patient.insuranceNumber}">
                                 <p th:text="'Insurance number: ' + *{patient.insuranceNumber}" class="card-text"></p>
                                 <p th:text="'Diagnosis: ' + *{patient.diagnosis}" class="card-text"></p>
-                                <p th:text="'Doctor: ' + *{patient.doctor.name}" class="card-text"></p>
+                                <p th:text="'Doctor: ' + *{patient.doctor.user.name}" class="card-text"></p>
                             </div>
                         </div>
                         <input type="submit" value="Save" class="btn btn-primary m-1">
-                        <a th:href="@{/patient/{insuranceNumber}/prescription/cancel/{uuid}
+                        <a th:href="@{/patient/{insuranceNumber}/prescription/{uuid}/cancel
                            (insuranceNumber=*{patient.insuranceNumber}, uuid=*{uuid})}" role="button"
                            th:unless="${uuid == null}" class="btn btn-danger">Cancel prescription</a>
                     </div>

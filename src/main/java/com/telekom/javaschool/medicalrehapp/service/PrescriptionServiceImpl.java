@@ -106,10 +106,12 @@ public class PrescriptionServiceImpl implements PrescriptionService {
     }
 
     @Override
-    @Transactional(readOnly = true)
-    public List<PrescriptionDto> findPrescriptionsByPatient(String insuranceNumber) {
-        return prescriptionMapper.entityListToDtoList(prescriptionRepository
-                .findPrescriptionsByInsuranceNumber(insuranceNumber));
+    @Transactional
+    public List<PrescriptionDto> getAndCheckPrescriptionsByPatient(String insuranceNumber) {
+        List<PrescriptionEntity> prescriptionEntities = prescriptionRepository
+                .findPrescriptionsByInsuranceNumber(insuranceNumber);
+        checkStatusIfCompleted(prescriptionEntities);
+        return prescriptionMapper.entityListToDtoList(prescriptionEntities);
     }
 
     @Override
@@ -118,6 +120,19 @@ public class PrescriptionServiceImpl implements PrescriptionService {
         PrescriptionEntity prescriptionEntity = getPrescriptionEntityByUuid(uuid);
         prescriptionEntity.setPrescriptionStatus(PrescriptionStatus.CANCELED);
         return prescriptionRepository.save(prescriptionEntity);
+    }
+
+    @Override
+    @Transactional
+    public void cancelAllByPatient(PatientEntity patientEntity) {
+        List<PrescriptionEntity> prescriptionEntities = prescriptionRepository
+                .findPrescriptionsByInsuranceNumber(patientEntity.getInsuranceNumber());
+        for (PrescriptionEntity entity : prescriptionEntities) {
+            if (entity.getPrescriptionStatus() == PrescriptionStatus.ACTIVE) {
+                entity.setPrescriptionStatus(PrescriptionStatus.CANCELED);
+            }
+        }
+        prescriptionRepository.saveAll(prescriptionEntities);
     }
 
     private void convertPeriodToDates(PrescriptionDto prescriptionDto) {
@@ -170,8 +185,13 @@ public class PrescriptionServiceImpl implements PrescriptionService {
                 .orElseThrow(() -> new EntityNotFoundException(String.format(LogMessages.TREATMENT_NOT_FOUND, name)));
     }
 
-    private TimePatternEntity getTimePatternEntityById(long id) {
-        return timePatternRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException(LogMessages.TIME_PATTERN_NOT_FOUND));
+    private void checkStatusIfCompleted(List<PrescriptionEntity> prescriptionEntities) {
+        for (PrescriptionEntity entity : prescriptionEntities) {
+            if (entity.getPrescriptionStatus() == PrescriptionStatus.ACTIVE
+                    && entity.getEndDate().isBefore(LocalDate.now())) {
+                entity.setPrescriptionStatus(PrescriptionStatus.COMPLETED);
+                prescriptionRepository.save(entity);
+            }
+        }
     }
 }

@@ -5,6 +5,7 @@ import com.telekom.javaschool.medicalrehapp.dao.EventRepository;
 import com.telekom.javaschool.medicalrehapp.dto.EventDto;
 import com.telekom.javaschool.medicalrehapp.entity.EventEntity;
 import com.telekom.javaschool.medicalrehapp.entity.EventStatus;
+import com.telekom.javaschool.medicalrehapp.entity.PatientEntity;
 import com.telekom.javaschool.medicalrehapp.entity.PrescriptionEntity;
 import com.telekom.javaschool.medicalrehapp.entity.TimeBasis;
 import com.telekom.javaschool.medicalrehapp.entity.TimePatternElementEntity;
@@ -73,12 +74,14 @@ public class EventServiceImpl implements EventService {
     @Transactional
     public void cancelByPrescription(PrescriptionEntity prescriptionEntity) {
         List<EventEntity> eventsToCancel = eventRepository.findAllByPrescription(prescriptionEntity);
-        for (EventEntity event : eventsToCancel) {
-            event.setEventStatus(EventStatus.CANCELED);
-            event.setCancelReason("Prescription canceled by doctor");
-        }
-        eventRepository.saveAll(eventsToCancel);
-        log.debug("Events canceled");
+        cancelEventsByReason(eventsToCancel, "Prescription is canceled by the doctor");
+    }
+
+    @Override
+    @Transactional
+    public void cancelByPatient(PatientEntity patientEntity) {
+        List<EventEntity> eventsToCancel = eventRepository.findAllByPatient(patientEntity);
+        cancelEventsByReason(eventsToCancel, "Patient is discharged by the doctor");
     }
 
     @Override
@@ -170,5 +173,14 @@ public class EventServiceImpl implements EventService {
     private EventEntity getEventEntityByUuid(String uuid) {
         return eventRepository.findByUuid(UUID.fromString(uuid))
                 .orElseThrow(() -> new EntityNotFoundException(String.format(LogMessages.EVENT_NOT_FOUND, uuid)));
+    }
+
+    private void cancelEventsByReason(List<EventEntity> eventsToCancel, String reason) {
+        for (EventEntity event : eventsToCancel) {
+            event.setEventStatus(EventStatus.CANCELED);
+            event.setCancelReason(reason);
+        }
+        eventRepository.saveAll(eventsToCancel);
+        log.debug("Events canceled");
     }
 }

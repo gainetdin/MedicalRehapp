@@ -50,7 +50,7 @@ public class PrescriptionController {
 
     @GetMapping
     public String showPrescriptionsOfPatient(@PathVariable(INSURANCE_NUMBER) String insuranceNumber, Model model) {
-        List<PrescriptionDto> prescriptionDtos = prescriptionService.findPrescriptionsByPatient(insuranceNumber);
+        List<PrescriptionDto> prescriptionDtos = prescriptionService.getAndCheckPrescriptionsByPatient(insuranceNumber);
         PatientDto patientDto = patientService.findByInsuranceNumber(insuranceNumber);
         model.addAttribute("prescriptions", prescriptionDtos);
         model.addAttribute("patient", patientDto);
@@ -95,8 +95,8 @@ public class PrescriptionController {
         return "redirect:/patient/" + insuranceNumber + "/prescription";
     }
 
-    @GetMapping("/cancel/{uuid}")
-    public String handleDeletePrescription(@PathVariable("uuid") String uuid,
+    @GetMapping("/{uuid}/cancel")
+    public String cancelPrescription(@PathVariable("uuid") String uuid,
                                            @PathVariable(INSURANCE_NUMBER) String insuranceNumber) {
         prescriptionManager.cancelPrescriptionAndEvents(uuid);
         return "redirect:/patient/" + insuranceNumber + "/prescription";

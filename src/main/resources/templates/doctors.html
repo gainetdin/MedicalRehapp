@@ -25,7 +25,7 @@
                             </thead>
                             <tbody>
                                 <tr th:each="doctor : ${doctors}">
-                                    <td th:text="${doctor.name}"></td>
+                                    <td th:text="${doctor.user.name}"></td>
                                 </tr>
                             </tbody>
                         </table>

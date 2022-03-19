@@ -10,6 +10,7 @@ import com.telekom.javaschool.medicalrehapp.entity.PatientStatus;
 import com.telekom.javaschool.medicalrehapp.mapper.PatientMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -43,7 +44,8 @@ public class PatientServiceImpl implements PatientService {
         }
         patientDto.setPatientStatus(PatientStatus.BEING_TREATED);
         PatientEntity patientEntity = patientMapper.dtoToEntity(patientDto);
-        patientEntity.setDoctor(getDoctorEntity(patientDto));
+        String doctorLogin = SecurityContextHolder.getContext().getAuthentication().getName();
+        patientEntity.setDoctor(getDoctorEntity(doctorLogin));
         log.debug(patientDto.toString());
         patientRepository.save(patientEntity);
     }
@@ -53,8 +55,8 @@ public class PatientServiceImpl implements PatientService {
     public void update(PatientDto patientDto) {
         PatientEntity patientEntity = getPatientEntityByInsuranceNumber(patientDto.getInsuranceNumber());
         patientEntity.setDiagnosis(patientDto.getDiagnosis());
-        patientEntity.setPatientStatus(patientDto.getPatientStatus());
-        patientEntity.setDoctor(getDoctorEntity(patientDto));
+        String doctorLogin = SecurityContextHolder.getContext().getAuthentication().getName();
+        patientEntity.setDoctor(getDoctorEntity(doctorLogin));
         patientRepository.save(patientEntity);
     }
 
@@ -72,10 +74,18 @@ public class PatientServiceImpl implements PatientService {
 
     @Override
     @Transactional
-    public void discharge(PatientDto patientDto) {
-        PatientEntity patientEntity = getPatientEntityByInsuranceNumber(patientDto.getInsuranceNumber());
+    public PatientEntity discharge(String insuranceNumber) {
+        PatientEntity patientEntity = getPatientEntityByInsuranceNumber(insuranceNumber);
         patientEntity.setPatientStatus(PatientStatus.DISCHARGED);
-        patientRepository.save(patientEntity);
+        return patientRepository.save(patientEntity);
+    }
+
+    @Override
+    @Transactional
+    public PatientEntity takeBack(String insuranceNumber) {
+        PatientEntity patientEntity = getPatientEntityByInsuranceNumber(insuranceNumber);
+        patientEntity.setPatientStatus(PatientStatus.BEING_TREATED);
+        return patientRepository.save(patientEntity);
     }
 
     private PatientEntity getPatientEntityByInsuranceNumber(String insuranceNumber) {
@@ -83,9 +93,8 @@ public class PatientServiceImpl implements PatientService {
                 .orElseThrow(() -> new EntityNotFoundException(String.format(LogMessages.PATIENT_NOT_FOUND, insuranceNumber)));
     }
 
-    private DoctorEntity getDoctorEntity(PatientDto patientDto) {
-        String name = patientDto.getDoctor().getName();
-        return doctorRepository.findByName(name)
-                .orElseThrow(() -> new EntityNotFoundException(String.format(LogMessages.DOCTOR_NOT_FOUND, name)));
+    private DoctorEntity getDoctorEntity(String login) {
+        return doctorRepository.findByUserLogin(login)
+                .orElseThrow(() -> new EntityNotFoundException(String.format(LogMessages.DOCTOR_NOT_FOUND, login)));
     }
 }

@@ -1,6 +1,7 @@
 package com.telekom.javaschool.medicalrehapp.service;
 
 import com.telekom.javaschool.medicalrehapp.dto.PatientDto;
+import com.telekom.javaschool.medicalrehapp.entity.PatientEntity;
 
 import java.util.List;
 
@@ -14,5 +15,7 @@ public interface PatientService {
 
     PatientDto findByInsuranceNumber(String insuranceNumber);
 
-    void discharge(PatientDto patientDto);
+    PatientEntity discharge(String insuranceNumber);
+
+    PatientEntity takeBack(String insuranceNumber);
 }
