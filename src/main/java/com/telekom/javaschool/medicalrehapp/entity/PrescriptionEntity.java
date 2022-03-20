@@ -26,7 +26,7 @@ import java.util.UUID;
 @Table(name = "prescription")
 public class PrescriptionEntity extends AbstractEntity {
 
-    @Column(name = "uuid")
+    @Column(name = "uuid", nullable = false, columnDefinition = "VARCHAR(255)")
     private UUID uuid;
 
     @ManyToOne
@@ -41,10 +41,10 @@ public class PrescriptionEntity extends AbstractEntity {
     @JoinColumn(name = "time_pattern_id")
     private TimePatternEntity timePattern;
 
-    @Column(name = "start_date_time")
+    @Column(name = "start_date_time", nullable = false)
     private LocalDateTime startDateTime;
 
-    @Column(name = "end_date")
+    @Column(name = "end_date", nullable = false)
     private LocalDate endDate;
 
     @Column(name = "dosage")
@@ -55,7 +55,7 @@ public class PrescriptionEntity extends AbstractEntity {
     private DosageUnit dosageUnit;
 
     @Enumerated(value = EnumType.STRING)
-    @Column(name = "prescription_status")
+    @Column(name = "prescription_status", nullable = false)
     private PrescriptionStatus prescriptionStatus;
 
     @PrePersist

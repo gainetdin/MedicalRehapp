@@ -24,10 +24,10 @@ import java.util.List;
 public class TimePatternEntity extends AbstractEntity {
 
     @Enumerated(value = EnumType.STRING)
-    @Column(name = "time_basis")
+    @Column(name = "time_basis", nullable = false)
     private TimeBasis timeBasis;
 
-    @Column(name = "daily_frequency")
+    @Column(name = "daily_frequency", nullable = false)
     private int dailyFrequency;
 
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "timePattern", orphanRemoval = true)

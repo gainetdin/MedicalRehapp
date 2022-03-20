@@ -24,18 +24,18 @@ import java.util.UUID;
 @Table(name = "event")
 public class EventEntity extends AbstractEntity {
 
-    @Column(name = "uuid")
+    @Column(name = "uuid", nullable = false, columnDefinition = "VARCHAR(255)")
     private UUID uuid;
 
     @ManyToOne
     @JoinColumn(name = "patient_id")
     private PatientEntity patient;
 
-    @Column(name = "date_time")
+    @Column(name = "date_time", nullable = false)
     private LocalDateTime dateTime;
 
     @Enumerated(value = EnumType.STRING)
-    @Column(name = "event_status")
+    @Column(name = "event_status", nullable = false)
     private EventStatus eventStatus;
 
     @OneToOne
