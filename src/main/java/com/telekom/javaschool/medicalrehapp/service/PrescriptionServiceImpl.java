@@ -93,6 +93,8 @@ public class PrescriptionServiceImpl implements PrescriptionService {
                 .getPatient().getInsuranceNumber()));
         prescriptionEntity.setStartDateTime(LocalDateTime.now());
         prescriptionEntity.setEndDate(prescriptionDto.getEndDate());
+        prescriptionEntity.setDosage(prescriptionDto.getDosage());
+        prescriptionEntity.setDosageUnit(prescriptionDto.getDosageUnit());
 
         TimePatternEntity timePatternEntity = timePatternMapper.dtoToEntity(prescriptionDto.getTimePattern());
         timePatternRepository.save(timePatternEntity);

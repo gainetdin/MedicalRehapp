@@ -7,6 +7,8 @@
     <meta charset="UTF-8">
     <title>Patients</title>
     <div th:replace="doc-style :: content"></div>
+    <script src="../static/js/datatables.min.js" th:src="@{/js/datatables.min.js}"></script>
+    <link rel="stylesheet" href="../static/css/datatables.min.css" th:href="@{/css/datatables.min.css}">
 </head>
 <body class="d-flex flex-column">
     <div th:replace="header :: content"></div>
@@ -17,7 +19,15 @@
                     <div class="col-sm text-start">
                         <h2>Patients</h2>
                     </div>
-                    <div class="col-sm text-end">
+                    <div class="col-sm text-end m-2">
+                        <div id="status">
+                            <label for="under-treatment">Under treatment</label>
+                            <input type="checkbox" id="under-treatment" name="status" value="Under treatment" class="me-3" checked>
+                            <label for="discharged">Discharged</label>
+                            <input type="checkbox" id="discharged" name="status" value="Discharged" class="me-3">
+                        </div>
+                    </div>
+                    <div class="col-sm-2 text-end">
                         <a th:href="@{/patient/add}" role="button"
                            class="btn btn-primary">Add new patient</a>
                     </div>
@@ -25,7 +35,7 @@
                 <div th:switch="${patients}">
                     <h3 th:case="null">No patients registered</h3>
                     <div th:case="*">
-                        <table class="table">
+                        <table id="patientTable" class="table">
                             <thead>
                                 <tr>
                                     <th scope="col">Name</th>
@@ -60,5 +70,29 @@
         </div>
     </div>
     <div th:replace="footer :: content"></div>
+
+    <script>
+        $(document).ready(function() {
+            $.fn.dataTable.ext.search.push(
+                function(settings, searchData) {
+                    var statuses = $('input:checkbox[name="status"]:checked').map(function() {
+                        return this.value;
+                    }).get();
+                    if (statuses.length === 0) {
+                        return true;
+                    }
+                    return statuses.indexOf(searchData[4]) !== -1;
+                }
+            );
+
+            var table = $('#patientTable').DataTable({
+                "lengthChange": false
+            });
+
+            $('input:checkbox').on('change', function () {
+                table.draw();
+            });
+        });
+    </script>
 </body>
 </html>

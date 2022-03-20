@@ -29,7 +29,7 @@ public class PrescriptionManagerImpl implements PrescriptionManager {
     @Transactional
     public void updatePrescriptionAndEvents(PrescriptionDto prescriptionDto) {
         PrescriptionEntity prescriptionEntity = prescriptionService.update(prescriptionDto);
-        eventService.create(prescriptionEntity);
+        eventService.updateByPrescription(prescriptionEntity);
     }
 
     @Override

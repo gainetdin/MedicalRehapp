@@ -32,6 +32,7 @@ public class PrescriptionController {
     private static final String DAYS_OF_WEEK = "daysOfWeek";
     private static final String DOSAGE_UNITS = "dosageUnits";
     private static final List<TimePatternElementDto> WRAPPED_DAYS_OF_WEEK = TimePatternElementDto.getWrappedDaysOfWeek();
+    private static final String REDIRECT_ADDRESS = "redirect:/patient/%s/prescription";
     private final PrescriptionService prescriptionService;
     private final PatientService patientService;
     private final TreatmentService treatmentService;
@@ -74,7 +75,7 @@ public class PrescriptionController {
                                    PrescriptionDto prescriptionDto) {
         log.debug(prescriptionDto.toString());
         prescriptionManager.createPrescriptionAndEvents(prescriptionDto);
-        return "redirect:/patient/" + insuranceNumber + "/prescription";
+        return String.format(REDIRECT_ADDRESS, insuranceNumber);
     }
 
     @GetMapping("/{uuid}")
@@ -91,14 +92,15 @@ public class PrescriptionController {
     @PostMapping("/{uuid}")
     public String editPrescription(@PathVariable(INSURANCE_NUMBER) String insuranceNumber,
                                    PrescriptionDto prescriptionDto) {
-        prescriptionService.update(prescriptionDto);
-        return "redirect:/patient/" + insuranceNumber + "/prescription";
+        log.debug(prescriptionDto.toString());
+        prescriptionManager.updatePrescriptionAndEvents(prescriptionDto);
+        return String.format(REDIRECT_ADDRESS, insuranceNumber);
     }
 
     @GetMapping("/{uuid}/cancel")
     public String cancelPrescription(@PathVariable("uuid") String uuid,
                                            @PathVariable(INSURANCE_NUMBER) String insuranceNumber) {
         prescriptionManager.cancelPrescriptionAndEvents(uuid);
-        return "redirect:/patient/" + insuranceNumber + "/prescription";
+        return String.format(REDIRECT_ADDRESS, insuranceNumber);
     }
 }

@@ -16,14 +16,30 @@
         <div class="container text-center">
             <div class="row justify-content-center">
                 <div class="row">
-                    <div class="col-sm text-start">
+                    <div class="col-sm-2 text-start">
                         <h2>Events</h2>
                     </div>
-                    <div class="col-sm text-end">
-
+                    <div class="col-sm text-start m-2">
+                        <form action="#" th:action="@{/event}"
+                              th:object="${filterDateTimeEvent}" th:method="post">
+                            <label for="endDateTime">Filter by date and time:</label>
+                            <input type="datetime-local" id="endDateTime" class="form-control-sm"
+                                   th:field="*{dateTime}" required>
+                            <input type="submit" value="Filter" class="btn btn-sm btn-primary ms-2">
+                        </form>
+                    </div>
+                    <div class="col-sm-4 text-end m-2">
+                        <div id="status">
+                            <label for="scheduled">Scheduled</label>
+                            <input type="checkbox" id="scheduled" name="status" value="Scheduled" class="me-3" checked>
+                            <label for="completed">Completed</label>
+                            <input type="checkbox" id="completed" name="status" value="Completed" class="me-3">
+                            <label for="canceled">Canceled</label>
+                            <input type="checkbox" id="canceled" name="status" value="Canceled" class="me-3">
+                        </div>
                     </div>
                 </div>
-                <div th:switch="${allEvents}">
+                <div th:switch="${events}">
                     <h4 th:case="null">No events created</h4>
                     <div th:case="*">
                         <table id="eventTable" class="table table-striped">
@@ -39,10 +55,13 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr th:each="event : ${allEvents}">
+                                <tr th:each="event : ${events}">
                                     <td th:text="${event.dateTime.toLocalDate()}"></td>
                                     <td th:text="${event.dateTime.toLocalTime()}"></td>
-                                    <td th:text="${event.patient.name}"></td>
+                                    <td>
+                                        <a th:href="@{/event(insuranceNumber=${event.patient.insuranceNumber})}"
+                                           th:text="${event.patient.name}"></a>
+                                    </td>
                                     <td th:text="${event.treatment.name}"></td>
                                     <td th:text="${event.eventStatus.label}"></td>
                                     <td th:text="${event.cancelReason}"></td>
@@ -60,9 +79,30 @@
     </div>
     <div th:replace="footer :: content"></div>
     <script>
+        endDateTime.min = new Date().toISOString().slice(0, 16);
+    </script>
+    <script>
         $(document).ready(function() {
-            $('#eventTable').DataTable();
-        } );
+            $.fn.dataTable.ext.search.push(
+                function(settings, searchData) {
+                    var statuses = $('input:checkbox[name="status"]:checked').map(function() {
+                        return this.value;
+                    }).get();
+                    if (statuses.length === 0) {
+                        return true;
+                    }
+                    return statuses.indexOf(searchData[4]) !== -1;
+                }
+            );
+
+            var table = $('#eventTable').DataTable({
+                "lengthChange": false
+            });
+
+            $('input:checkbox').on('change', function () {
+                table.draw();
+            });
+        });
     </script>
 </body>
 </html>

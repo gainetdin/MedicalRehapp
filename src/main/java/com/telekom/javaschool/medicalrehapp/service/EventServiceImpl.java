@@ -52,7 +52,13 @@ public class EventServiceImpl implements EventService {
     @Override
     @Transactional
     public void updateByPrescription(PrescriptionEntity prescriptionEntity) {
-
+        log.debug("Events update started");
+        List<EventEntity> oldEventEntityList = eventRepository.findAllByPrescription(prescriptionEntity);
+        cancelEventsByReason(oldEventEntityList, "Prescription is updated by the doctor");
+        List<LocalDateTime> dateTimeOfEvents = createDateTimeOfEvents(prescriptionEntity);
+        List<EventEntity> newEventEntityList = convertDateTimeToEvents(prescriptionEntity, dateTimeOfEvents);
+        eventRepository.saveAll(newEventEntityList);
+        log.debug("Events saved to repository");
     }
 
     @Override
@@ -85,18 +91,22 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public List<EventDto> showEventsByInsuranceNumber(String insuranceNumber) {
+        return eventMapper.entityListToDtoList(eventRepository.findAllByInsuranceNumber(insuranceNumber));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public List<EventDto> showAllEvents() {
-        return eventMapper.entityListToDtoList(eventRepository.findAll());
-    }
-
-    @Override
-    public List<EventDto> showEventsByPatient() {
-        return null;
-    }
-
-    @Override
-    public List<EventDto> showEventsByDateTime() {
         return eventMapper.entityListToDtoList(eventRepository.findAllByOrderByDateTimeAsc());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<EventDto> showAllEventsFilteredByDateTime(LocalDateTime filterDateTime) {
+        return eventMapper.entityListToDtoList(eventRepository
+                .findAllByDateTimeBetweenOrderByDateTimeAsc(LocalDateTime.now(), filterDateTime));
     }
 
     private List<LocalDateTime> createDateTimeOfEvents(PrescriptionEntity prescriptionEntity) {
@@ -124,7 +134,8 @@ public class EventServiceImpl implements EventService {
         return dateTimeOfEventList;
     }
 
-    private List<EventEntity> convertDateTimeToEvents(PrescriptionEntity prescriptionEntity, List<LocalDateTime> dateTimeOfEvents) {
+    private List<EventEntity> convertDateTimeToEvents(PrescriptionEntity prescriptionEntity,
+                                                      List<LocalDateTime> dateTimeOfEvents) {
         if (dateTimeOfEvents.isEmpty()) {
             throw new IllegalArgumentException("Cannot create any event");
         }
@@ -177,8 +188,10 @@ public class EventServiceImpl implements EventService {
 
     private void cancelEventsByReason(List<EventEntity> eventsToCancel, String reason) {
         for (EventEntity event : eventsToCancel) {
-            event.setEventStatus(EventStatus.CANCELED);
-            event.setCancelReason(reason);
+            if (event.getEventStatus() == EventStatus.SCHEDULED) {
+                event.setEventStatus(EventStatus.CANCELED);
+                event.setCancelReason(reason);
+            }
         }
         eventRepository.saveAll(eventsToCancel);
         log.debug("Events canceled");
