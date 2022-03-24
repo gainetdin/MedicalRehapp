@@ -9,6 +9,4 @@ public interface DoctorService {
     void save(DoctorDto doctor);
 
     List<DoctorDto> findAll();
-
-    DoctorDto findByName(String name);
 }

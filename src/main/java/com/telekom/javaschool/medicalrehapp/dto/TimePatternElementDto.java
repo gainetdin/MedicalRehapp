@@ -14,7 +14,6 @@ import java.util.List;
 @NoArgsConstructor
 public class TimePatternElementDto extends AbstractDto implements Serializable {
     private DayOfWeek dayOfWeek;
-//    private TimePatternDto timePattern;
 
     public static List<TimePatternElementDto> getWrappedDaysOfWeek() {
         List<TimePatternElementDto> daysOfWeek = new ArrayList<>();

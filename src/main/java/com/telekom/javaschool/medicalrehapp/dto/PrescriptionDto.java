@@ -1,6 +1,7 @@
 package com.telekom.javaschool.medicalrehapp.dto;
 
 import com.telekom.javaschool.medicalrehapp.entity.DosageUnit;
+import com.telekom.javaschool.medicalrehapp.entity.PrescriptionStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -29,4 +30,5 @@ public class PrescriptionDto extends AbstractDto implements Serializable {
     private ChronoUnit periodUnit;
     private double dosage;
     private DosageUnit dosageUnit;
+    private PrescriptionStatus prescriptionStatus;
 }

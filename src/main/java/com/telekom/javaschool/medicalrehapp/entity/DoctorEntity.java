@@ -6,6 +6,8 @@ import lombok.Setter;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 @Getter
@@ -15,8 +17,8 @@ import javax.persistence.Table;
 @Table(name = "doctor")
 public class DoctorEntity extends AbstractEntity {
 
-    @Column(name = "name", unique = true)
-    private String name;
-
+    @OneToOne
+    @JoinColumn(name = "user_id")
+    private UserEntity user;
 }
 

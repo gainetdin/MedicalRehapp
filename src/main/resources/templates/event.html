@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="https://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<head>
+    <meta charset="UTF-8">
+    <title>Event</title>
+    <div th:replace="doc-style :: content"></div>
+</head>
+<body class="d-flex flex-column">
+    <div th:replace="header :: content"></div>
+    <div id="page-content">
+        <div class="container text-center">
+            <div class="row justify-content-center">
+                <h3>Event</h3>
+                <form action="#" th:action="@{/event/{uuid}(uuid=*{uuid})}" th:object="${event}" th:method="post">
+                    <table id="eventTable" class="table">
+                        <thead>
+                            <tr>
+                                <th scope="col">Date</th>
+                                <th scope="col">Time</th>
+                                <th scope="col">Patient</th>
+                                <th scope="col">Treatment</th>
+                                <th scope="col" th:if="*{prescription.treatment.type.name() == 'MEDICINE'}">Dosage</th>
+                                <th scope="col">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td th:text="*{dateTime.toLocalDate()}"></td>
+                                <td th:text="*{dateTime.toLocalTime()}"></td>
+                                <td th:text="*{patient.name}"></td>
+                                <td th:text="*{treatment.name}"></td>
+                                <td th:if="*{prescription.treatment.type.name() == 'MEDICINE'}"
+                                    th:text="*{prescription.dosage + ' ' + prescription.dosageUnit.label}"></td>
+                                <td th:text="*{eventStatus.label}"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <br>
+                    <label for="event-status">Change event status: </label>
+                    <br>
+                    <div id="event-status">
+                        <input type="radio" name="event-status" class="btn-check" id="completed"
+                               data-bs-toggle="collapse" data-bs-target=".timeCollapse.show" required
+                               th:field="*{eventStatus}" onclick="hideCancelReason()"
+                               th:value="${T(com.telekom.javaschool.medicalrehapp.entity.EventStatus).COMPLETED}">
+                        <label class="btn btn-outline-success m-3" for="completed">Completed</label>
+                        <input type="radio" name="event-status" class="btn-check" id="canceled"
+                               data-bs-toggle="collapse" data-bs-target=".timeCollapse:not(.show)"
+                               th:field="*{eventStatus}" onclick="requireCancelReason()"
+                               th:value="${T(com.telekom.javaschool.medicalrehapp.entity.EventStatus).CANCELED}">
+                        <label class="btn btn-outline-warning m-3" for="canceled">Canceled</label>
+                        <div class="collapse timeCollapse">
+                            <div class="card card-body">
+                                <label class="form-label" for="reason">Write why event should be canceled:</label>
+                                <textarea th:field="*{cancelReason}" id="reason" maxlength="255" minlength="5"
+                                          class="form-control"></textarea>
+                            </div>
+                        </div>
+                        <input type="hidden" th:field="*{uuid}">
+                    </div>
+                    <input type="submit" value="Save changes" class="btn btn-primary m-3">
+                </form>
+            </div>
+        </div>
+    </div>
+    <div th:replace="footer :: content"></div>
+    <script>
+        function requireCancelReason() {
+            const element = document.getElementById('reason');
+            if (document.getElementById('canceled').checked) {
+                element.setAttribute("required", "");
+            }
+        }
+
+        function hideCancelReason() {
+            const element = document.getElementById('reason');
+            if (document.getElementById('completed').checked) {
+                element.removeAttribute("required");
+            }
+        }
+    </script>
+</body>
+</html>

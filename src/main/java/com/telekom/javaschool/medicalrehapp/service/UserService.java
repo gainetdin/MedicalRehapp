@@ -14,4 +14,6 @@ public interface UserService {
     UserDto findByLogin(String login);
 
     List<UserDto> findAll();
+
+    List<UserDto> findAllDoctors();
 }

@@ -1,6 +1,5 @@
 package com.telekom.javaschool.medicalrehapp.dao;
 
-import com.telekom.javaschool.medicalrehapp.entity.PatientEntity;
 import com.telekom.javaschool.medicalrehapp.entity.PrescriptionEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -17,6 +16,4 @@ public interface PrescriptionRepository extends JpaRepository<PrescriptionEntity
     List<PrescriptionEntity> findPrescriptionsByInsuranceNumber(@Param("insurance_number") String insuranceNumber);
 
     Optional<PrescriptionEntity> findByUuid(UUID uuid);
-
-    void deleteByUuid(UUID uuid);
 }

@@ -1,8 +1,10 @@
 package com.telekom.javaschool.medicalrehapp.service;
 
 import com.telekom.javaschool.medicalrehapp.constant.LogMessages;
+import com.telekom.javaschool.medicalrehapp.dao.DoctorRepository;
 import com.telekom.javaschool.medicalrehapp.dao.UserRepository;
 import com.telekom.javaschool.medicalrehapp.dto.UserDto;
+import com.telekom.javaschool.medicalrehapp.entity.DoctorEntity;
 import com.telekom.javaschool.medicalrehapp.entity.Role;
 import com.telekom.javaschool.medicalrehapp.entity.UserEntity;
 import com.telekom.javaschool.medicalrehapp.mapper.UserMapper;
@@ -22,14 +24,17 @@ public class UserServiceImpl implements UserService{
 
     private final UserRepository userRepository;
     private final UserMapper userMapper;
+    private final DoctorRepository doctorRepository;
     private final PasswordEncoder passwordEncoder;
 
     @Autowired
     public UserServiceImpl(UserRepository userRepository,
                            UserMapper userMapper,
+                           DoctorRepository doctorRepository,
                            PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.userMapper = userMapper;
+        this.doctorRepository = doctorRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -55,8 +60,14 @@ public class UserServiceImpl implements UserService{
     public void update(UserDto user) {
         UserEntity userEntity = getUserEntityByLogin(user.getLogin());
         userEntity.setName(user.getName());
+        Role role = user.getRole();
         userEntity.setRole(user.getRole());
-        userRepository.save(userEntity);
+        UserEntity savedUserEntity = userRepository.save(userEntity);
+        if (role == Role.DOCTOR) {
+            DoctorEntity doctorEntity = new DoctorEntity();
+            doctorEntity.setUser(savedUserEntity);
+            doctorRepository.save(doctorEntity);
+        }
     }
 
     @Override
@@ -69,6 +80,11 @@ public class UserServiceImpl implements UserService{
     @Transactional(readOnly = true)
     public List<UserDto> findAll() {
         return userMapper.entityListToDtoList(userRepository.findAll());
+    }
+
+    @Override
+    public List<UserDto> findAllDoctors() {
+        return userMapper.entityListToDtoList(userRepository.findAllByRole(Role.DOCTOR));
     }
 
     private UserEntity getUserEntityByLogin(String login) {

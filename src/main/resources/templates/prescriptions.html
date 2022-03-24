@@ -5,7 +5,7 @@
       xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
 <head>
     <meta charset="UTF-8">
-    <title>Patient treatment</title>
+    <title>Prescriptions</title>
     <div th:replace="doc-style :: content"></div>
 
 </head>
@@ -24,7 +24,7 @@
                             <p th:text="'Full name: ' + ${patient.name}" class="card-text"></p>
                             <p th:text="'Insurance number: ' + ${patient.insuranceNumber}" class="card-text"></p>
                             <p th:text="'Diagnosis: ' + ${patient.diagnosis}" class="card-text"></p>
-                            <p th:text="'Doctor: ' + ${patient.doctor.name}" class="card-text"></p>
+                            <p th:text="'Doctor: ' + ${patient.doctor.user.name}" class="card-text"></p>
                         </div>
                     </div>
                     <a th:href="@{/patient}" role="button"
@@ -43,6 +43,7 @@
                                         <th scope="col">Type</th>
                                         <th scope="col">Dosage</th>
                                         <th scope="col">Until</th>
+                                        <th scope="col">Status</th>
                                         <th scope="col"></th>
                                     </tr>
                                 </thead>
@@ -55,13 +56,14 @@
                                         <td th:unless="${prescription.treatment.type.name() == 'MEDICINE'}"></td>
                                         <td th:text="${#strings.capitalize(#strings.toLowerCase(prescription.endDate.getMonth())) + ' ' +
                                         prescription.endDate.getDayOfMonth()}"></td>
+                                        <td th:text="${prescription.prescriptionStatus.label}"></td>
                                         <td>
                                             <a th:href="@{/patient/{insuranceNumber}/prescription/{uuid}
                                                (insuranceNumber=${patient.insuranceNumber}, uuid=${prescription.uuid})}" role="button"
                                                class="btn btn-sm btn-primary">Edit</a>
-                                            <a th:href="@{/patient/{insuranceNumber}/prescription/delete/{uuid}
+                                            <a th:href="@{/patient/{insuranceNumber}/prescription/{uuid}/cancel
                                                (insuranceNumber=*{patient.insuranceNumber}, uuid=*{prescription.uuid})}" role="button"
-                                               class="btn btn-sm btn-danger">Delete</a>
+                                               class="btn btn-sm btn-danger">Cancel</a>
                                         </td>
                                     </tr>
                                 </tbody>

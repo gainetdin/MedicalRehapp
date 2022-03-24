@@ -34,12 +34,4 @@ public class DoctorServiceImpl implements DoctorService {
     public List<DoctorDto> findAll() {
         return doctorMapper.entityListToDtoList(doctorRepository.findAll());
     }
-
-    @Override
-    @Transactional(readOnly = true)
-    public DoctorDto findByName(String name) {
-        DoctorEntity doctorEntity = doctorRepository.findByName(name)
-                .orElseThrow(() -> new EntityNotFoundException("Doctor with this name doesn't exist"));
-        return doctorMapper.entityToDto(doctorEntity);
-    }
 }

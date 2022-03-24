@@ -4,7 +4,7 @@ import com.telekom.javaschool.medicalrehapp.dto.PatientDto;
 import com.telekom.javaschool.medicalrehapp.dto.PrescriptionDto;
 import com.telekom.javaschool.medicalrehapp.dto.TimePatternElementDto;
 import com.telekom.javaschool.medicalrehapp.entity.DosageUnit;
-import com.telekom.javaschool.medicalrehapp.manager.PrescriptionManager;
+import com.telekom.javaschool.medicalrehapp.service.PrescriptionManagerImpl;
 import com.telekom.javaschool.medicalrehapp.service.PatientService;
 import com.telekom.javaschool.medicalrehapp.service.PrescriptionService;
 import com.telekom.javaschool.medicalrehapp.service.TreatmentService;
@@ -32,16 +32,17 @@ public class PrescriptionController {
     private static final String DAYS_OF_WEEK = "daysOfWeek";
     private static final String DOSAGE_UNITS = "dosageUnits";
     private static final List<TimePatternElementDto> WRAPPED_DAYS_OF_WEEK = TimePatternElementDto.getWrappedDaysOfWeek();
+    private static final String REDIRECT_ADDRESS = "redirect:/patient/%s/prescription";
     private final PrescriptionService prescriptionService;
     private final PatientService patientService;
     private final TreatmentService treatmentService;
-    private final PrescriptionManager prescriptionManager;
+    private final PrescriptionManagerImpl prescriptionManager;
 
     @Autowired
     public PrescriptionController(PrescriptionService prescriptionService,
                                   PatientService patientService,
                                   TreatmentService treatmentService,
-                                  PrescriptionManager prescriptionManager) {
+                                  PrescriptionManagerImpl prescriptionManager) {
         this.prescriptionService = prescriptionService;
         this.patientService = patientService;
         this.treatmentService = treatmentService;
@@ -50,7 +51,7 @@ public class PrescriptionController {
 
     @GetMapping
     public String showPrescriptionsOfPatient(@PathVariable(INSURANCE_NUMBER) String insuranceNumber, Model model) {
-        List<PrescriptionDto> prescriptionDtos = prescriptionService.findPrescriptionsByPatient(insuranceNumber);
+        List<PrescriptionDto> prescriptionDtos = prescriptionService.getAndCheckPrescriptionsByPatient(insuranceNumber);
         PatientDto patientDto = patientService.findByInsuranceNumber(insuranceNumber);
         model.addAttribute("prescriptions", prescriptionDtos);
         model.addAttribute("patient", patientDto);
@@ -74,7 +75,7 @@ public class PrescriptionController {
                                    PrescriptionDto prescriptionDto) {
         log.debug(prescriptionDto.toString());
         prescriptionManager.createPrescriptionAndEvents(prescriptionDto);
-        return "redirect:/patient/" + insuranceNumber + "/prescription";
+        return String.format(REDIRECT_ADDRESS, insuranceNumber);
     }
 
     @GetMapping("/{uuid}")
@@ -91,14 +92,15 @@ public class PrescriptionController {
     @PostMapping("/{uuid}")
     public String editPrescription(@PathVariable(INSURANCE_NUMBER) String insuranceNumber,
                                    PrescriptionDto prescriptionDto) {
-        prescriptionService.update(prescriptionDto);
-        return "redirect:/patient/" + insuranceNumber + "/prescription";
+        log.debug(prescriptionDto.toString());
+        prescriptionManager.updatePrescriptionAndEvents(prescriptionDto);
+        return String.format(REDIRECT_ADDRESS, insuranceNumber);
     }
 
-    @GetMapping("/delete/{uuid}")
-    public String handleDeletePrescription(@PathVariable("uuid") String uuid,
+    @GetMapping("/{uuid}/cancel")
+    public String cancelPrescription(@PathVariable("uuid") String uuid,
                                            @PathVariable(INSURANCE_NUMBER) String insuranceNumber) {
-        prescriptionService.deleteByUuid(uuid);
-        return "redirect:/patient/" + insuranceNumber + "/prescription";
+        prescriptionManager.cancelPrescriptionAndEvents(uuid);
+        return String.format(REDIRECT_ADDRESS, insuranceNumber);
     }
 }

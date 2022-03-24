@@ -17,11 +17,11 @@ import javax.persistence.Table;
 @Table(name = "treatment")
 public class TreatmentEntity extends AbstractEntity {
 
-    @Column(name = "name", unique = true)
+    @Column(name = "name", unique = true, nullable = false)
     private String name;
 
     @Enumerated(value = EnumType.STRING)
-    @Column(name = "type")
+    @Column(name = "type", nullable = false)
     private TreatmentType type;
 
 }

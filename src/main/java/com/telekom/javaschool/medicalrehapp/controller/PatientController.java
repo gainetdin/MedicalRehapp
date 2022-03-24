@@ -1,9 +1,7 @@
 package com.telekom.javaschool.medicalrehapp.controller;
 
-import com.telekom.javaschool.medicalrehapp.dto.DoctorDto;
 import com.telekom.javaschool.medicalrehapp.dto.PatientDto;
-import com.telekom.javaschool.medicalrehapp.entity.PatientStatus;
-import com.telekom.javaschool.medicalrehapp.service.DoctorService;
+import com.telekom.javaschool.medicalrehapp.service.PatientManager;
 import com.telekom.javaschool.medicalrehapp.service.PatientService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,8 +13,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import java.util.List;
-
 @Slf4j
 @PreAuthorize("hasRole('ROLE_DOCTOR')")
 @Controller
@@ -25,15 +21,13 @@ public class PatientController {
 
     private static final String PATIENT = "patient";
     private static final String PATIENTS = "patients";
-    private static final String DOCTORS = "doctors";
-    private static final String STATUSES = "statuses";
     private final PatientService patientService;
-    private final DoctorService doctorService;
+    private final PatientManager patientManager;
 
     @Autowired
-    public PatientController(PatientService patientService, DoctorService doctorService) {
+    public PatientController(PatientService patientService, PatientManager patientManager) {
         this.patientService = patientService;
-        this.doctorService = doctorService;
+        this.patientManager = patientManager;
     }
 
     @GetMapping
@@ -45,9 +39,7 @@ public class PatientController {
     @GetMapping("/add")
     public String showPatientAddForm(Model model) {
         PatientDto patientDto = new PatientDto();
-        List<DoctorDto> doctors = doctorService.findAll();
         model.addAttribute(PATIENT, patientDto);
-        model.addAttribute(DOCTORS, doctors);
         return "patient-add";
     }
 
@@ -60,14 +52,24 @@ public class PatientController {
     @GetMapping("/{insuranceNumber}/edit")
     public String showPatientEditForm(@PathVariable("insuranceNumber") String insuranceNumber, Model model) {
         model.addAttribute(PATIENT, patientService.findByInsuranceNumber(insuranceNumber));
-        model.addAttribute(DOCTORS, doctorService.findAll());
-        model.addAttribute(STATUSES, PatientStatus.values());
         return "patient-edit";
     }
 
     @PostMapping
     public String editPatient(PatientDto patientDto) {
         patientService.update(patientDto);
+        return "redirect:/patient";
+    }
+
+    @GetMapping("/{insuranceNumber}/discharge")
+    public String dischargePatient(@PathVariable("insuranceNumber") String insuranceNumber) {
+        patientManager.dischargePatientAndCancelEverything(insuranceNumber);
+        return "redirect:/patient";
+    }
+
+    @GetMapping("/{insuranceNumber}/take-back")
+    public String takeBackPatient(@PathVariable("insuranceNumber") String insuranceNumber) {
+        patientService.takeBack(insuranceNumber);
         return "redirect:/patient";
     }
 }

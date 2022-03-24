@@ -7,16 +7,14 @@ import com.telekom.javaschool.medicalrehapp.dao.TimePatternElementRepository;
 import com.telekom.javaschool.medicalrehapp.dao.TimePatternRepository;
 import com.telekom.javaschool.medicalrehapp.dao.TreatmentRepository;
 import com.telekom.javaschool.medicalrehapp.dto.PrescriptionDto;
-import com.telekom.javaschool.medicalrehapp.dto.TimePatternDto;
-import com.telekom.javaschool.medicalrehapp.dto.TimePatternElementDto;
 import com.telekom.javaschool.medicalrehapp.entity.PatientEntity;
 import com.telekom.javaschool.medicalrehapp.entity.PrescriptionEntity;
+import com.telekom.javaschool.medicalrehapp.entity.PrescriptionStatus;
 import com.telekom.javaschool.medicalrehapp.entity.TimeBasis;
 import com.telekom.javaschool.medicalrehapp.entity.TimePatternElementEntity;
 import com.telekom.javaschool.medicalrehapp.entity.TimePatternEntity;
 import com.telekom.javaschool.medicalrehapp.entity.TreatmentEntity;
 import com.telekom.javaschool.medicalrehapp.mapper.PrescriptionMapper;
-import com.telekom.javaschool.medicalrehapp.mapper.TimePatternElementMapper;
 import com.telekom.javaschool.medicalrehapp.mapper.TimePatternMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -74,6 +72,7 @@ public class PrescriptionServiceImpl implements PrescriptionService {
 
         prescriptionEntity.setTimePattern(timePatternEntity);
         prescriptionEntity.setTreatment(getTreatmentEntityByName(prescriptionDto.getTreatment().getName()));
+        prescriptionEntity.setPrescriptionStatus(PrescriptionStatus.ACTIVE);
         PrescriptionEntity savedPrescriptionEntity = prescriptionRepository.save(prescriptionEntity);
         log.debug(savedPrescriptionEntity.toString());
         log.info("Prescription created");
@@ -94,6 +93,8 @@ public class PrescriptionServiceImpl implements PrescriptionService {
                 .getPatient().getInsuranceNumber()));
         prescriptionEntity.setStartDateTime(LocalDateTime.now());
         prescriptionEntity.setEndDate(prescriptionDto.getEndDate());
+        prescriptionEntity.setDosage(prescriptionDto.getDosage());
+        prescriptionEntity.setDosageUnit(prescriptionDto.getDosageUnit());
 
         TimePatternEntity timePatternEntity = timePatternMapper.dtoToEntity(prescriptionDto.getTimePattern());
         timePatternRepository.save(timePatternEntity);
@@ -101,26 +102,39 @@ public class PrescriptionServiceImpl implements PrescriptionService {
 
         prescriptionEntity.setTimePattern(timePatternEntity);
         prescriptionEntity.setTreatment(getTreatmentEntityByName(prescriptionDto.getTreatment().getName()));
+        prescriptionEntity.setPrescriptionStatus(PrescriptionStatus.ACTIVE);
         log.info("Prescription updated");
         return prescriptionRepository.save(prescriptionEntity);
     }
 
     @Override
-    @Transactional(readOnly = true)
-    public List<PrescriptionDto> findPrescriptionsByPatient(String insuranceNumber) {
-        return prescriptionMapper.entityListToDtoList(prescriptionRepository
-                .findPrescriptionsByInsuranceNumber(insuranceNumber));
+    @Transactional
+    public List<PrescriptionDto> getAndCheckPrescriptionsByPatient(String insuranceNumber) {
+        List<PrescriptionEntity> prescriptionEntities = prescriptionRepository
+                .findPrescriptionsByInsuranceNumber(insuranceNumber);
+        checkStatusIfCompleted(prescriptionEntities);
+        return prescriptionMapper.entityListToDtoList(prescriptionEntities);
     }
 
     @Override
     @Transactional
-    public void deleteByUuid(String uuid) {
+    public PrescriptionEntity cancelByUuid(String uuid) {
         PrescriptionEntity prescriptionEntity = getPrescriptionEntityByUuid(uuid);
-        TimePatternEntity timePatternEntity = prescriptionEntity.getTimePattern();
-        List<TimePatternElementEntity> elementList = timePatternEntity.getTimePatternElement();
-        prescriptionRepository.deleteByUuid(UUID.fromString(uuid));
-        timePatternElementRepository.deleteAll(elementList);
-        timePatternRepository.delete(timePatternEntity);
+        prescriptionEntity.setPrescriptionStatus(PrescriptionStatus.CANCELED);
+        return prescriptionRepository.save(prescriptionEntity);
+    }
+
+    @Override
+    @Transactional
+    public void cancelAllByPatient(PatientEntity patientEntity) {
+        List<PrescriptionEntity> prescriptionEntities = prescriptionRepository
+                .findPrescriptionsByInsuranceNumber(patientEntity.getInsuranceNumber());
+        for (PrescriptionEntity entity : prescriptionEntities) {
+            if (entity.getPrescriptionStatus() == PrescriptionStatus.ACTIVE) {
+                entity.setPrescriptionStatus(PrescriptionStatus.CANCELED);
+            }
+        }
+        prescriptionRepository.saveAll(prescriptionEntities);
     }
 
     private void convertPeriodToDates(PrescriptionDto prescriptionDto) {
@@ -173,8 +187,13 @@ public class PrescriptionServiceImpl implements PrescriptionService {
                 .orElseThrow(() -> new EntityNotFoundException(String.format(LogMessages.TREATMENT_NOT_FOUND, name)));
     }
 
-    private TimePatternEntity getTimePatternEntityById(long id) {
-        return timePatternRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException(LogMessages.TIME_PATTERN_NOT_FOUND));
+    private void checkStatusIfCompleted(List<PrescriptionEntity> prescriptionEntities) {
+        for (PrescriptionEntity entity : prescriptionEntities) {
+            if (entity.getPrescriptionStatus() == PrescriptionStatus.ACTIVE
+                    && entity.getEndDate().isBefore(LocalDate.now())) {
+                entity.setPrescriptionStatus(PrescriptionStatus.COMPLETED);
+                prescriptionRepository.save(entity);
+            }
+        }
     }
 }
