@@ -23,7 +23,8 @@
                         <br>
                         <label for="name">Full name: </label>
                         <br>
-                        <input type="text" th:field="*{name}" id="name" placeholder="name" class="form-control">
+                        <input type="text" th:field="*{name}" id="name" placeholder="name" class="form-control"
+                               required pattern=".*\S+.*">
                         <br>
                     </div>
                     <div class="col-sm">

@@ -60,13 +60,18 @@ public class UserServiceImpl implements UserService{
     public void update(UserDto user) {
         UserEntity userEntity = getUserEntityByLogin(user.getLogin());
         userEntity.setName(user.getName());
+        Role previousRole = userEntity.getRole();
         Role role = user.getRole();
         userEntity.setRole(user.getRole());
         UserEntity savedUserEntity = userRepository.save(userEntity);
-        if (role == Role.DOCTOR) {
+        if (previousRole != Role.DOCTOR && role == Role.DOCTOR) {
             DoctorEntity doctorEntity = new DoctorEntity();
             doctorEntity.setUser(savedUserEntity);
             doctorRepository.save(doctorEntity);
+        }
+        if (previousRole == Role.DOCTOR && role != Role.DOCTOR) {
+            log.debug("User is not doctor anymore");
+            doctorRepository.delete(doctorRepository.findByUserLogin(user.getLogin()).get()); //make custom query
         }
     }
 
@@ -80,11 +85,6 @@ public class UserServiceImpl implements UserService{
     @Transactional(readOnly = true)
     public List<UserDto> findAll() {
         return userMapper.entityListToDtoList(userRepository.findAll());
-    }
-
-    @Override
-    public List<UserDto> findAllDoctors() {
-        return userMapper.entityListToDtoList(userRepository.findAllByRole(Role.DOCTOR));
     }
 
     private UserEntity getUserEntityByLogin(String login) {
