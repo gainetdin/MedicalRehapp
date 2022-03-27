@@ -18,7 +18,8 @@
                     <div class="col-sm">
                         <label for="name">Treatment name: </label>
                         <br>
-                        <input type="text" th:field="*{name}" id="name" class="form-control" required>
+                        <input type="text" th:field="*{name}" id="name" class="form-control"
+                               required pattern=".*\S+.*">
                         <br>
                     </div>
                     <div class="col-sm">

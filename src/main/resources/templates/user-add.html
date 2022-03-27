@@ -18,17 +18,20 @@
         <div>
           <label for="login">Login: </label>
           <br>
-          <input type="text" name="login" id="login" placeholder="enter login">
+          <input type="text" name="login" id="login" placeholder="enter login"
+                 required pattern=".*\S+.*">
         </div>
         <div>
           <label for="password">Password: </label>
           <br>
-          <input type="password" name="password" id="password" placeholder="enter password">
+          <input type="password" name="password" id="password" placeholder="enter password"
+                 required pattern=".*\S+.*">
         </div>
         <div>
           <label for="name">Full name: </label>
           <br>
-          <input type="text" name="name" id="name" placeholder="enter full name">
+          <input type="text" name="name" id="name" placeholder="enter full name"
+                 required pattern=".*\S+.*">
         </div>
         <div>
           <input type="submit" value="Create account">

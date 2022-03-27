@@ -35,12 +35,6 @@ public class TreatmentServiceImpl implements TreatmentService {
     }
 
     @Override
-    @Transactional
-    public void update(TreatmentDto treatmentDto) {
-
-    }
-
-    @Override
     @Transactional(readOnly = true)
     public List<TreatmentDto> findAll() {
         return treatmentMapper.entityListToDtoList(treatmentRepository.findAll());

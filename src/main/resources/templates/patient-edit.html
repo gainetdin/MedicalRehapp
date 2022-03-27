@@ -34,7 +34,8 @@
                     <div class="col-sm">
                         <label for="diagnosis">Diagnosis: </label>
                         <br>
-                        <input type="text" th:field="*{diagnosis}" id="diagnosis" class="form-control">
+                        <input type="text" th:field="*{diagnosis}" id="diagnosis" class="form-control"
+                               required pattern=".*\S+.*">
                         <br>
                     </div>
                 </div>

@@ -18,18 +18,21 @@
                     <div class="col-sm">
                         <label for="name">Full name: </label>
                         <br>
-                        <input type="text" th:field="*{name}" id="name" class="form-control">
+                        <input type="text" th:field="*{name}" id="name" class="form-control"
+                               required pattern=".*\S+.*">
                         <br>
                         <label for="diagnosis">Diagnosis: </label>
                         <br>
-                        <input type="text" th:field="*{diagnosis}" id="diagnosis" class="form-control">
+                        <input type="text" th:field="*{diagnosis}" id="diagnosis" class="form-control"
+                               required pattern=".*\S+.*">
                         <br>
                     </div>
                     <div class="col-sm">
-                        <label for="insuranceNumber">Insurance number: </label>
+                        <label for="insuranceNumber">Insurance number (in the format 123-456-789-01): </label>
                         <br>
                         <input type="text" th:field="*{insuranceNumber}" id="insuranceNumber"
-                               onkeyup="addHyphen(this)" maxlength="14" class="form-control">
+                               onkeyup="addHyphen(this)" maxlength="14" class="form-control"
+                               required pattern="^\d{3}-\d{3}-\d{3}-\d{2}$">
                     </div>
                 </div>
                 <br>

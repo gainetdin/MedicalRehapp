@@ -1,18 +1,18 @@
 SET search_path TO mrschema;
 
-INSERT INTO "user"(login, password, name, role, version, id)
+INSERT INTO "user"(login, password, name, role, version)
 VALUES ('ericforeman', '$2a$10$YrRfHkTFB/.hBty5z7idG.ooajgvnzoV2BzXRsnHVX7VU4Q8BckbK',
-        'Eric Foreman', 'DOCTOR', 0, 1),
+        'Eric Foreman', 'DOCTOR', 0),
        ('robertchase', '$2a$10$YrRfHkTFB/.hBty5z7idG.ooajgvnzoV2BzXRsnHVX7VU4Q8BckbK',
-        'Robert Chase', 'DOCTOR', 0, 2),
+        'Robert Chase', 'DOCTOR', 0),
        ('admin', '$2a$10$9zfPE5JcD96gUkeNx..qaeJDyj74bwGH/TeGfu6YW8t/Nzj.BvKPO',
-        'Admin', 'ADMIN', 0, 3),
+        'Admin', 'ADMIN', 0),
        ('wendy', '$2a$10$QS3Zs/XhxbHJfDLknQ0l2uHysTyedxBLU7BPYAZrZ2aLvMPQj5m0q',
-        'Wendy Quinn', 'NURSE', 0, 4);
+        'Wendy Quinn', 'NURSE', 0);
 
-INSERT INTO doctor(user_id, version, id)
-VALUES (1, 0, 1),
-       (2, 0, 2);
+INSERT INTO doctor(user_id, version)
+VALUES (1, 0),
+       (2, 0);
 
 INSERT INTO treatment(name, type, version)
 VALUES ('A-poxide (Chlordiazepoxide)', 'MEDICINE', 0),
