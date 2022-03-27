@@ -28,13 +28,4 @@ public class UserDetailsServiceImpl implements UserDetailsService {
                         .build())
                 .orElseThrow(() -> new UsernameNotFoundException(String.format(LogMessages.USER_NOT_FOUND, login)));
     }
-
-//    private CurrentUser setUserDetails(UserEntity user) {
-//        return new CurrentUser(user.getLogin(),
-//                user.getPassword(),
-//                true, true, true, true,
-//                List.of(user.getRole()),
-//                user.getName(),
-//                user.getRole());
-//    }
 }

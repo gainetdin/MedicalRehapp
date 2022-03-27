@@ -1,10 +1,8 @@
 package com.telekom.javaschool.medicalrehapp.service;
 
 import com.telekom.javaschool.medicalrehapp.constant.LogMessages;
-import com.telekom.javaschool.medicalrehapp.dao.DoctorRepository;
 import com.telekom.javaschool.medicalrehapp.dao.UserRepository;
 import com.telekom.javaschool.medicalrehapp.dto.UserDto;
-import com.telekom.javaschool.medicalrehapp.entity.DoctorEntity;
 import com.telekom.javaschool.medicalrehapp.entity.Role;
 import com.telekom.javaschool.medicalrehapp.entity.UserEntity;
 import com.telekom.javaschool.medicalrehapp.mapper.UserMapper;
@@ -24,17 +22,14 @@ public class UserServiceImpl implements UserService{
 
     private final UserRepository userRepository;
     private final UserMapper userMapper;
-    private final DoctorRepository doctorRepository;
     private final PasswordEncoder passwordEncoder;
 
     @Autowired
     public UserServiceImpl(UserRepository userRepository,
                            UserMapper userMapper,
-                           DoctorRepository doctorRepository,
                            PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.userMapper = userMapper;
-        this.doctorRepository = doctorRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -57,22 +52,11 @@ public class UserServiceImpl implements UserService{
 
     @Override
     @Transactional
-    public void update(UserDto user) {
+    public UserEntity update(UserDto user) {
         UserEntity userEntity = getUserEntityByLogin(user.getLogin());
         userEntity.setName(user.getName());
-        Role previousRole = userEntity.getRole();
-        Role role = user.getRole();
         userEntity.setRole(user.getRole());
-        UserEntity savedUserEntity = userRepository.save(userEntity);
-        if (previousRole != Role.DOCTOR && role == Role.DOCTOR) {
-            DoctorEntity doctorEntity = new DoctorEntity();
-            doctorEntity.setUser(savedUserEntity);
-            doctorRepository.save(doctorEntity);
-        }
-        if (previousRole == Role.DOCTOR && role != Role.DOCTOR) {
-            log.debug("User is not doctor anymore");
-            doctorRepository.delete(doctorRepository.findByUserLogin(user.getLogin()).get()); //make custom query
-        }
+        return userRepository.save(userEntity);
     }
 
     @Override

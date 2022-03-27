@@ -1,25 +1,27 @@
 package com.telekom.javaschool.medicalrehapp.validator;
 
+import lombok.extern.slf4j.Slf4j;
+
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class EnumValueValidator implements ConstraintValidator<EnumValue, CharSequence> {
+@Slf4j
+public class EnumValueValidator implements ConstraintValidator<EnumValue, Enum<?>> {
 
-    private List<String> permittedValues;
+    private List<Enum<?>> permittedValues;
 
     @Override
     public void initialize(EnumValue constraintAnnotation) {
         permittedValues = Stream.of(constraintAnnotation.enumClass().getEnumConstants())
-                .map(Enum::name)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public boolean isValid(CharSequence charSequence,
+    public boolean isValid(Enum<?> currentValue,
                            ConstraintValidatorContext constraintValidatorContext) {
-        return permittedValues.contains(charSequence.toString());
+        return permittedValues.contains(currentValue);
     }
 }

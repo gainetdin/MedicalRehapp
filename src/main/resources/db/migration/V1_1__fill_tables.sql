@@ -14,13 +14,13 @@ INSERT INTO doctor(user_id, version)
 VALUES (1, 0),
        (2, 0);
 
-INSERT INTO treatment(name, type, version)
-VALUES ('A-poxide (Chlordiazepoxide)', 'MEDICINE', 0),
-       ('Demeclocycline', 'MEDICINE', 0),
-       ('Cardiovascular strengthening', 'PROCEDURE', 0),
-       ('Physiotherapy', 'PROCEDURE', 0),
-       ('Massage', 'PROCEDURE', 0),
-       ('Papaverine', 'MEDICINE', 0);
+INSERT INTO treatment(name, type, version, deleted)
+VALUES ('A-poxide (Chlordiazepoxide)', 'MEDICINE', 0, false),
+       ('Demeclocycline', 'MEDICINE', 0, false),
+       ('Cardiovascular strengthening', 'PROCEDURE', 0, false),
+       ('Physiotherapy', 'PROCEDURE', 0, false),
+       ('Massage', 'PROCEDURE', 0, false),
+       ('Papaverine', 'MEDICINE', 0, false);
 
 INSERT INTO patient(diagnosis, insurance_number, name, patient_status, doctor_id, version)
 VALUES ('Anxiety/agitation', '214-376-768-76', 'John Kelley', 'BEING_TREATED', 1, 0),

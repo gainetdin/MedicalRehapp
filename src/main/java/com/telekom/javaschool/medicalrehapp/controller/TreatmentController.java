@@ -9,6 +9,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -48,5 +49,12 @@ public class TreatmentController {
     public String showTreatments(Model model) {
         model.addAttribute("treatments", treatmentService.findAll());
         return "treatments";
+    }
+
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @GetMapping("/{treatmentName}/delete")
+    public String deleteTreatment(@PathVariable("treatmentName") String treatmentName) {
+        treatmentService.delete(treatmentName);
+        return "redirect:/treatment";
     }
 }
