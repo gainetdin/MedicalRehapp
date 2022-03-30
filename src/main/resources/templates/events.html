@@ -8,6 +8,7 @@
     <title>Events</title>
     <div th:replace="doc-style :: content"></div>
     <script src="../static/js/datatables.min.js" th:src="@{/js/datatables.min.js}"></script>
+    <script src="../static/js/moment.js" th:src="@{/js/moment.js}"></script>
     <link rel="stylesheet" href="../static/css/datatables.min.css" th:href="@{/css/datatables.min.css}">
 </head>
 <body class="d-flex flex-column">
@@ -19,61 +20,39 @@
                     <div class="col-sm-2 text-start">
                         <h2>Events</h2>
                     </div>
-                    <div class="col-sm text-start m-2">
-                        <form action="#" th:action="@{/event}"
-                              th:object="${filterDateTimeEvent}" th:method="post">
-                            <label for="endDateTime">Filter by date and time:</label>
-                            <input type="datetime-local" id="endDateTime" class="form-control-sm"
-                                   th:field="*{dateTime}" required>
-                            <input type="submit" value="Filter" class="btn btn-sm btn-primary ms-2">
-                        </form>
-                    </div>
-                    <div class="col-sm-4 text-end m-2">
-                        <div id="status">
-                            <label for="scheduled">Scheduled</label>
-                            <input type="checkbox" id="scheduled" name="status" value="Scheduled" class="me-3" checked>
-                            <label for="completed">Completed</label>
-                            <input type="checkbox" id="completed" name="status" value="Completed" class="me-3">
-                            <label for="canceled">Canceled</label>
-                            <input type="checkbox" id="canceled" name="status" value="Canceled" class="me-3">
-                        </div>
-                    </div>
+<!--                    <div class="col-sm text-start m-2">-->
+<!--                        <form action="#" th:action="@{/event}"-->
+<!--                              th:object="${filterDateTimeEvent}" th:method="post">-->
+<!--                            <label for="endDateTime">Filter by date and time:</label>-->
+<!--                            <input type="datetime-local" id="endDateTime" class="form-control-sm"-->
+<!--                                   th:field="*{dateTime}" required>-->
+<!--                            <input type="submit" value="Filter" class="btn btn-sm btn-primary ms-2">-->
+<!--                        </form>-->
+<!--                    </div>-->
+<!--                    <div class="col-sm-4 text-end m-2">-->
+<!--                        <div id="status">-->
+<!--                            <label for="scheduled">Scheduled</label>-->
+<!--                            <input type="checkbox" id="scheduled" name="status" value="Scheduled" class="me-3" checked>-->
+<!--                            <label for="completed">Completed</label>-->
+<!--                            <input type="checkbox" id="completed" name="status" value="Completed" class="me-3">-->
+<!--                            <label for="canceled">Canceled</label>-->
+<!--                            <input type="checkbox" id="canceled" name="status" value="Canceled" class="me-3">-->
+<!--                        </div>-->
+<!--                    </div>-->
                 </div>
-                <div th:switch="${events}">
-                    <h4 th:case="null">No events created</h4>
-                    <div th:case="*">
-                        <table id="eventTable" class="table table-striped">
-                            <thead>
-                                <tr>
-                                    <th scope="col">Date</th>
-                                    <th scope="col">Time</th>
-                                    <th scope="col">Patient</th>
-                                    <th scope="col">Treatment</th>
-                                    <th scope="col">Status</th>
-                                    <th scope="col">Cancel reason</th>
-                                    <th scope="col"></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr th:each="event : ${events}">
-                                    <td th:text="${event.dateTime.toLocalDate()}"></td>
-                                    <td th:text="${event.dateTime.toLocalTime()}"></td>
-                                    <td>
-                                        <a th:href="@{/event(insuranceNumber=${event.patient.insuranceNumber})}"
-                                           th:text="${event.patient.name}"></a>
-                                    </td>
-                                    <td th:text="${event.treatment.name}"></td>
-                                    <td th:text="${event.eventStatus.label}"></td>
-                                    <td th:text="${event.cancelReason}"></td>
-                                    <td>
-                                        <a th:href="@{/event/{uuid}(uuid=${event.uuid})}"
-                                        role="button" class="btn btn-sm btn-primary">Edit</a>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+                <table id="eventTable" class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th scope="col">Date</th>
+                            <th scope="col">Time</th>
+                            <th scope="col">Patient</th>
+                            <th scope="col">Treatment</th>
+                            <th scope="col">Status</th>
+                            <th scope="col">Cancel reason</th>
+                            <th scope="col"></th>
+                        </tr>
+                    </thead>
+                </table>
             </div>
         </div>
     </div>
@@ -83,26 +62,60 @@
     </script>
     <script>
         $(document).ready(function() {
-            $.fn.dataTable.ext.search.push(
-                function(settings, searchData) {
-                    var statuses = $('input:checkbox[name="status"]:checked').map(function() {
-                        return this.value;
-                    }).get();
-                    if (statuses.length === 0) {
-                        return true;
-                    }
-                    return statuses.indexOf(searchData[4]) !== -1;
-                }
-            );
+            // $.fn.dataTable.ext.search.push(
+            //     function(settings, searchData) {
+            //         var statuses = $('input:checkbox[name="status"]:checked').map(function() {
+            //             return this.value;
+            //         }).get();
+            //         if (statuses.length === 0) {
+            //             return true;
+            //         }
+            //         return statuses.indexOf(searchData[4]) !== -1;
+            //     }
+            // );
 
             var table = $('#eventTable').DataTable({
-                "lengthChange": false
+                serverSide: true,
+                processing: true,
+                ordering: false,
+                ajax: {
+                    url: '/event/all'
+                },
+                columns: [
+                    {
+                        data: "dateTime",
+                        render: function(data) {
+                            return moment(data).format('D MMMM, dddd')
+                        }
+                    },
+                    {
+                        data: "dateTime",
+                        render: function(data) {
+                            return moment(data).format('HH:mm')
+                        }
+                    },
+                    { data: "patient.name" },
+                    { data: "treatment.name" },
+                    {
+                        data: "eventStatus",
+                        render: function(data) {
+                            return data.charAt(0).toUpperCase() + data.toLowerCase().slice(1);
+                        }
+                    },
+                    { data: "cancelReason" },
+                    {
+                        data: "uuid",
+                        render: function ( data, type, row, meta ) {
+                            return '<a href="/event/'+data+'" role="button" class="btn btn-sm btn-primary">Edit</a>';
+                        }
+                    }
+                ]
             });
 
-            $('input:checkbox').on('change', function () {
-                table.draw();
-            });
-        });
+            // $('input:checkbox').on('change', function () {
+            //     table.draw();
+            // });
+        })
     </script>
 </body>
 </html>

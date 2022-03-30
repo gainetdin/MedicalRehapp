@@ -21,7 +21,6 @@ public class EventDto extends AbstractDto implements Serializable {
 
     private UUID uuid;
 
-    @NotNull
     private PatientDto patient;
 
     @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
@@ -30,11 +29,9 @@ public class EventDto extends AbstractDto implements Serializable {
     @EnumValue(enumClass = EventStatus.class)
     private EventStatus eventStatus;
 
-    @NotNull
     private TreatmentDto treatment;
 
     private String cancelReason;
 
-    @NotNull
     private PrescriptionDto prescription;
 }
