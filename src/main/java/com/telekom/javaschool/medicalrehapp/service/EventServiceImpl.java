@@ -3,6 +3,7 @@ package com.telekom.javaschool.medicalrehapp.service;
 import com.telekom.javaschool.medicalrehapp.constant.LogMessages;
 import com.telekom.javaschool.medicalrehapp.dao.EventRepository;
 import com.telekom.javaschool.medicalrehapp.dto.EventDto;
+import com.telekom.javaschool.medicalrehapp.dto.EventRequestDto;
 import com.telekom.javaschool.medicalrehapp.dto.EventResponseDto;
 import com.telekom.javaschool.medicalrehapp.entity.EventEntity;
 import com.telekom.javaschool.medicalrehapp.entity.EventStatus;
@@ -96,30 +97,32 @@ public class EventServiceImpl implements EventService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<EventDto> showEventsByInsuranceNumber(String insuranceNumber) {
-        return eventMapper.entityListToDtoList(eventRepository.findAllByInsuranceNumber(insuranceNumber));
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public EventResponseDto showAllEvents(int start, int length, int draw) {
-        int pageNumber = start / length;
-        Pageable pageRequest = PageRequest.of(pageNumber, length);
-        Page<EventEntity> eventEntityPage = eventRepository.findAllByOrderByDateTimeAsc(pageRequest);
-        int recordsNumber = (int) eventEntityPage.getTotalElements();
+    public EventResponseDto showEventsByFilters(EventRequestDto eventRequestDto) {
+        Page<EventEntity> eventEntityPage = getEventEntitiesByFilters(eventRequestDto);
         return EventResponseDto.builder()
                 .data(eventMapper.entityListToDtoList(eventEntityPage.getContent()))
-                .draw(draw)
-                .recordsTotal(recordsNumber)
-                .recordsFiltered(recordsNumber)
+                .draw(eventRequestDto.getDraw())
+                .recordsTotal((int) eventRepository.count())
+                .recordsFiltered((int) eventEntityPage.getTotalElements())
                 .build();
     }
 
-    @Override
-    @Transactional(readOnly = true)
-    public List<EventDto> showAllEventsFilteredByDateTime(LocalDateTime filterDateTime) {
-        return eventMapper.entityListToDtoList(eventRepository
-                .findAllByDateTimeBetweenOrderByDateTimeAsc(LocalDateTime.now(), filterDateTime));
+    private Page<EventEntity> getEventEntitiesByFilters(EventRequestDto eventRequestDto) {
+        int rowsOnPage = eventRequestDto.getLength();
+        int pageNumber = eventRequestDto.getStart() / rowsOnPage;
+        Pageable pageRequest = PageRequest.of(pageNumber, rowsOnPage);
+        LocalDateTime startDateTime = LocalDateTime.parse(eventRequestDto.getStartDateTime());
+        LocalDateTime endDateTime = LocalDateTime.parse(eventRequestDto.getEndDateTime());
+        List<EventStatus> statuses = eventRequestDto.getStatuses();
+        String patientNameLike = eventRequestDto.getSearch();
+        if (patientNameLike.isBlank()) {
+            return eventRepository.findAllByDateTimeBetweenAndEventStatusIsInOrderByDateTimeAsc(
+                    startDateTime, endDateTime, statuses, pageRequest);
+        }
+        else {
+            return eventRepository.findAllByDateTimeBetweenAndEventStatusIsInAndPatientNameLikeOrderByDateTimeAsc(
+                    patientNameLike, startDateTime, endDateTime, statuses, pageRequest);
+        }
     }
 
     private List<LocalDateTime> createDateTimeOfEvents(PrescriptionEntity prescriptionEntity) {

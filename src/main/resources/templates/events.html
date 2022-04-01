@@ -9,6 +9,7 @@
     <div th:replace="doc-style :: content"></div>
     <script src="../static/js/datatables.min.js" th:src="@{/js/datatables.min.js}"></script>
     <script src="../static/js/moment.js" th:src="@{/js/moment.js}"></script>
+    <script src="../static/js/events.js" th:src="@{/js/events.js}"></script>
     <link rel="stylesheet" href="../static/css/datatables.min.css" th:href="@{/css/datatables.min.css}">
 </head>
 <body class="d-flex flex-column">
@@ -17,28 +18,30 @@
         <div class="container text-center">
             <div class="row justify-content-center">
                 <div class="row">
-                    <div class="col-sm-2 text-start">
+                    <div class="col-sm-2 text-start m-2">
                         <h2>Events</h2>
                     </div>
-<!--                    <div class="col-sm text-start m-2">-->
-<!--                        <form action="#" th:action="@{/event}"-->
-<!--                              th:object="${filterDateTimeEvent}" th:method="post">-->
-<!--                            <label for="endDateTime">Filter by date and time:</label>-->
-<!--                            <input type="datetime-local" id="endDateTime" class="form-control-sm"-->
-<!--                                   th:field="*{dateTime}" required>-->
-<!--                            <input type="submit" value="Filter" class="btn btn-sm btn-primary ms-2">-->
-<!--                        </form>-->
-<!--                    </div>-->
-<!--                    <div class="col-sm-4 text-end m-2">-->
-<!--                        <div id="status">-->
-<!--                            <label for="scheduled">Scheduled</label>-->
-<!--                            <input type="checkbox" id="scheduled" name="status" value="Scheduled" class="me-3" checked>-->
-<!--                            <label for="completed">Completed</label>-->
-<!--                            <input type="checkbox" id="completed" name="status" value="Completed" class="me-3">-->
-<!--                            <label for="canceled">Canceled</label>-->
-<!--                            <input type="checkbox" id="canceled" name="status" value="Canceled" class="me-3">-->
-<!--                        </div>-->
-<!--                    </div>-->
+                    <div class="col-sm text-end m-2">
+                        <input type="radio" name="event-time" class="btn-check" id="all-time"
+                               value="0" checked>
+                        <label class="btn btn-outline-primary m-1" for="all-time">All events</label>
+                        <input type="radio" name="event-time" class="btn-check" id="next-hour"
+                               value="1">
+                        <label class="btn btn-outline-primary m-1" for="next-hour">Next hour</label>
+                        <input type="radio" name="event-time" class="btn-check" id="today"
+                               value="24">
+                        <label class="btn btn-outline-primary m-1" for="today">Today</label>
+                    </div>
+                    <div class="col-sm text-end m-2">
+                        <div id="status">
+                            <input type="checkbox" id="scheduled" name="status" value="SCHEDULED" class="btn-check" checked>
+                            <label for="scheduled" class="btn btn-outline-primary m-1">Scheduled</label>
+                            <input type="checkbox" id="completed" name="status" value="COMPLETED" class="btn-check" checked>
+                            <label for="completed" class="btn btn-outline-primary m-1">Completed</label>
+                            <input type="checkbox" id="canceled" name="status" value="CANCELED" class="btn-check" checked>
+                            <label for="canceled" class="btn btn-outline-primary m-1">Canceled</label>
+                        </div>
+                    </div>
                 </div>
                 <table id="eventTable" class="table table-striped">
                     <thead>
@@ -57,65 +60,5 @@
         </div>
     </div>
     <div th:replace="footer :: content"></div>
-    <script>
-        endDateTime.min = new Date().toISOString().slice(0, 16);
-    </script>
-    <script>
-        $(document).ready(function() {
-            // $.fn.dataTable.ext.search.push(
-            //     function(settings, searchData) {
-            //         var statuses = $('input:checkbox[name="status"]:checked').map(function() {
-            //             return this.value;
-            //         }).get();
-            //         if (statuses.length === 0) {
-            //             return true;
-            //         }
-            //         return statuses.indexOf(searchData[4]) !== -1;
-            //     }
-            // );
-
-            var table = $('#eventTable').DataTable({
-                serverSide: true,
-                processing: true,
-                ordering: false,
-                ajax: {
-                    url: '/event/all'
-                },
-                columns: [
-                    {
-                        data: "dateTime",
-                        render: function(data) {
-                            return moment(data).format('D MMMM, dddd')
-                        }
-                    },
-                    {
-                        data: "dateTime",
-                        render: function(data) {
-                            return moment(data).format('HH:mm')
-                        }
-                    },
-                    { data: "patient.name" },
-                    { data: "treatment.name" },
-                    {
-                        data: "eventStatus",
-                        render: function(data) {
-                            return data.charAt(0).toUpperCase() + data.toLowerCase().slice(1);
-                        }
-                    },
-                    { data: "cancelReason" },
-                    {
-                        data: "uuid",
-                        render: function ( data, type, row, meta ) {
-                            return '<a href="/event/'+data+'" role="button" class="btn btn-sm btn-primary">Edit</a>';
-                        }
-                    }
-                ]
-            });
-
-            // $('input:checkbox').on('change', function () {
-            //     table.draw();
-            // });
-        })
-    </script>
 </body>
 </html>
