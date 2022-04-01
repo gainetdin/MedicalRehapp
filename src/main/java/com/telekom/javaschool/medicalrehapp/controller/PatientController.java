@@ -8,13 +8,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-
-import javax.validation.Valid;
 
 @Slf4j
 @PreAuthorize("hasRole('ROLE_DOCTOR')")
@@ -48,19 +45,19 @@ public class PatientController {
 
     @PostMapping("/add")
     public String addPatient(PatientDto patientDto) {
-        patientService.create(patientDto);
+        patientManager.createPatient(patientDto);
         return "redirect:/patient";
     }
 
     @GetMapping("/{insuranceNumber}/edit")
     public String showPatientEditForm(@PathVariable("insuranceNumber") String insuranceNumber, Model model) {
-        model.addAttribute(PATIENT, patientService.findByInsuranceNumber(insuranceNumber));
+        model.addAttribute(PATIENT, patientService.getByInsuranceNumber(insuranceNumber));
         return "patient-edit";
     }
 
     @PostMapping
     public String editPatient(PatientDto patientDto) {
-        patientService.update(patientDto);
+        patientManager.updatePatient(patientDto);
         return "redirect:/patient";
     }
 

@@ -33,8 +33,9 @@ CREATE TABLE treatment
 (
     id      BIGSERIAL PRIMARY KEY,
     version BIGINT NOT NULL,
-    name    VARCHAR(255) UNIQUE NOT NULL,
-    type    VARCHAR(255) NOT NULL
+    name    VARCHAR(255) NOT NULL,
+    type    VARCHAR(255) NOT NULL,
+    deleted BOOLEAN NOT NULL
 );
 
 CREATE TABLE time_pattern

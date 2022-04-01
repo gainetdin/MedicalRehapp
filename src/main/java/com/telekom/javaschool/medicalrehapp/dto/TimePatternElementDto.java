@@ -1,5 +1,6 @@
 package com.telekom.javaschool.medicalrehapp.dto;
 
+import com.telekom.javaschool.medicalrehapp.validator.EnumValue;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -13,6 +14,8 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class TimePatternElementDto extends AbstractDto implements Serializable {
+
+    @EnumValue(enumClass = DayOfWeek.class)
     private DayOfWeek dayOfWeek;
 
     public static List<TimePatternElementDto> getWrappedDaysOfWeek() {

@@ -52,7 +52,7 @@ public class PrescriptionController {
     @GetMapping
     public String showPrescriptionsOfPatient(@PathVariable(INSURANCE_NUMBER) String insuranceNumber, Model model) {
         List<PrescriptionDto> prescriptionDtos = prescriptionService.getAndCheckPrescriptionsByPatient(insuranceNumber);
-        PatientDto patientDto = patientService.findByInsuranceNumber(insuranceNumber);
+        PatientDto patientDto = patientService.getByInsuranceNumber(insuranceNumber);
         model.addAttribute("prescriptions", prescriptionDtos);
         model.addAttribute("patient", patientDto);
         log.debug("Prescriptions page requested");
@@ -62,7 +62,7 @@ public class PrescriptionController {
     @GetMapping("/add")
     public String showPrescriptionAddForm(@PathVariable(INSURANCE_NUMBER) String insuranceNumber, Model model) {
         PrescriptionDto prescriptionDto = new PrescriptionDto();
-        prescriptionDto.setPatient(patientService.findByInsuranceNumber(insuranceNumber));
+        prescriptionDto.setPatient(patientService.getByInsuranceNumber(insuranceNumber));
         model.addAttribute(PRESCRIPTION, prescriptionDto);
         model.addAttribute(TREATMENTS, treatmentService.findAll());
         model.addAttribute(DAYS_OF_WEEK, WRAPPED_DAYS_OF_WEEK);

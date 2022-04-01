@@ -2,6 +2,7 @@ package com.telekom.javaschool.medicalrehapp.controller;
 
 import com.telekom.javaschool.medicalrehapp.dto.UserDto;
 import com.telekom.javaschool.medicalrehapp.entity.Role;
+import com.telekom.javaschool.medicalrehapp.service.UserManager;
 import com.telekom.javaschool.medicalrehapp.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,10 +20,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class UserController {
 
     private final UserService userService;
+    private final UserManager userManager;
 
     @Autowired
-    public UserController(UserService userService) {
+    public UserController(UserService userService, UserManager userManager) {
         this.userService = userService;
+        this.userManager = userManager;
     }
 
     @GetMapping("/add")
@@ -55,7 +58,7 @@ public class UserController {
     @PostMapping("/edit")
     public String editUser(UserDto user) {
         log.debug(user.toString());
-        userService.update(user);
+        userManager.updateUserAndCheckRole(user);
         return "redirect:/user";
     }
 }

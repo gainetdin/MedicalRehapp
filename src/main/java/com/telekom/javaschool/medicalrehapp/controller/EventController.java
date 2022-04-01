@@ -1,6 +1,7 @@
 package com.telekom.javaschool.medicalrehapp.controller;
 
 import com.telekom.javaschool.medicalrehapp.dto.EventDto;
+import com.telekom.javaschool.medicalrehapp.dto.EventResponseDto;
 import com.telekom.javaschool.medicalrehapp.entity.EventStatus;
 import com.telekom.javaschool.medicalrehapp.service.EventService;
 import lombok.extern.slf4j.Slf4j;
@@ -13,8 +14,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -35,27 +38,36 @@ public class EventController {
     @GetMapping
     public String showAllEvents(@RequestParam(value = "insuranceNumber", required = false) String insuranceNumber,
                                 Model model) {
-        List<EventDto> events;
-        if (insuranceNumber == null) {
-            events = eventService.showAllEvents();
-        }
-        else {
-            events = eventService.showEventsByInsuranceNumber(insuranceNumber);
-        }
-        EventDto filterDateTimeEvent = new EventDto();
-        filterDateTimeEvent.setDateTime(LocalDateTime.now());
-        model.addAttribute(EVENTS, events);
-        model.addAttribute(FILTER_DATE_TIME_EVENT, filterDateTimeEvent);
+//        List<EventDto> events;
+//        if (insuranceNumber == null) {
+//            events = eventService.showAllEvents();
+//        }
+//        else {
+//            events = eventService.showEventsByInsuranceNumber(insuranceNumber);
+//        }
+//        EventDto filterDateTimeEvent = new EventDto();
+//        filterDateTimeEvent.setDateTime(LocalDateTime.now());
+//        model.addAttribute(EVENTS, events);
+//        model.addAttribute(FILTER_DATE_TIME_EVENT, filterDateTimeEvent);
         return EVENTS;
     }
 
-    @PostMapping
-    public String filterEvents(Model model, EventDto filterDateTimeEvent) {
-        List<EventDto> filteredEvents = eventService.showAllEventsFilteredByDateTime(filterDateTimeEvent.getDateTime());
-        model.addAttribute(EVENTS, filteredEvents);
-        model.addAttribute(FILTER_DATE_TIME_EVENT, filterDateTimeEvent);
-        return EVENTS;
+    @GetMapping("/all")
+    @ResponseBody
+    public EventResponseDto showEvents(@RequestParam("start") int start,
+                                       @RequestParam("length") int length,
+                                       @RequestParam("draw") int draw) {
+
+        return eventService.showAllEvents(start, length, draw);
     }
+
+//    @PostMapping
+//    public String filterEvents(Model model, EventDto filterDateTimeEvent) {
+//        List<EventDto> filteredEvents = eventService.showAllEventsFilteredByDateTime(filterDateTimeEvent.getDateTime());
+//        model.addAttribute(EVENTS, filteredEvents);
+//        model.addAttribute(FILTER_DATE_TIME_EVENT, filterDateTimeEvent);
+//        return EVENTS;
+//    }
 
     @GetMapping("/{uuid}")
     public String showEvent(@PathVariable("uuid") String uuid, Model model) {

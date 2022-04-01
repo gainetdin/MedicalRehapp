@@ -3,6 +3,8 @@ package com.telekom.javaschool.medicalrehapp.dao;
 import com.telekom.javaschool.medicalrehapp.entity.EventEntity;
 import com.telekom.javaschool.medicalrehapp.entity.PatientEntity;
 import com.telekom.javaschool.medicalrehapp.entity.PrescriptionEntity;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -14,7 +16,7 @@ import java.util.UUID;
 
 public interface EventRepository extends JpaRepository<EventEntity, Long> {
 
-    List<EventEntity> findAllByOrderByDateTimeAsc();
+    Page<EventEntity> findAllByOrderByDateTimeAsc(Pageable pageRequest);
 
     List<EventEntity> findAllByPrescription(PrescriptionEntity prescriptionEntity);
 

@@ -5,4 +5,8 @@ import com.telekom.javaschool.medicalrehapp.dto.PatientDto;
 public interface PatientManager {
 
     void dischargePatientAndCancelEverything(String insuranceNumber);
+
+    void createPatient(PatientDto patientDto);
+
+    void updatePatient(PatientDto patientDto);
 }

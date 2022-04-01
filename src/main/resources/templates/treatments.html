@@ -30,12 +30,18 @@
                                 <tr>
                                     <th scope="col">Name</th>
                                     <th scope="col">Type</th>
+                                    <th scope="col"></th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr th:each="treatment : ${treatments}">
                                     <td th:text="${treatment.name}"></td>
                                     <td th:text="${treatment.type.label}"></td>
+                                    <td>
+                                        <a th:href="@{/treatment/{treatmentName}/delete
+                                        (treatmentName=${treatment.name})}" sec:authorize="hasRole('ROLE_ADMIN')"
+                                           role="button" class="btn btn-sm btn-danger">Delete</a>
+                                    </td>
                                 </tr>
                             </tbody>
                         </table>

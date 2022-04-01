@@ -3,6 +3,7 @@ package com.telekom.javaschool.medicalrehapp.service;
 import com.telekom.javaschool.medicalrehapp.constant.LogMessages;
 import com.telekom.javaschool.medicalrehapp.dao.EventRepository;
 import com.telekom.javaschool.medicalrehapp.dto.EventDto;
+import com.telekom.javaschool.medicalrehapp.dto.EventResponseDto;
 import com.telekom.javaschool.medicalrehapp.entity.EventEntity;
 import com.telekom.javaschool.medicalrehapp.entity.EventStatus;
 import com.telekom.javaschool.medicalrehapp.entity.PatientEntity;
@@ -13,6 +14,9 @@ import com.telekom.javaschool.medicalrehapp.entity.TimePatternEntity;
 import com.telekom.javaschool.medicalrehapp.mapper.EventMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -98,8 +102,17 @@ public class EventServiceImpl implements EventService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<EventDto> showAllEvents() {
-        return eventMapper.entityListToDtoList(eventRepository.findAllByOrderByDateTimeAsc());
+    public EventResponseDto showAllEvents(int start, int length, int draw) {
+        int pageNumber = start / length;
+        Pageable pageRequest = PageRequest.of(pageNumber, length);
+        Page<EventEntity> eventEntityPage = eventRepository.findAllByOrderByDateTimeAsc(pageRequest);
+        int recordsNumber = (int) eventEntityPage.getTotalElements();
+        return EventResponseDto.builder()
+                .data(eventMapper.entityListToDtoList(eventEntityPage.getContent()))
+                .draw(draw)
+                .recordsTotal(recordsNumber)
+                .recordsFiltered(recordsNumber)
+                .build();
     }
 
     @Override
