@@ -11,6 +11,8 @@ spring:
       hibernate.default_schema: mrschema
   flyway:
     schemas: mrschema
+  activemq:
+    broker-url: ${MED_REH_BROKER_URL}
   main:
     banner-mode: off
 

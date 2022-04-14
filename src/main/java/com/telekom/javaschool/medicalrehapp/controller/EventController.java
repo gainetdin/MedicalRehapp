@@ -4,6 +4,7 @@ import com.telekom.javaschool.medicalrehapp.dto.EventDto;
 import com.telekom.javaschool.medicalrehapp.dto.EventRequestDto;
 import com.telekom.javaschool.medicalrehapp.dto.EventResponseDto;
 import com.telekom.javaschool.medicalrehapp.entity.EventStatus;
+import com.telekom.javaschool.medicalrehapp.service.EventManager;
 import com.telekom.javaschool.medicalrehapp.service.EventService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,10 +25,12 @@ public class EventController {
 
     private static final String EVENT = "event";
     private final EventService eventService;
+    private final EventManager eventManager;
 
     @Autowired
-    public EventController(EventService eventService) {
+    public EventController(EventService eventService, EventManager eventManager) {
         this.eventService = eventService;
+        this.eventManager = eventManager;
     }
 
     @GetMapping
@@ -51,7 +54,7 @@ public class EventController {
 
     @PostMapping("/{uuid}")
     public String editEvent(EventDto eventDto) {
-        eventService.update(eventDto);
+        eventManager.updateEvent(eventDto);
         return "redirect:/event";
     }
 }

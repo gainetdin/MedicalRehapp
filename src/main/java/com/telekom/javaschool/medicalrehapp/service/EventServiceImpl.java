@@ -2,6 +2,7 @@ package com.telekom.javaschool.medicalrehapp.service;
 
 import com.telekom.javaschool.medicalrehapp.constant.LogMessages;
 import com.telekom.javaschool.medicalrehapp.dao.EventRepository;
+import com.telekom.javaschool.medicalrehapp.dto.EventBoardDto;
 import com.telekom.javaschool.medicalrehapp.dto.EventDto;
 import com.telekom.javaschool.medicalrehapp.dto.EventRequestDto;
 import com.telekom.javaschool.medicalrehapp.dto.EventResponseDto;
@@ -12,6 +13,7 @@ import com.telekom.javaschool.medicalrehapp.entity.PrescriptionEntity;
 import com.telekom.javaschool.medicalrehapp.entity.TimeBasis;
 import com.telekom.javaschool.medicalrehapp.entity.TimePatternElementEntity;
 import com.telekom.javaschool.medicalrehapp.entity.TimePatternEntity;
+import com.telekom.javaschool.medicalrehapp.mapper.EventBoardMapper;
 import com.telekom.javaschool.medicalrehapp.mapper.EventMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +30,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -36,11 +39,15 @@ import java.util.UUID;
 public class EventServiceImpl implements EventService {
 
     private final EventMapper eventMapper;
+    private final EventBoardMapper eventBoardMapper;
     private final EventRepository eventRepository;
 
     @Autowired
-    public EventServiceImpl(EventMapper eventMapper, EventRepository eventRepository) {
+    public EventServiceImpl(EventMapper eventMapper,
+                            EventBoardMapper eventBoardMapper,
+                            EventRepository eventRepository) {
         this.eventMapper = eventMapper;
+        this.eventBoardMapper = eventBoardMapper;
         this.eventRepository = eventRepository;
     }
 
@@ -102,6 +109,18 @@ public class EventServiceImpl implements EventService {
     public EventResponseDto showEventsByFilters(EventRequestDto eventRequestDto) {
         Page<EventEntity> eventEntityPage = getEventEntitiesByFilters(eventRequestDto);
         return buildEventResponseDto(eventRequestDto, eventEntityPage);
+    }
+
+    @Override
+    @Transactional
+    public List<EventBoardDto> getBoardEvents() {
+        LocalDateTime todayStart = LocalDate.now().atStartOfDay();
+        LocalDateTime todayEnd = LocalDate.now().atTime(23,59);
+        List<EventStatus> statuses = Collections.singletonList(EventStatus.SCHEDULED);
+        Pageable pageRequest = PageRequest.of(0, Integer.MAX_VALUE);
+        Page<EventEntity> eventEntityPage = eventRepository.findAllByDateTimeBetweenAndEventStatusIsInOrderByDateTimeAsc(
+                todayStart, todayEnd, statuses, pageRequest);
+        return eventBoardMapper.entityListToDtoList(eventEntityPage.getContent());
     }
 
     private Page<EventEntity> getEventEntitiesByFilters(EventRequestDto eventRequestDto) {

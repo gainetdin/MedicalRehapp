@@ -1,5 +1,6 @@
 package com.telekom.javaschool.medicalrehapp.service;
 
+import com.telekom.javaschool.medicalrehapp.dto.EventBoardDto;
 import com.telekom.javaschool.medicalrehapp.dto.EventDto;
 import com.telekom.javaschool.medicalrehapp.dto.EventRequestDto;
 import com.telekom.javaschool.medicalrehapp.dto.EventResponseDto;
@@ -8,6 +9,7 @@ import com.telekom.javaschool.medicalrehapp.entity.PrescriptionEntity;
 import org.springframework.validation.annotation.Validated;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @Validated
 public interface EventService {
@@ -25,4 +27,6 @@ public interface EventService {
     void cancelByPatient(PatientEntity patientEntity);
 
     EventResponseDto showEventsByFilters(EventRequestDto eventRequestDto);
+
+    List<EventBoardDto> getBoardEvents();
 }
