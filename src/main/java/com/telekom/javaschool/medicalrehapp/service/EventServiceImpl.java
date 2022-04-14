@@ -33,6 +33,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -155,6 +156,7 @@ public class EventServiceImpl implements EventService {
         TimePatternEntity timePatternEntity = prescriptionEntity.getTimePattern();
         LocalDateTime startDateTime = prescriptionEntity.getStartDateTime();
         LocalDateTime endDateTime = prescriptionEntity.getEndDate().atTime(LocalTime.MAX);
+        List<LocalDateTime> savedEventsTimeList = getSavedEventsTimeList(startDateTime, endDateTime);
         List<LocalTime> timeSchedule = getTimeSchedule(timePatternEntity.getDailyFrequency());
         List<DayOfWeek> daySchedule = getDaySchedule(timePatternEntity);
         LocalDate eventDate;
@@ -166,13 +168,35 @@ public class EventServiceImpl implements EventService {
                 continue;
             }
             for (LocalTime eventTime : timeSchedule) {
-                if (eventDate.atTime(eventTime).isAfter(startDateTime)) {
-                    dateTimeOfEventList.add(eventDate.atTime(eventTime));
+                LocalDateTime dateTimeForSchedule = eventDate.atTime(eventTime);
+                if (dateTimeForSchedule.isAfter(startDateTime)) {
+                    dateTimeForSchedule = checkIfTimeIsNotBusy(savedEventsTimeList, dateTimeForSchedule);
+                    dateTimeOfEventList.add(dateTimeForSchedule);
                 }
             }
         }
         log.debug(dateTimeOfEventList.toString());
         return dateTimeOfEventList;
+    }
+
+    private LocalDateTime checkIfTimeIsNotBusy(List<LocalDateTime> savedEventsTimeList,
+                                               LocalDateTime dateTimeForSchedule) {
+        while (savedEventsTimeList.contains(dateTimeForSchedule)) {
+            dateTimeForSchedule = dateTimeForSchedule.plusMinutes(10);
+            if (dateTimeForSchedule.toLocalTime().isAfter(LocalTime.of(23, 50))) {
+                throw new IllegalArgumentException(String.format("Too tight schedule. Cannot create event at %s",
+                        dateTimeForSchedule.toLocalDate()));
+            }
+        }
+        return dateTimeForSchedule;
+    }
+
+    private List<LocalDateTime> getSavedEventsTimeList(LocalDateTime startDateTime, LocalDateTime endDateTime) {
+        return eventRepository
+                .findAllByDateTimeBetweenAndEventStatus(startDateTime, endDateTime, EventStatus.SCHEDULED)
+                .stream()
+                .map(EventEntity::getDateTime)
+                .collect(Collectors.toList());
     }
 
     private List<EventEntity> convertDateTimeToEvents(PrescriptionEntity prescriptionEntity,

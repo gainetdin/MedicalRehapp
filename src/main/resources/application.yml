@@ -19,3 +19,6 @@ spring:
 logging:
   level:
     com.telekom.javaschool.medicalrehapp: DEBUG
+
+server:
+  port: 8090

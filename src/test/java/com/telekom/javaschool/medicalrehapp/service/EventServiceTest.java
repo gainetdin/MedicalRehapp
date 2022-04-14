@@ -24,12 +24,14 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 @ExtendWith(MockitoExtension.class)
 class EventServiceTest {
@@ -127,6 +129,22 @@ class EventServiceTest {
         List<EventEntity> updatedEvents = entitiesCaptor.getValue();
 
         assertEquals(EventStatus.CANCELED, updatedEvents.get(0).getEventStatus());
+    }
+
+    @Test
+    void shouldShiftEventsOnCreateIfBusy() {
+        List<EventEntity> entities = Collections.singletonList(createEventEntity(
+                LocalDateTime.of(2022, Month.MARCH, 15, 8, 0)));
+        Mockito.when(eventRepository.findAllByDateTimeBetweenAndEventStatus(Mockito.any(), Mockito.any(), Mockito.any()))
+                .thenReturn(entities);
+        eventService.create(prescriptionEntity);
+        Mockito.verify(eventRepository).saveAll(entitiesCaptor.capture());
+        List<EventEntity> eventsActual = entitiesCaptor.getValue();
+        List<LocalDateTime> dateTimesActual = eventsActual.stream()
+                .map(EventEntity::getDateTime)
+                .collect(Collectors.toList());
+
+        assertNotEquals(dateTimesExpected, dateTimesActual);
     }
 
     private static void createPrescriptionEntity() {
