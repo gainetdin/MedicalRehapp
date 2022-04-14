@@ -58,12 +58,12 @@ public class EventServiceImpl implements EventService {
     @Transactional
     public void updateByPrescription(PrescriptionEntity prescriptionEntity) {
         log.debug("Events update started");
-        List<EventEntity> oldEventEntityList = eventRepository.findAllByPrescription(prescriptionEntity);
-        cancelEventsByReason(oldEventEntityList, "Prescription is updated by the doctor");
+        List<EventEntity> eventEntityList = eventRepository.findAllByPrescription(prescriptionEntity);
+        cancelEventsByReason(eventEntityList, "Prescription is updated by the doctor");
         List<LocalDateTime> dateTimeOfEvents = createDateTimeOfEvents(prescriptionEntity);
-        List<EventEntity> newEventEntityList = convertDateTimeToEvents(prescriptionEntity, dateTimeOfEvents);
-        eventRepository.saveAll(newEventEntityList);
-        log.debug("Events saved to repository");
+        eventEntityList.addAll(convertDateTimeToEvents(prescriptionEntity, dateTimeOfEvents));
+        eventRepository.saveAll(eventEntityList);
+        log.debug("Events canceled and saved to repository");
     }
 
     @Override
@@ -86,6 +86,7 @@ public class EventServiceImpl implements EventService {
     public void cancelByPrescription(PrescriptionEntity prescriptionEntity) {
         List<EventEntity> eventsToCancel = eventRepository.findAllByPrescription(prescriptionEntity);
         cancelEventsByReason(eventsToCancel, "Prescription is canceled by the doctor");
+        eventRepository.saveAll(eventsToCancel);
     }
 
     @Override
@@ -93,18 +94,14 @@ public class EventServiceImpl implements EventService {
     public void cancelByPatient(PatientEntity patientEntity) {
         List<EventEntity> eventsToCancel = eventRepository.findAllByPatient(patientEntity);
         cancelEventsByReason(eventsToCancel, "Patient is discharged by the doctor");
+        eventRepository.saveAll(eventsToCancel);
     }
 
     @Override
     @Transactional(readOnly = true)
     public EventResponseDto showEventsByFilters(EventRequestDto eventRequestDto) {
         Page<EventEntity> eventEntityPage = getEventEntitiesByFilters(eventRequestDto);
-        return EventResponseDto.builder()
-                .data(eventMapper.entityListToDtoList(eventEntityPage.getContent()))
-                .draw(eventRequestDto.getDraw())
-                .recordsTotal((int) eventRepository.count())
-                .recordsFiltered((int) eventEntityPage.getTotalElements())
-                .build();
+        return buildEventResponseDto(eventRequestDto, eventEntityPage);
     }
 
     private Page<EventEntity> getEventEntitiesByFilters(EventRequestDto eventRequestDto) {
@@ -123,6 +120,15 @@ public class EventServiceImpl implements EventService {
             return eventRepository.findAllByDateTimeBetweenAndEventStatusIsInAndPatientNameLikeOrderByDateTimeAsc(
                     patientNameLike, startDateTime, endDateTime, statuses, pageRequest);
         }
+    }
+
+    private EventResponseDto buildEventResponseDto(EventRequestDto eventRequestDto, Page<EventEntity> eventEntityPage) {
+        return EventResponseDto.builder()
+                .data(eventMapper.entityListToDtoList(eventEntityPage.getContent()))
+                .draw(eventRequestDto.getDraw())
+                .recordsTotal((int) eventRepository.count())
+                .recordsFiltered((int) eventEntityPage.getTotalElements())
+                .build();
     }
 
     private List<LocalDateTime> createDateTimeOfEvents(PrescriptionEntity prescriptionEntity) {
@@ -209,7 +215,5 @@ public class EventServiceImpl implements EventService {
                 event.setCancelReason(reason);
             }
         }
-        eventRepository.saveAll(eventsToCancel);
-        log.debug("Events canceled");
     }
 }
