@@ -6,5 +6,9 @@ import java.util.List;
 
 public interface MessageService {
 
+    /**
+     * Serializes list of events to JSON and sends to the queue.
+     * @param eventBoardDtoList list of events with string fields
+     */
     void sendMessage(List<EventBoardDto> eventBoardDtoList);
 }

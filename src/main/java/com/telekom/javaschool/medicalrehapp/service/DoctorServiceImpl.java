@@ -31,12 +31,6 @@ public class DoctorServiceImpl implements DoctorService {
     }
 
     @Override
-    @Transactional
-    public void save(DoctorDto doctorDto) {
-        doctorRepository.save(doctorMapper.dtoToEntity(doctorDto));
-    }
-
-    @Override
     @Transactional(readOnly = true)
     public List<DoctorDto> findAll() {
         return doctorMapper.entityListToDtoList(doctorRepository.findAll());

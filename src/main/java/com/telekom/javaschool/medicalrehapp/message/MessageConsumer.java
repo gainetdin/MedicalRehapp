@@ -17,12 +17,16 @@ public class MessageConsumer {
         this.eventManager = eventManager;
     }
 
+    /**
+     * Listens to messages and sends events list by request.
+     * @param message request message
+     */
     @JmsListener(destination = "medrehapp-init")
     public void consumeMessage(String message) {
         log.debug("Message received: " + message);
         String requestText = "Asking for event list";
         if (requestText.equals(message)) {
-            eventManager.sendInitialEvents();
+            eventManager.sendEvents();
         }
     }
 }
