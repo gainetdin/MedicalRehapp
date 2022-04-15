@@ -12,17 +12,17 @@ public class PatientManagerImpl implements PatientManager {
 
     private final PatientService patientService;
     private final PrescriptionService prescriptionService;
-    private final EventService eventService;
+    private final EventManager eventManager;
     private final DoctorService doctorService;
 
     @Autowired
     public PatientManagerImpl(PatientService patientService,
                               PrescriptionService prescriptionService,
-                              EventService eventService,
+                              EventManager eventManager,
                               DoctorService doctorService) {
         this.patientService = patientService;
         this.prescriptionService = prescriptionService;
-        this.eventService = eventService;
+        this.eventManager = eventManager;
         this.doctorService = doctorService;
     }
 
@@ -31,7 +31,7 @@ public class PatientManagerImpl implements PatientManager {
     public void dischargePatientAndCancelEverything(String insuranceNumber) {
         PatientEntity patientEntity = patientService.discharge(insuranceNumber);
         prescriptionService.cancelAllByPatient(patientEntity);
-        eventService.cancelByPatient(patientEntity);
+        eventManager.cancelEventsByPatient(patientEntity);
     }
 
     @Override

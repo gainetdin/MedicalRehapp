@@ -2,6 +2,7 @@ package com.telekom.javaschool.medicalrehapp.service;
 
 import com.telekom.javaschool.medicalrehapp.constant.LogMessages;
 import com.telekom.javaschool.medicalrehapp.dao.EventRepository;
+import com.telekom.javaschool.medicalrehapp.dto.EventBoardDto;
 import com.telekom.javaschool.medicalrehapp.dto.EventDto;
 import com.telekom.javaschool.medicalrehapp.dto.EventRequestDto;
 import com.telekom.javaschool.medicalrehapp.dto.EventResponseDto;
@@ -12,6 +13,7 @@ import com.telekom.javaschool.medicalrehapp.entity.PrescriptionEntity;
 import com.telekom.javaschool.medicalrehapp.entity.TimeBasis;
 import com.telekom.javaschool.medicalrehapp.entity.TimePatternElementEntity;
 import com.telekom.javaschool.medicalrehapp.entity.TimePatternEntity;
+import com.telekom.javaschool.medicalrehapp.mapper.EventBoardMapper;
 import com.telekom.javaschool.medicalrehapp.mapper.EventMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,19 +30,25 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
 public class EventServiceImpl implements EventService {
 
     private final EventMapper eventMapper;
+    private final EventBoardMapper eventBoardMapper;
     private final EventRepository eventRepository;
 
     @Autowired
-    public EventServiceImpl(EventMapper eventMapper, EventRepository eventRepository) {
+    public EventServiceImpl(EventMapper eventMapper,
+                            EventBoardMapper eventBoardMapper,
+                            EventRepository eventRepository) {
         this.eventMapper = eventMapper;
+        this.eventBoardMapper = eventBoardMapper;
         this.eventRepository = eventRepository;
     }
 
@@ -104,6 +112,18 @@ public class EventServiceImpl implements EventService {
         return buildEventResponseDto(eventRequestDto, eventEntityPage);
     }
 
+    @Override
+    @Transactional
+    public List<EventBoardDto> getBoardEvents() {
+        LocalDateTime todayStart = LocalDate.now().atStartOfDay();
+        LocalDateTime todayEnd = LocalDate.now().atTime(23,59);
+        List<EventStatus> statuses = Collections.singletonList(EventStatus.SCHEDULED);
+        Pageable pageRequest = PageRequest.of(0, Integer.MAX_VALUE);
+        Page<EventEntity> eventEntityPage = eventRepository.findAllByDateTimeBetweenAndEventStatusIsInOrderByDateTimeAsc(
+                todayStart, todayEnd, statuses, pageRequest);
+        return eventBoardMapper.entityListToDtoList(eventEntityPage.getContent());
+    }
+
     private Page<EventEntity> getEventEntitiesByFilters(EventRequestDto eventRequestDto) {
         int rowsOnPage = eventRequestDto.getLength();
         int pageNumber = eventRequestDto.getStart() / rowsOnPage;
@@ -136,6 +156,7 @@ public class EventServiceImpl implements EventService {
         TimePatternEntity timePatternEntity = prescriptionEntity.getTimePattern();
         LocalDateTime startDateTime = prescriptionEntity.getStartDateTime();
         LocalDateTime endDateTime = prescriptionEntity.getEndDate().atTime(LocalTime.MAX);
+        List<LocalDateTime> savedEventsTimeList = getSavedEventsTimeList(startDateTime, endDateTime);
         List<LocalTime> timeSchedule = getTimeSchedule(timePatternEntity.getDailyFrequency());
         List<DayOfWeek> daySchedule = getDaySchedule(timePatternEntity);
         LocalDate eventDate;
@@ -147,13 +168,35 @@ public class EventServiceImpl implements EventService {
                 continue;
             }
             for (LocalTime eventTime : timeSchedule) {
-                if (eventDate.atTime(eventTime).isAfter(startDateTime)) {
-                    dateTimeOfEventList.add(eventDate.atTime(eventTime));
+                LocalDateTime dateTimeForSchedule = eventDate.atTime(eventTime);
+                if (dateTimeForSchedule.isAfter(startDateTime)) {
+                    dateTimeForSchedule = checkIfTimeIsNotBusy(savedEventsTimeList, dateTimeForSchedule);
+                    dateTimeOfEventList.add(dateTimeForSchedule);
                 }
             }
         }
         log.debug(dateTimeOfEventList.toString());
         return dateTimeOfEventList;
+    }
+
+    private LocalDateTime checkIfTimeIsNotBusy(List<LocalDateTime> savedEventsTimeList,
+                                               LocalDateTime dateTimeForSchedule) {
+        while (savedEventsTimeList.contains(dateTimeForSchedule)) {
+            dateTimeForSchedule = dateTimeForSchedule.plusMinutes(10);
+            if (dateTimeForSchedule.toLocalTime().isAfter(LocalTime.of(23, 50))) {
+                throw new IllegalArgumentException(String.format("Too tight schedule. Cannot create event at %s",
+                        dateTimeForSchedule.toLocalDate()));
+            }
+        }
+        return dateTimeForSchedule;
+    }
+
+    private List<LocalDateTime> getSavedEventsTimeList(LocalDateTime startDateTime, LocalDateTime endDateTime) {
+        return eventRepository
+                .findAllByDateTimeBetweenAndEventStatus(startDateTime, endDateTime, EventStatus.SCHEDULED)
+                .stream()
+                .map(EventEntity::getDateTime)
+                .collect(Collectors.toList());
     }
 
     private List<EventEntity> convertDateTimeToEvents(PrescriptionEntity prescriptionEntity,

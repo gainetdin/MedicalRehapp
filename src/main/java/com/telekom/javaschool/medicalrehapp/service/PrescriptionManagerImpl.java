@@ -15,19 +15,19 @@ import org.springframework.transaction.annotation.Transactional;
 public class PrescriptionManagerImpl implements PrescriptionManager {
 
     private final PrescriptionService prescriptionService;
-    private final EventService eventService;
+    private final EventManager eventManager;
     private final PatientService patientService;
     private final TimePatternService timePatternService;
     private final TreatmentService treatmentService;
 
     @Autowired
     public PrescriptionManagerImpl(PrescriptionService prescriptionService,
-                                   EventService eventService,
+                                   EventManager eventManager,
                                    PatientService patientService,
                                    TimePatternService timePatternService,
                                    TreatmentService treatmentService) {
         this.prescriptionService = prescriptionService;
-        this.eventService = eventService;
+        this.eventManager = eventManager;
         this.patientService = patientService;
         this.timePatternService = timePatternService;
         this.treatmentService = treatmentService;
@@ -39,7 +39,7 @@ public class PrescriptionManagerImpl implements PrescriptionManager {
         PrescriptionEntity prescriptionEntity = prescriptionService.prepareCreate(prescriptionDto);
         setEntitiesAndSavePrescription(prescriptionDto, prescriptionEntity);
         log.info("Prescription created");
-        eventService.create(prescriptionEntity);
+        eventManager.createEvents(prescriptionEntity);
     }
 
     @Override
@@ -48,14 +48,14 @@ public class PrescriptionManagerImpl implements PrescriptionManager {
         PrescriptionEntity prescriptionEntity = prescriptionService.prepareUpdate(prescriptionDto);
         setEntitiesAndSavePrescription(prescriptionDto, prescriptionEntity);
         log.info("Prescription updated");
-        eventService.updateByPrescription(prescriptionEntity);
+        eventManager.updateEvents(prescriptionEntity);
     }
 
     @Override
     @Transactional
     public void cancelPrescriptionAndEvents(String uuid) {
         PrescriptionEntity prescriptionEntity = prescriptionService.cancelByUuid(uuid);
-        eventService.cancelByPrescription(prescriptionEntity);
+        eventManager.cancelEventsByPrescription(prescriptionEntity);
     }
 
     private void setEntitiesAndSavePrescription(PrescriptionDto prescriptionDto, PrescriptionEntity prescriptionEntity) {

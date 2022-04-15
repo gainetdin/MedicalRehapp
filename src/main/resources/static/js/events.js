@@ -20,6 +20,7 @@ $(document).ready(function() {
             endDateTime = new Date(endDateTime.setHours(startDateTime.getHours() + 1));
         }
         else if (timeDifference === '24') {
+            startDateTime = new Date(startDateTime.setHours(0));
             endDateTime = new Date(endDateTime.setHours(23,59,59));
         }
         else {

@@ -42,4 +42,7 @@ public interface EventRepository extends JpaRepository<EventEntity, Long> {
             @Param("statuses") List<EventStatus> statuses,
             Pageable pageable
     );
+
+    List<EventEntity> findAllByDateTimeBetweenAndEventStatus(
+            LocalDateTime startDateTime, LocalDateTime endDateTime, EventStatus status);
 }

@@ -11,9 +11,14 @@ spring:
       hibernate.default_schema: mrschema
   flyway:
     schemas: mrschema
+  activemq:
+    broker-url: ${MED_REH_BROKER_URL}
   main:
     banner-mode: off
 
 logging:
   level:
     com.telekom.javaschool.medicalrehapp: DEBUG
+
+server:
+  port: 8090
